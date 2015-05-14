@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulation.DDA.Console", "Simulation.DDA.Console\Simulation.DDA.Console.csproj", "{3989756D-6BF1-4F3F-AA65-B0ED2DEF62D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulation.Models", "Simulation.Models\Simulation.Models.csproj", "{866CA2C4-C878-45A2-A947-7C89B0A2AE61}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulation.DDA", "Simulation.DDA\Simulation.DDA.csproj", "{35819F8B-180E-4BE8-91F7-E636510244E9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3989756D-6BF1-4F3F-AA65-B0ED2DEF62D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3989756D-6BF1-4F3F-AA65-B0ED2DEF62D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3989756D-6BF1-4F3F-AA65-B0ED2DEF62D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3989756D-6BF1-4F3F-AA65-B0ED2DEF62D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{866CA2C4-C878-45A2-A947-7C89B0A2AE61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{866CA2C4-C878-45A2-A947-7C89B0A2AE61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{866CA2C4-C878-45A2-A947-7C89B0A2AE61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{866CA2C4-C878-45A2-A947-7C89B0A2AE61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35819F8B-180E-4BE8-91F7-E636510244E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35819F8B-180E-4BE8-91F7-E636510244E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35819F8B-180E-4BE8-91F7-E636510244E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35819F8B-180E-4BE8-91F7-E636510244E9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
