@@ -1,27 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Globalization;
+using System.Runtime.CompilerServices;
+
+using Simulation.Infrastructure;
+using Simulation.Models;
 
 namespace Simulation.DDA.Console
 {
-    class Program
+    public class Program
     {
-
-        [DllImport("ModernKDDA.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int TestMethod1(int syst, double[] A, double[] x, double[] b);
-
         static void Main(string[] args)
         {
+            
+            var result = Calculate();
 
-            var list1 = new double[] { 2 };
-            var list2 = new double[] { 3 };
-            var list3 = new double[] { 4 };
-
-            var res = TestMethod1(6, list1, list2, list3);
-            var rea = 1;
+            SimpleFormatter.Write("rezult_ext.txt", result);
         }
+
+        public static Dictionary<double, double> Calculate()
+        {
+            bool solid = false;
+            var manager = new MediumManager(ParameterHelper.ReadOpticalConstants("opt_const.txt"), solid);
+            var ext = new ExtinctionManager(manager);
+
+            SimulationParameters parameters = new SimulationParameters
+            {
+                WavePropagation = ParameterHelper.ReadWavePropagationFromConfiguration("ddaParameters.xml"),
+                IncidentMagnitude = ParameterHelper.ReadIncidentMagnitudeFromConfiguration("ddaParameters.xml"),
+                SystemConfig = ParameterHelper.ReadSystemConfig("dipols.txt"),
+                WaveConfig = ParameterHelper.ReadWavelengthFromConfigration("ddaParameters.xml")
+            };
+
+            return ext.CalculateCrossExtinction(parameters);
+        }
+
     }
 }

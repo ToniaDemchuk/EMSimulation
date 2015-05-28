@@ -4,16 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3989756D-6BF1-4F3F-AA65-B0ED2DEF62D5}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{B4704359-7410-45C7-94CC-F9107558D4F7}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Simulation.DDA.Console</RootNamespace>
-    <AssemblyName>Simulation.DDA.Console</AssemblyName>
+    <RootNamespace>Simulation.DDA.Tests</RootNamespace>
+    <AssemblyName>Simulation.DDA.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -32,14 +30,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ModernKDDA, Version=0.0.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libs\ModernKDDA.dll</HintPath>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="ModernKDDA">
+      <HintPath>..\..\Libs\ModernKDDA.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -47,39 +43,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="ExtinctionManagerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Simulation.DDA\Simulation.DDA.csproj">
-      <Project>{35819f8b-180e-4be8-91f7-e636510244e9}</Project>
-      <Name>Simulation.DDA</Name>
+    <ProjectReference Include="..\..\Simulation.DDA.Console\Simulation.DDA.Console.csproj">
+      <Project>{3989756d-6bf1-4f3f-aa65-b0ed2def62d5}</Project>
+      <Name>Simulation.DDA.Console</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Simulation.Infrastructure\Simulation.Infrastructure.csproj">
-      <Project>{e43fabf6-e2f6-43b1-a0e0-c906beb6fdb2}</Project>
+    <ProjectReference Include="..\..\Simulation.Infrastructure\Simulation.Infrastructure.csproj">
+      <Project>{E43FABF6-E2F6-43B1-A0E0-C906BEB6FDB2}</Project>
       <Name>Simulation.Infrastructure</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Simulation.Models\Simulation.Models.csproj">
-      <Project>{866ca2c4-c878-45a2-a947-7c89b0a2ae61}</Project>
-      <Name>Simulation.Models</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="control.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ddaParameters.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="dipols.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="opt_const.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

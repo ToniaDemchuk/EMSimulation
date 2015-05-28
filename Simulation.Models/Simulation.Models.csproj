@@ -32,6 +32,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -39,13 +40,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CartesianCoordinate.cs" />
-    <Compile Include="EulerAngle.cs" />
-    <Compile Include="OpticalConstants.cs" />
+    <Compile Include="Coordinates\CartesianCoordinate.cs" />
+    <Compile Include="DispersionParameter.cs" />
+    <Compile Include="Extensions\CoordinateExtensions.cs" />
+    <Compile Include="Coordinates\BaseCoordinate.cs" />
+    <Compile Include="Coordinates\ComplexCoordinate.cs" />
+    <Compile Include="ConfigurationParameters\DDAParameters.cs" />
+    <Compile Include="Extensions\DyadCoordinateEntensions.cs" />
+    <Compile Include="Coordinates\DyadCoordinate.cs" />
+    <Compile Include="SimulationParameters\SphericalCoordinate.cs" />
+    <Compile Include="Extensions\SphericalCoordinateExtensions.cs" />
+    <Compile Include="SimulationParameters\OpticalConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SimulationParameters.cs" />
-    <Compile Include="SystemConfig.cs" />
-    <Compile Include="WaveLengthConfig.cs" />
+    <Compile Include="SimulationParameters\SimulationParameters.cs" />
+    <Compile Include="SimulationParameters\SystemConfig.cs" />
+    <Compile Include="Enums\UnitOfMeasurement.cs" />
+    <Compile Include="SimulationParameters\LinearDiscreteCollection.cs" />
+    <Compile Include="ConfigurationParameters\WaveLengthElement.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
