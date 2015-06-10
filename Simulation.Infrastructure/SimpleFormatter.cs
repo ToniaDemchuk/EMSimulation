@@ -3,18 +3,32 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
+
+using Simulation.Models;
 
 namespace Simulation.Infrastructure
 {
     public static class SimpleFormatter
     {
-        public static void Write(string filename, Dictionary<double, double> cext)
+        public static void Write<T1, T2>(string filename, Dictionary<double, T1> cext, Func<T1, T2> valueSelector = null)
         {
+            if (valueSelector == null)
+            {
+                valueSelector = x => (dynamic)x;
+            }
+
+            var fileDir = new FileInfo(filename).Directory;
+            if (fileDir != null && !fileDir.Exists)
+            {
+                fileDir.Create();
+            }
+
             using (var sw = new StreamWriter(filename))
             {
                 foreach (var pair in cext)
                 {
-                    sw.WriteLine("{0} {1}", pair.Key, pair.Value);
+                    sw.WriteLine("{0} {1}", pair.Key, valueSelector(pair.Value));
                 }
             }
         }
@@ -22,7 +36,7 @@ namespace Simulation.Infrastructure
         public static Dictionary<double, double> Read(string filename)
         {
             var dict = new Dictionary<double, double>();
-            
+
             using (var sr = new StreamReader(filename))
             {
                 while (!sr.EndOfStream)

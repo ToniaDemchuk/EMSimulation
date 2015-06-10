@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -28,14 +29,20 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GnuplotCSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Libs\GnuplotCSharp.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="ModernKDDA">
       <HintPath>..\..\Libs\ModernKDDA.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -43,10 +50,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ExtinctionManagerTests.cs" />
+    <Compile Include="OpticalConstantTest.cs" />
+    <Compile Include="SimulationTests.cs" />
+    <Compile Include="ProgramTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\ScilabEngine\Simulation.ScilabEngine.csproj">
+      <Project>{C7775A18-8EF1-4B48-A324-A43950BCEC74}</Project>
+      <Name>Simulation.ScilabEngine</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Simulation.DDA.Console\Simulation.DDA.Console.csproj">
       <Project>{3989756d-6bf1-4f3f-aa65-b0ed2def62d5}</Project>
       <Name>Simulation.DDA.Console</Name>
@@ -54,6 +67,10 @@
     <ProjectReference Include="..\..\Simulation.Infrastructure\Simulation.Infrastructure.csproj">
       <Project>{E43FABF6-E2F6-43B1-A0E0-C906BEB6FDB2}</Project>
       <Name>Simulation.Infrastructure</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Simulation.Models\Simulation.Models.csproj">
+      <Project>{866CA2C4-C878-45A2-A947-7C89B0A2AE61}</Project>
+      <Name>Simulation.Models</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

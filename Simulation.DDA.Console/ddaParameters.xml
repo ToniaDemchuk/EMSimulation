@@ -1,10 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <DDAParameters>
 
+  <SolidMaterial>false</SolidMaterial>
+  
   <IncidentMagnitude radius="1" polar="90" azimuth="45" units="Degree"/>
 
   <WavePropagation polar="0" azimuth="0" units="Degree"/>
   
-  <WaveLengthConfig lower="300.0" upper="900.0" count="901"/>
+  <WaveLengthConfig lower="300.0" upper="999.0" count="1000"/>
   
 </DDAParameters>

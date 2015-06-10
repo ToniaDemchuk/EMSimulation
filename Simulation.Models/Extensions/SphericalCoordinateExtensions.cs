@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel;
 
-namespace Simulation.Models
+namespace Simulation.Models.Extensions
 {
     public static class SphericalCoordinateExtensions
     {
@@ -19,11 +19,13 @@ namespace Simulation.Models
         /// </returns>
         public static CartesianCoordinate ConvertToCartesian(this SphericalCoordinate spherical)
         {
+            var sphericalRad = spherical.ConvertToRadians();
+
             return new CartesianCoordinate(
-                spherical.Radius,
-                Math.Sin(spherical.Polar) * Math.Cos(spherical.Azimuth),
-                Math.Sin(spherical.Polar) * Math.Sin(spherical.Azimuth),
-                Math.Cos(spherical.Polar));
+                sphericalRad.Radius,
+                Math.Sin(sphericalRad.Polar) * Math.Cos(sphericalRad.Azimuth),
+                Math.Sin(sphericalRad.Polar) * Math.Sin(sphericalRad.Azimuth),
+                Math.Cos(sphericalRad.Polar));
         }
 
         /// <summary>

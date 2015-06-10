@@ -17,10 +17,10 @@ namespace Simulation.Models
         public int Size { get; protected set; }
 
         /// <summary>
-        /// Gets or sets the radius.
+        /// Gets or sets the effective radius.
         /// </summary>
         /// <value>
-        /// The radius.
+        /// The effective radius.
         /// </value>
         public IList<double> Radius { get; protected set; }
 

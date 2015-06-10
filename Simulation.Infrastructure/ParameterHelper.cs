@@ -7,12 +7,12 @@ using System.Numerics;
 
 using Simulation.DDA.Console;
 using Simulation.Models;
+using Simulation.Models.Extensions;
 
 namespace Simulation.Infrastructure
 {
     public static class ParameterHelper
     {
-
         public static SystemConfig ReadSystemConfig(string fileName)
         {
             var radiusList = new List<double>();
@@ -30,7 +30,7 @@ namespace Simulation.Infrastructure
                     var split = str.Split(
                         new[] { '\t' },
                         StringSplitOptions.RemoveEmptyEntries)
-                        .Select(x=>double.Parse(x, CultureInfo.InvariantCulture)).ToArray();
+                        .Select(x => double.Parse(x, CultureInfo.InvariantCulture)).ToArray();
 
                     radiusList.Add(split[0]);
                     pointList.Add(new CartesianCoordinate(split[1], split[2], split[3]));
@@ -46,7 +46,6 @@ namespace Simulation.Infrastructure
             var permittivityList = new List<Complex>();
             using (var sr = new StreamReader(fileName))
             {
-                
                 while (!sr.EndOfStream)
                 {
                     var str = sr.ReadLine();
@@ -62,6 +61,16 @@ namespace Simulation.Infrastructure
             return new OpticalConstants(waveLengthList, permittivityList);
         }
 
+        public static void WriteOpticalConstants(string fileName, Dictionary<double, Complex> dict)
+        {
+            using (var sw = new StreamWriter(fileName))
+            {
+                foreach (var value in dict)
+                {
+                    sw.WriteLine("{0}\t{1}\t{2}", value.Key, value.Value.Real, value.Value.Imaginary);
+                }
+            }
+        }
 
         public static LinearDiscreteCollection ReadWavelengthFromConfigration(string fileName)
         {
@@ -72,7 +81,17 @@ namespace Simulation.Infrastructure
                 waveLength.Upper,
                 waveLength.Count);
         }
-        
+
+        public static LinearDiscreteCollection ReadWavelengthFromConfigration(DDAParameters config)
+        {
+            var waveLength = config.WaveLengthConfig;
+
+            return new LinearDiscreteCollection(
+                waveLength.Lower,
+                waveLength.Upper,
+                waveLength.Count);
+        }
+
         public static SphericalCoordinate ReadWavePropagationFromConfiguration(string fileName)
         {
             return XmlSerializerHelper.DeserializeObject<DDAParameters>(fileName).WavePropagation;
@@ -80,32 +99,8 @@ namespace Simulation.Infrastructure
 
         public static CartesianCoordinate ReadIncidentMagnitudeFromConfiguration(string fileName)
         {
-            return XmlSerializerHelper.DeserializeObject<DDAParameters>(fileName).IncidentMagnitude.ConvertToCartesian();
+            var aaa = XmlSerializerHelper.DeserializeObject<DDAParameters>(fileName);
+            return aaa.IncidentMagnitude.ConvertToCartesian();
         }
-
-        #region Obsolete methods
-
-        [Obsolete]
-        public static LinearDiscreteCollection ReadWaveConfig()
-        {
-            using (var sr = new StreamReader("control.txt"))
-            {
-                var strings =
-                    sr.ReadToEnd()
-                        .Split(
-                            Environment.NewLine.ToCharArray(),
-                            StringSplitOptions.RemoveEmptyEntries)
-                        .Select(double.Parse)
-                        .ToArray();
-
-                return new LinearDiscreteCollection(
-                    strings[0],
-                    strings[1],
-                    Convert.ToInt16(strings[2]));
-            }
-        }
-
-        #endregion
-
     }
 }

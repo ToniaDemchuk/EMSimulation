@@ -1,5 +1,7 @@
 ﻿using System.Numerics;
 
+using Simulation.Models.Extensions;
+
 namespace Simulation.Models
 {
     /// <summary>
@@ -22,8 +24,8 @@ namespace Simulation.Models
         /// <param name="zz">The zz.</param>
         public DyadCoordinate(T xx, T xy, T xz, T yx, T yy, T yz, T zx, T zy, T zz)
         {
-            this.Dyad = new T[DyadCoordinateEntensions.DyadLength,
-                DyadCoordinateEntensions.DyadLength]
+            this.Dyad = new T[CoordinateEntensions.DyadLength,
+                CoordinateEntensions.DyadLength]
             {
                 { xx, xy, xz },
                 { yx, yy, yz },
@@ -33,8 +35,8 @@ namespace Simulation.Models
 
         public DyadCoordinate(T initValue)
         {
-            this.Dyad = new T[DyadCoordinateEntensions.DyadLength,
-                DyadCoordinateEntensions.DyadLength]
+            this.Dyad = new T[CoordinateEntensions.DyadLength,
+                CoordinateEntensions.DyadLength]
             {
                 { initValue, (dynamic)0, (dynamic)0 },
                 { (dynamic)0, initValue, (dynamic)0 },
@@ -55,12 +57,12 @@ namespace Simulation.Models
             T num)
         {
             var newDyad =
-                new T[DyadCoordinateEntensions.DyadLength,
-                    DyadCoordinateEntensions.DyadLength];
+                new T[CoordinateEntensions.DyadLength,
+                    CoordinateEntensions.DyadLength];
 
-            for (int i = 0; i < DyadCoordinateEntensions.DyadLength; i++)
+            for (int i = 0; i < CoordinateEntensions.DyadLength; i++)
             {
-                for (int j = 0; j < DyadCoordinateEntensions.DyadLength; j++)
+                for (int j = 0; j < CoordinateEntensions.DyadLength; j++)
                 {
                     newDyad[i, j] = (dynamic)point1.Dyad[i, j] * num;
                 }
@@ -89,12 +91,12 @@ namespace Simulation.Models
             DyadCoordinate<T> point2)
         {
             var newDyad =
-                new T[DyadCoordinateEntensions.DyadLength,
-                    DyadCoordinateEntensions.DyadLength];
+                new T[CoordinateEntensions.DyadLength,
+                    CoordinateEntensions.DyadLength];
 
-            for (int i = 0; i < DyadCoordinateEntensions.DyadLength; i++)
+            for (int i = 0; i < CoordinateEntensions.DyadLength; i++)
             {
-                for (int j = 0; j < DyadCoordinateEntensions.DyadLength; j++)
+                for (int j = 0; j < CoordinateEntensions.DyadLength; j++)
                 {
                     newDyad[i, j] = (dynamic)point1.Dyad[i, j] - point2.Dyad[i, j];
                 }
@@ -116,12 +118,12 @@ namespace Simulation.Models
             DyadCoordinate<T> point2)
         {
             var newDyad =
-                new T[DyadCoordinateEntensions.DyadLength,
-                    DyadCoordinateEntensions.DyadLength];
+                new T[CoordinateEntensions.DyadLength,
+                    CoordinateEntensions.DyadLength];
 
-            for (int i = 0; i < DyadCoordinateEntensions.DyadLength; i++)
+            for (int i = 0; i < CoordinateEntensions.DyadLength; i++)
             {
-                for (int j = 0; j < DyadCoordinateEntensions.DyadLength; j++)
+                for (int j = 0; j < CoordinateEntensions.DyadLength; j++)
                 {
                     newDyad[i, j] = (dynamic)point1.Dyad[i, j] + point2.Dyad[i, j];
                 }
@@ -132,12 +134,12 @@ namespace Simulation.Models
 
         public static implicit operator DyadCoordinate<Complex>(DyadCoordinate<T> value)
         {
-            var newDyad = new Complex[DyadCoordinateEntensions.DyadLength,
-                DyadCoordinateEntensions.DyadLength];
+            var newDyad = new Complex[CoordinateEntensions.DyadLength,
+                CoordinateEntensions.DyadLength];
 
-            for (int i = 0; i < DyadCoordinateEntensions.DyadLength; i++)
+            for (int i = 0; i < CoordinateEntensions.DyadLength; i++)
             {
-                for (int j = 0; j < DyadCoordinateEntensions.DyadLength; j++)
+                for (int j = 0; j < CoordinateEntensions.DyadLength; j++)
                 {
                     newDyad[i, j] = (dynamic)value.Dyad[i, j];
                 }

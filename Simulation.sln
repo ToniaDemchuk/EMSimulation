@@ -13,6 +13,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{926848A5
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulation.Infrastructure", "Simulation.Infrastructure\Simulation.Infrastructure.csproj", "{E43FABF6-E2F6-43B1-A0E0-C906BEB6FDB2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulation.FDTD", "Simulation.FDTD\Simulation.FDTD.csproj", "{036281EF-CFA5-4CD2-A3E5-BE263462369E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulation.ScilabEngine", "ScilabEngine\Simulation.ScilabEngine.csproj", "{C7775A18-8EF1-4B48-A324-A43950BCEC74}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{E43FABF6-E2F6-43B1-A0E0-C906BEB6FDB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E43FABF6-E2F6-43B1-A0E0-C906BEB6FDB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E43FABF6-E2F6-43B1-A0E0-C906BEB6FDB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{036281EF-CFA5-4CD2-A3E5-BE263462369E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{036281EF-CFA5-4CD2-A3E5-BE263462369E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{036281EF-CFA5-4CD2-A3E5-BE263462369E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{036281EF-CFA5-4CD2-A3E5-BE263462369E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7775A18-8EF1-4B48-A324-A43950BCEC74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7775A18-8EF1-4B48-A324-A43950BCEC74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7775A18-8EF1-4B48-A324-A43950BCEC74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7775A18-8EF1-4B48-A324-A43950BCEC74}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

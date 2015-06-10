@@ -2,6 +2,7 @@
 using System.Numerics;
 
 using Simulation.Models;
+using Simulation.Models.Extensions;
 
 namespace Simulation.DDA
 {
@@ -26,7 +27,7 @@ namespace Simulation.DDA
                 Permitivity = this.opticalConstants.SelectOpticalConst(waveLength)
             };
 
-            var waveVector = getWaveVector(
+            var waveVector = this.getWaveVector(
                 waveLength,
                 parameters.MediumRefractiveIndex,
                 angle);
@@ -64,9 +65,9 @@ namespace Simulation.DDA
             double wp = 9.2; // [eV] Ag.
             double gamma0 = 0.02; ////[eV]
             double vf = 0.915; ////2.6;//0.915; // [eV*nm] Зміна оптичних констант зі зміною радіуса частинки
-            double Aparam = 0.75;
+            const double Aparam = 0.75;
 
-            if (solid)
+            if (this.solid)
             {
                 return param.Permitivity;
             }

@@ -10,9 +10,9 @@ namespace Simulation.Models
     /// </summary>
     public class OpticalConstants
     {
-        private readonly List<double> waveLengthList;
+        public List<double> WaveLengthList { get; private set; }
 
-        private readonly List<Complex> permittivityList;
+        public List<Complex> PermittivityList { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OpticalConstants" /> class.
@@ -27,8 +27,8 @@ namespace Simulation.Models
                 throw new ArgumentException("Lists have different count.");
             }
 
-            this.waveLengthList = waveLengthList;
-            this.permittivityList = permittivityList;
+            this.WaveLengthList = waveLengthList;
+            this.PermittivityList = permittivityList;
         }
 
         /// <summary>
@@ -42,15 +42,15 @@ namespace Simulation.Models
             var lower = tuple.Item1;
             var upper = tuple.Item2;
 
-            var deltaWaveLength = waveLength - waveLengthList[lower];
-            var stepWaveLength = waveLengthList[upper] - waveLengthList[lower];
+            var deltaWaveLength = waveLength - this.WaveLengthList[lower];
+            var stepWaveLength = this.WaveLengthList[upper] - this.WaveLengthList[lower];
             var coefWaveLength = deltaWaveLength / stepWaveLength;
 
-            double epsRe = this.permittivityList[lower].Real + coefWaveLength *
-                (this.permittivityList[upper].Real - this.permittivityList[lower].Real);
+            double epsRe = this.PermittivityList[lower].Real + coefWaveLength *
+                (this.PermittivityList[upper].Real - this.PermittivityList[lower].Real);
 
-            double epsIm = this.permittivityList[lower].Imaginary + coefWaveLength *
-                (this.permittivityList[upper].Imaginary - this.permittivityList[lower].Imaginary);
+            double epsIm = this.PermittivityList[lower].Imaginary + coefWaveLength *
+                (this.PermittivityList[upper].Imaginary - this.PermittivityList[lower].Imaginary);
 
             return new Complex(epsRe, epsIm);
 
@@ -62,14 +62,14 @@ namespace Simulation.Models
         private Tuple<int, int> getNearestIndexes(double waveLength)
         {
             int i;
-            for (i = 0; i < this.waveLengthList.Count - 1; i++)
+            for (i = 0; i < this.WaveLengthList.Count - 1; i++)
             {
-                if (waveLength >= this.waveLengthList[i] && waveLength < this.waveLengthList[i + 1])
+                if (waveLength >= this.WaveLengthList[i] && waveLength < this.WaveLengthList[i + 1])
                 {
-                    break;
+                    return new Tuple<int, int>(i, i + 1);
                 }
             }
-            return new Tuple<int, int>(i, i + 1);
+            return new Tuple<int, int>(this.WaveLengthList.Count - 1, this.WaveLengthList.Count - 1);
         }
     }
 }

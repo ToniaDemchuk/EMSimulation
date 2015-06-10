@@ -19,7 +19,7 @@ namespace Simulation.Models
             this.Lower = lower;
             this.Upper = upper;
             this.Count = count;
-            this.Step = calculateStep();
+            this.Step = this.calculateStep();
         }
 
         /// <summary>
@@ -75,8 +75,18 @@ namespace Simulation.Models
         {
             get
             {
-                return this.Lower + this.Step * index;
+                return this.GetValue(index);
             }
+        }
+
+        /// <summary>
+        /// Gets the value.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <returns></returns>
+        protected double GetValue(int index)
+        {
+            return this.Lower + this.Step * index;
         }
 
         /// <summary>
@@ -87,9 +97,9 @@ namespace Simulation.Models
         /// </returns>
         public IEnumerator<double> GetEnumerator()
         {
-            for (int i = 0; i < Count; i++)
+            for (int i = 0; i < this.Count; i++)
             {
-                yield return this[i];
+                yield return this.GetValue(i);
             }
         }
 

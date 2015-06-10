@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Numerics;
 
 namespace Simulation.Models
 {
@@ -9,14 +8,15 @@ namespace Simulation.Models
     public class CartesianCoordinate : BaseCoordinate<double>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CartesianCoordinate"/> class.
+        /// Initializes a new instance of the <see cref="CartesianCoordinate" /> class.
         /// </summary>
         /// <param name="x">The x coordinate.</param>
         /// <param name="y">The y coordinate.</param>
         /// <param name="z">The z coordinate.</param>
-        public CartesianCoordinate(double x, double y, double z):base(x, y, z)
+        public CartesianCoordinate(double x, double y, double z)
+            : base(x, y, z)
         {
-            this.Norm = Math.Sqrt(X * X + Y * Y + Z * Z);
+            this.Norm = Math.Sqrt(this.X * this.X + this.Y * this.Y + this.Z * this.Z);
         }
 
         /// <summary>
@@ -172,6 +172,15 @@ namespace Simulation.Models
         public static CartesianCoordinate operator *(double num, CartesianCoordinate point1)
         {
             return point1 * num;
+        }
+
+        public static CartesianCoordinate operator /(CartesianCoordinate point1, double num)
+        {
+            var x = point1.X / num;
+            var y = point1.Y / num;
+            var z = point1.Z / num;
+
+            return new CartesianCoordinate(x, y, z);
         }
 
         /// <summary>

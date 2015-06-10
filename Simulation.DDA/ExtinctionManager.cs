@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
+
+using Simulation.Infrastructure;
 using Simulation.Models;
+using Simulation.Models.Extensions;
 
 namespace Simulation.DDA
 {
@@ -15,24 +18,23 @@ namespace Simulation.DDA
             this.mediumManager = mediumManager;
         }
 
+        private double[] polarization = null;
+
         [DllImport("ModernKDDA.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int OpenMPCGMethod(int syst, double[] A, double[] x, double[] b);
+        public static extern int OpenMPCGMethod(int syst, double[] a, double[] x, double[] b);
 
-        public Dictionary<double, double> CalculateCrossExtinction(SimulationParameters parameters)
+        public Dictionary<double, SimulationResult> CalculateCrossExtinction(SimulationParameters parameters)
         {
-            int size_Adbl = parameters.SystemConfig.Size * CoordinateExtensions.ComplexMultiplier;  // розмірність матриці А, Р, Е представлена в дійсних числах
-
-            double[] P = new double[size_Adbl];
+            this.initPolarization(parameters);
 
             return parameters.WaveConfig
                 .ToDictionary(
                     x => x,
-                    x => this.CalculateSingleDDA(P, x, parameters));
+                    x => this.CalculateSingleDDA(x, parameters));
 
         }
 
-        public double CalculateSingleDDA(
-            double[] P,
+        public SimulationResult CalculateSingleDDA(
             double waveLength,
             SimulationParameters parameters)
         {
@@ -41,45 +43,61 @@ namespace Simulation.DDA
                     waveLength,
                     parameters.WavePropagation);
 
-            ComplexCoordinate[] E = this.GetIncidentField(
+            ComplexCoordinate[] e = this.GetIncidentField(
                 parameters.SystemConfig,
                 parameters.IncidentMagnitude,
                 dispersion);
 
-            DyadCoordinate<Complex>[,] A = this.BuildMatrixA(
+            DyadCoordinate<Complex>[,] a = this.BuildMatrixA(
                 parameters.SystemConfig,
                 dispersion);
 
             OpenMPCGMethod(
-                P.Length,
-                CoordinateExtensions.ConvertToPlainArray(A),
-                P,
-                CoordinateExtensions.ConvertToPlainArray(E));
+                this.polarization.Length,
+                CoordinateHelper.ConvertToPlainArray(a),
+                this.polarization,
+                CoordinateHelper.ConvertToPlainArray(e));
 
-            return this.CalculateCrossSectionExtinction(
-                CoordinateExtensions.ConvertFromPlainArray(P),
-                E, parameters, dispersion);
+            var result = new SimulationResult
+            {
+                Polarization = CoordinateHelper.ConvertFromPlainArray(this.polarization),
+                ElectricField = e
+            };
+
+            this.CalculateCrossSectionExtinction(
+                result,
+                parameters,
+                dispersion);
+
+            return result;
         }
 
-
-        DyadCoordinate<Complex>[,] BuildMatrixA(SystemConfig system, DispersionParameter dispersion)
+        private void initPolarization(SimulationParameters parameters)
         {
-            DyadCoordinate<Complex>[,] A = new DyadCoordinate<Complex>[system.Size, system.Size];
+            int sizeAdbl = parameters.SystemConfig.Size * CoordinateHelper.ComplexMultiplier;
+            // розмірність матриці А, Р, Е представлена в дійсних числах
 
-            for (int j = 0; j < system.Size; j++)
+            this.polarization = new double[sizeAdbl];
+        }
+
+        public DyadCoordinate<Complex>[,] BuildMatrixA(SystemConfig system, DispersionParameter dispersion)
+        {
+            DyadCoordinate<Complex>[,] a = new DyadCoordinate<Complex>[system.Size, system.Size];
+
+            for (int i = 0; i < system.Size; i++)
             {
-                for (int i = 0; i < system.Size; i++)
+                for (int j = 0; j < system.Size; j++)
                 {
-                    A[i, j] = i == j
-                        ? setDiagonalElements(system, i, dispersion)
-                        : setNonDiagonalElements(system, i, j, dispersion);
+                    a[i, j] = i == j
+                        ? this.setDiagonalElements(system, i, dispersion)
+                        : this.setNonDiagonalElements(system, i, j, dispersion);
                 }
             }
 
-            return A;
+            return a;
         }
 
-        private static DyadCoordinate<Complex> setNonDiagonalElements(SystemConfig system, int i, int j, DispersionParameter dispersion)
+        private DyadCoordinate<Complex> setNonDiagonalElements(SystemConfig system, int i, int j, DispersionParameter dispersion)
         {
             var r = system.Points[j] - system.Points[i];
             double rmod = r.Norm;
@@ -89,7 +107,7 @@ namespace Simulation.DDA
             var kmod = dispersion.WaveVector.Norm;
             double kr = kmod * rmod;
 
-            DyadCoordinate<Complex> dyadProduct = DyadCoordinateEntensions.DyadProduct(r, r);
+            DyadCoordinate<Complex> dyadProduct = CoordinateEntensions.DyadProduct(r, r);
 
             var initDyad = new DyadCoordinate<Complex>(rmod_2);
 
@@ -107,14 +125,14 @@ namespace Simulation.DDA
             double eps_m = dispersion.MediumRefractiveIndex * dispersion.MediumRefractiveIndex;
 
             double radius = system.Radius[index];
-            Complex eps = mediumManager.GetEpsilon(dispersion, radius);
+            Complex eps = this.mediumManager.GetEpsilon(dispersion, radius);
 
             // Complex value inverted to Clausius-Mossotti polarization.
             Complex multiplier = (eps + 2.0 * eps_m) / (eps - 1.0 * eps_m);
 
-            double rad_inv = 1 / (radius * radius * radius);
+            double volumeFactorInverted = 1 / (radius * radius * radius);
 
-            DyadCoordinate<Complex> complex = new DyadCoordinate<Complex>(multiplier * rad_inv);
+            DyadCoordinate<Complex> complex = new DyadCoordinate<Complex>(multiplier * volumeFactorInverted);
 
             var kmod = dispersion.WaveVector.Norm;
             double radiation = 2.0 / 3.0 * kmod * kmod * kmod; // доданок, що відповідає за релаксаційне випромінювання.
@@ -123,31 +141,36 @@ namespace Simulation.DDA
             return complex - radiativeReaction;
         }
 
-
-        public ComplexCoordinate[] GetIncidentField(SystemConfig system, CartesianCoordinate Exyz, DispersionParameter dispersion)
+        public ComplexCoordinate[] GetIncidentField(SystemConfig system, CartesianCoordinate exyz, DispersionParameter dispersion)
         {
             double eps_m = dispersion.MediumRefractiveIndex * dispersion.MediumRefractiveIndex;
-            ComplexCoordinate[] E = new ComplexCoordinate[system.Size];
+            ComplexCoordinate[] e = new ComplexCoordinate[system.Size];
 
             for (int j = 0; j < system.Size; j++)
             {
                 CartesianCoordinate point = system.Points[j];
                 double kr = dispersion.WaveVector * point;
-                E[j] = new ComplexCoordinate(Exyz * eps_m, kr);
+                e[j] = new ComplexCoordinate(exyz * eps_m, kr);
             }
 
-            return E;
+            return e;
         }
 
-        private double CalculateCrossSectionExtinction(ComplexCoordinate[] P, ComplexCoordinate[] Einc, SimulationParameters parameters, DispersionParameter dispersion)
+        private void CalculateCrossSectionExtinction(SimulationResult result, SimulationParameters parameters, DispersionParameter dispersion)
         {
-            double eps_m = dispersion.MediumRefractiveIndex * dispersion.MediumRefractiveIndex;
-            var Exyz_mod = parameters.IncidentMagnitude.Norm;
-            double constCext = 4.0 * Math.PI * dispersion.WaveVector.Norm / (Exyz_mod * Exyz_mod * eps_m);
+            double epsM = dispersion.MediumRefractiveIndex * dispersion.MediumRefractiveIndex;
+            var exyzMod = parameters.IncidentMagnitude.Norm;
+            double factorCext = 4.0 * Math.PI * dispersion.WaveVector.Norm / (exyzMod * exyzMod * epsM);
 
-            double crossExt = Einc.Select((eInc, j) => (eInc * P[j]).Imaginary).Sum();
+            double crossExt = result.ElectricField.Select((eInc, j) => (eInc * result.Polarization[j]).Imaginary).Sum();
 
-            return crossExt * constCext;
+            var crossSectionExt = crossExt * factorCext;
+
+            result.CrossSectionExtinction = crossSectionExt;
+            result.EffectiveCrossSectionExtinction =
+                crossSectionExt /
+                parameters.SystemConfig.Radius.Sum(radius => MathHelper.Area(radius)); //todo
         }
+
     }
 }

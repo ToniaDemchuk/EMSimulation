@@ -40,15 +40,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConfigurationParameters\FDTDField.cs" />
     <Compile Include="Coordinates\CartesianCoordinate.cs" />
-    <Compile Include="DispersionParameter.cs" />
-    <Compile Include="Extensions\CoordinateExtensions.cs" />
+    <Compile Include="Enums\MediumType.cs" />
+    <Compile Include="FDTDPulse.cs" />
+    <Compile Include="Fundamentals.cs" />
+    <Compile Include="IMedium.cs" />
+    <Compile Include="Medium.cs" />
+    <Compile Include="SimulationParameters\SimulationResult.cs" />
+    <Compile Include="SimulationParameters\DispersionParameter.cs" />
+    <Compile Include="Extensions\CoordinateHelper.cs" />
     <Compile Include="Coordinates\BaseCoordinate.cs" />
     <Compile Include="Coordinates\ComplexCoordinate.cs" />
     <Compile Include="ConfigurationParameters\DDAParameters.cs" />
-    <Compile Include="Extensions\DyadCoordinateEntensions.cs" />
+    <Compile Include="Extensions\CoordinateEntensions.cs" />
     <Compile Include="Coordinates\DyadCoordinate.cs" />
-    <Compile Include="SimulationParameters\SphericalCoordinate.cs" />
+    <Compile Include="Coordinates\SphericalCoordinate.cs" />
     <Compile Include="Extensions\SphericalCoordinateExtensions.cs" />
     <Compile Include="SimulationParameters\OpticalConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

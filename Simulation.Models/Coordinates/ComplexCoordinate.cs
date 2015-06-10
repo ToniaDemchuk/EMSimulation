@@ -14,9 +14,10 @@ namespace Simulation.Models
         /// <param name="x">The x coordinate.</param>
         /// <param name="y">The y coordinate.</param>
         /// <param name="z">The z coordinate.</param>
-        public ComplexCoordinate(Complex x, Complex y, Complex z):base(x, y, z)
+        public ComplexCoordinate(Complex x, Complex y, Complex z)
+            : base(x, y, z)
         {
-            this.Norm = Math.Sqrt(X.Magnitude * X.Magnitude + Y.Magnitude * Y.Magnitude + Z.Magnitude * Z.Magnitude);
+            this.Norm = Math.Sqrt(this.X.Magnitude * this.X.Magnitude + this.Y.Magnitude * this.Y.Magnitude + this.Z.Magnitude * this.Z.Magnitude);
         }
 
         public ComplexCoordinate(CartesianCoordinate point, double angle)
@@ -164,6 +165,15 @@ namespace Simulation.Models
         public static ComplexCoordinate operator *(Complex num, ComplexCoordinate point1)
         {
             return point1 * num;
+        }
+
+        public static ComplexCoordinate operator /(ComplexCoordinate point1, Complex num)
+        {
+            var x = point1.X / num;
+            var y = point1.Y / num;
+            var z = point1.Z / num;
+
+            return new ComplexCoordinate(x, y, z);
         }
 
         /// <summary>

@@ -48,6 +48,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Simulation.Infrastructure\Simulation.Infrastructure.csproj">
+      <Project>{E43FABF6-E2F6-43B1-A0E0-C906BEB6FDB2}</Project>
+      <Name>Simulation.Infrastructure</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Simulation.Models\Simulation.Models.csproj">
       <Project>{866ca2c4-c878-45a2-a947-7c89b0a2ae61}</Project>
       <Name>Simulation.Models</Name>
