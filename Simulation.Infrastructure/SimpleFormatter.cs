@@ -13,6 +13,7 @@ namespace Simulation.Infrastructure
     {
         public static void Write<T1, T2>(string filename, Dictionary<double, T1> cext, Func<T1, T2> valueSelector = null)
         {
+            
             if (valueSelector == null)
             {
                 valueSelector = x => (dynamic)x;
@@ -28,7 +29,8 @@ namespace Simulation.Infrastructure
             {
                 foreach (var pair in cext)
                 {
-                    sw.WriteLine("{0} {1}", pair.Key, valueSelector(pair.Value));
+                    sw.WriteLine(string.Format(CultureInfo.InvariantCulture, "{0} {1}", pair.Key,
+                        valueSelector(pair.Value)));
                 }
             }
         }

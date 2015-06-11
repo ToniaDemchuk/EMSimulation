@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-
+using AwokeKnowing.GnuplotCSharp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Simulation.DDA.Console;
@@ -60,7 +61,7 @@ namespace Simulation.DDA.Tests
             const int DistanceMax = 3;
             const double DistanceStep = 0.1;
             List<double> distances = getDistances(DistanceStep, DistanceMax);
-            var radiuses = new List<double> { 4, 10, 20, 40, 100, 200 };
+            var radiuses = new List<double> { 4, 10, 20, 40, 70, 100, 200 };
             this.ddaConfig.IncidentMagnitude.Azimuth = 45;
 
             double maxRadius = radiuses.Max();
@@ -84,7 +85,8 @@ namespace Simulation.DDA.Tests
             const int DistanceMax = 3;
             const double DistanceStep = 0.1;
             List<double> distances = getDistances(DistanceStep, DistanceMax);
-            var radiuses = new List<double> { 4, 10, 20, 40, 100, 200 };
+            var radiuses = new List<double> { 4, 10, 20, 40, 70, 100, 200 };
+
             this.ddaConfig.IncidentMagnitude.Azimuth = 0;
 
             double maxRadius = radiuses.Max();
@@ -107,7 +109,7 @@ namespace Simulation.DDA.Tests
             const int DistanceMax = 3;
             const double DistanceStep = 0.1;
             List<double> distances = getDistances(DistanceStep, DistanceMax);
-            var radiuses = new List<double> { 4, 10, 20, 40, 100, 200 };
+            var radiuses = new List<double> { 4, 10, 20, 40, 70, 100, 200 };
             this.ddaConfig.IncidentMagnitude.Azimuth = 90;
 
             double maxRadius = radiuses.Max();
@@ -130,7 +132,7 @@ namespace Simulation.DDA.Tests
             const int DistanceMax = 3;
             const double DistanceStep = 0.1;
             List<double> distances = getDistances(DistanceStep, DistanceMax);
-            var radiuses = new List<double> { 4, 10, 20, 40, 100, 200 };
+            var radiuses = new List<double> { 4, 10, 20, 40, 70, 100, 200 };
             this.ddaConfig.IncidentMagnitude.Azimuth = 45;
 
             double maxRadius = radiuses.Max();
@@ -153,7 +155,7 @@ namespace Simulation.DDA.Tests
             const int DistanceMax = 3;
             const double DistanceStep = 0.1;
             List<double> distances = getDistances(DistanceStep, DistanceMax);
-            var radiuses = new List<double> { 4, 10, 20, 40, 100, 200 };
+            var radiuses = new List<double> { 4, 10, 20, 40, 70, 100, 200 };
             this.ddaConfig.IncidentMagnitude.Azimuth = 0;
 
             double maxRadius = radiuses.Max();
@@ -176,7 +178,7 @@ namespace Simulation.DDA.Tests
             const int DistanceMax = 3;
             const double DistanceStep = 0.1;
             List<double> distances = getDistances(DistanceStep, DistanceMax);
-            var radiuses = new List<double> { 4, 10, 20, 40, 100, 200 };
+            var radiuses = new List<double> { 4, 10, 20, 40, 70, 100, 200 };
             this.ddaConfig.IncidentMagnitude.Azimuth = 90;
 
             double maxRadius = radiuses.Max();
@@ -200,7 +202,7 @@ namespace Simulation.DDA.Tests
             // Arrange
             const int DistanceMax = 3;
             const double DistanceStep = 0.1;
-            var radiuses = new List<double> { 4, 10, 20, 40, 100, 200 };
+            var radiuses = new List<double> { 4, 10, 20, 40, 70, 100, 200 };
             List<double> distances = getDistances(DistanceStep, DistanceMax);
             var dirAzimuth0 = "RadiusDistanceOutput_Azimuth0";
             var dirAzimuth90 = "RadiusDistanceOutput_Azimuth90";
@@ -234,7 +236,7 @@ namespace Simulation.DDA.Tests
             // Arrange
             const int DistanceMax = 3;
             const double DistanceStep = 0.1;
-            var radiuses = new List<double> { 4, 10, 20, 40, 100, 200 };
+            var radiuses = new List<double> { 4, 10, 20, 40, 70, 100, 200 };
             List<double> distances = getDistances(DistanceStep, DistanceMax);
             var dirAzimuth0 = "RadiusDistanceOutput_Azimuth0_EffectiveCrossExt";
             var dirAzimuth90 = "RadiusDistanceOutput_Azimuth90_EffectiveCrossExt";
@@ -267,10 +269,12 @@ namespace Simulation.DDA.Tests
             // Arrange
             const int DistanceMax = 3;
             const double DistanceStep = 0.1;
-            var radiuses = new List<double> { 4, 10, 20, 40, 100, 200 };
+            var radiuses = new List<double> { 4, 10, 20, 40, 70, 100, 200 };
             List<double> distances = getDistances(DistanceStep, DistanceMax);
             var dirAzimuthSum = "RadiusDistanceOutput_AzimuthSum";
             var dirAzimuth45 = "RadiusDistanceOutput_Azimuth45";
+            var gp = new GnuPlot();
+            gp.Set("style data lines");
 
             foreach (double radius in radiuses)
             {
@@ -280,10 +284,15 @@ namespace Simulation.DDA.Tests
                             this.getFileFormat(dirAzimuth45, distance, radius));
                     var azimSum = SimpleFormatter.Read(
                             this.getFileFormat(dirAzimuthSum, distance, radius));
+                    gp.HoldOn();
 
+                    gp.Plot(azim45.Keys.ToArray(), azim45.Values.ToArray());
+                    gp.Plot(azimSum.Keys.ToArray(), azimSum.Values.ToArray());
+                    gp.HoldOff();
                     AssertHelper.DictionaryAreClose(azim45, azimSum, 0.5);
                 }
             }
+            
         }
 
         [TestMethod]
@@ -292,7 +301,7 @@ namespace Simulation.DDA.Tests
             // Arrange
             const int DistanceMax = 3;
             const double DistanceStep = 0.1;
-            var radiuses = new List<double> { 4, 10, 20, 40, 100, 200 };
+            var radiuses = new List<double> { 4, 10, 20, 40, 70, 100, 200 };
             List<double> distances = getDistances(DistanceStep, DistanceMax);
             var dirAzimuthSum = "RadiusDistanceOutput_AzimuthSum_EffectiveCrossExt";
             var dirAzimuth45 = "RadiusDistanceOutput_Azimuth45_EffectiveCrossExt";
@@ -317,11 +326,15 @@ namespace Simulation.DDA.Tests
             // Arrange
             const int DistanceMax = 3;
             const double DistanceStep = 0.1;
-            var radiuses = new List<double> { 4, 10, 20, 40, 100, 200 };
+            var radiuses = new List<double> { 4, 10, 20, 40, 70, 100, 200 };
             List<double> distances = getDistances(DistanceStep, DistanceMax);
             var dirAzimuth0 = "RadiusDistanceOutput_Azimuth0";
             var dirAzimuth90 = "RadiusDistanceOutput_Azimuth90";
-
+            var gp = new GnuPlot();
+            gp.Set("style data lines");
+            //gp.HoldOn();
+            gp.Set("terminal windows");
+            radiuses.Reverse();
             foreach (double radius in radiuses)
             {
                 var peaks0 = new Dictionary<double, double>();
@@ -340,11 +353,18 @@ namespace Simulation.DDA.Tests
                     peaks90.Add(distance, azim90.Aggregate((l, r) => l.Value > r.Value ? l : r).Key);
                     
                 }
+                gp.Set(string.Format("term windows {0}",radius));
+                gp.HoldOn();
+
+                gp.Plot(peaks0.Select(x => x.Key).ToArray(), peaks0.Select(x => x.Value).ToArray());
+                gp.Plot(peaks90.Select(x => x.Key).ToArray(), peaks90.Select(x => x.Value).ToArray());
+                gp.HoldOff();
                 var filename0 = string.Format(@"../{0}/peaks_0deg_{1}.txt", this.TestContext.TestName, radius);
                 SimpleFormatter.Write<double, double>(filename0, peaks0);
                 var filename90 = string.Format(@"../{0}/peaks_90deg_{1}.txt", this.TestContext.TestName, radius);
                 SimpleFormatter.Write<double, double>(filename90, peaks90);
             }
+            gp.Wait();
         }
 
         #region Private methods
@@ -391,7 +411,7 @@ namespace Simulation.DDA.Tests
 
         private string getFileFormat(string dirPath, double distance, double radius)
         {
-            return string.Format(
+            return string.Format(CultureInfo.InvariantCulture,
                 @"../{0}/rezult_ext_{1}_{2}.txt",
                 dirPath,
                 (decimal)distance,
@@ -400,19 +420,19 @@ namespace Simulation.DDA.Tests
 
         private void writeParameters(List<double> radiuses, List<double> distances)
         {
-            var filename = string.Format(@"../{0}/parameters.txt", this.TestContext.TestName);
+            var filename = string.Format(CultureInfo.InvariantCulture, @"../{0}/parameters.txt", this.TestContext.TestName);
             using (var sw = new StreamWriter(filename))
             {
                 sw.WriteLine(
                     "radius = {0}",
                     string.Join(
                         ",",
-                        radiuses.Select(x => string.Format("{0}", (decimal)x))));
+                        radiuses.Select(x => string.Format(CultureInfo.InvariantCulture, "{0}", (decimal)x))));
                 sw.WriteLine(
                     "distance = {0}",
                     string.Join(
                         ",",
-                        distances.Select(x => string.Format("{0}", (decimal)x))));
+                        distances.Select(x => string.Format(CultureInfo.InvariantCulture, "{0}", (decimal)x))));
             }
         }
 

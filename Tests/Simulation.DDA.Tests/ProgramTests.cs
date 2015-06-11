@@ -29,8 +29,7 @@ namespace Simulation.DDA.Tests
             var result = DDAProgram.Calculate().ToDictionary(x=>x.Key, x=>x.Value.CrossSectionExtinction);
 
             // Assert
-            // HACK: remove 10 epsilon
-            AssertHelper.DictionaryAreClose(dict, result, 10);
+            AssertHelper.DictionaryAreClose(dict, result, 0.01);
         }
     }
 }
