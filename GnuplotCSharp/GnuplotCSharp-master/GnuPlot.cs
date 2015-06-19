@@ -63,25 +63,38 @@ namespace AwokeKnowing.GnuplotCSharp
             var plotY = this.PlotBuffer.Where(x => x.PlotType == PlotTypes.PlotY)
                 .SelectMany(p => p.Y.Select((y, i) => new Tuple<double, double>(i, y)));
 
-            var min = plotXY.Concat(plotY)
-                .Aggregate(
+            var plots = plotXY.Concat(plotY);
+
+            if (!plots.GetEnumerator().MoveNext())
+            {
+                return;
+            }
+
+            var min = plots.Aggregate(
                     (a, b) =>
                     {
-                        var distancea = Math.Pow(a.Item1 - mx, 2) + Math.Pow(a.Item2 - my, 2);
-                        var distanceb = Math.Pow(b.Item1 - mx, 2) + Math.Pow(b.Item2 - my, 2);
+                        double distancea = getDistance(a, mx, my);
+                        double distanceb = getDistance(b, mx, my);
 
                         return distancea < distanceb ? a : b;
                     });
-
             this.setCursor(min);
 
+        }
+
+        private static double getDistance(Tuple<double, double> a, double mx, double my)
+        {
+            double c1 = Math.Abs(a.Item1 - mx) / a.Item1;
+            double d1 = Math.Abs(a.Item2 - my) / a.Item2;
+
+            return c1*c1+d1*d1;
         }
 
         private void setCursor(Tuple<double, double> point)
         {
             this.Set(
                 string.Format(
-                    @"label 1 ""{0}, {1}"" at {0},{1} left point lt {2} pt {3} ps {4}",
+                    @"label 1 ""{0}, {1}"" at {0},{1} left point lt {2} pt {3} ps {4} hypertext",
                     point.Item1,
                     point.Item2,
                     1,
@@ -504,7 +517,7 @@ namespace AwokeKnowing.GnuplotCSharp
 
         public void WriteData(double[] y, StreamWriter stream, bool flush = true)
         {
-            for (int i = 0; i < y.Length; i++) stream.WriteLine(y[i].ToString());
+            for (int i = 0; i < y.Length; i++) stream.WriteLine(y[i].ToString(CultureInfo.InvariantCulture));
 
             if (flush) stream.Flush();
         }
@@ -515,7 +528,7 @@ namespace AwokeKnowing.GnuplotCSharp
             StreamWriter stream,
             bool flush = true)
         {
-            for (int i = 0; i < y.Length; i++) stream.WriteLine(x[i].ToString() + " " + y[i].ToString());
+            for (int i = 0; i < y.Length; i++) stream.WriteLine(x[i].ToString(CultureInfo.InvariantCulture) + " " + y[i].ToString(CultureInfo.InvariantCulture));
 
             if (flush) stream.Flush();
         }
@@ -529,7 +542,7 @@ namespace AwokeKnowing.GnuplotCSharp
             for (int i = 0; i < z.Length; i++)
             {
                 if (i > 0 && i % ySize == 0) stream.WriteLine();
-                stream.WriteLine(z[i].ToString());
+                stream.WriteLine(z[i].ToString(CultureInfo.InvariantCulture));
             }
 
             if (flush) stream.Flush();
@@ -543,7 +556,7 @@ namespace AwokeKnowing.GnuplotCSharp
             for (int i = 0; i < m; i++)
             {
                 line = "";
-                for (int j = 0; j < n; j++) line += zz[i, j].ToString() + " ";
+                for (int j = 0; j < n; j++) line += zz[i, j].ToString(CultureInfo.InvariantCulture) + " ";
                 stream.WriteLine(line.TrimEnd());
             }
 
@@ -562,7 +575,7 @@ namespace AwokeKnowing.GnuplotCSharp
             for (int i = 0; i < m; i++)
             {
                 if (i > 0 && x[i] != x[i - 1]) stream.WriteLine("");
-                stream.WriteLine(x[i] + " " + y[i] + " " + z[i]);
+                stream.WriteLine(x[i].ToString(CultureInfo.InvariantCulture) + " " + y[i].ToString(CultureInfo.InvariantCulture) + " " + z[i].ToString(CultureInfo.InvariantCulture));
             }
 
             if (flush) stream.Flush();
