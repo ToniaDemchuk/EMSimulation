@@ -23,19 +23,16 @@ namespace Simulation.DDA
         [DllImport("ModernKDDA.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern int OpenMPCGMethod(int syst, double[] a, double[] x, double[] b);
 
-        public Dictionary<double, SimulationResult> CalculateCrossExtinction(SimulationParameters parameters)
+        public SimulationResultDictionary CalculateCrossExtinction(SimulationParameters parameters)
         {
             this.initPolarization(parameters);
-
-            return parameters.WaveConfig
-                .ToDictionary(
-                    x => x,
+            return parameters.Spectrum
+                .ToSimulationResult(
                     x => this.CalculateSingleDDA(x, parameters));
-
         }
 
         public SimulationResult CalculateSingleDDA(
-            double waveLength,
+            SpectrumParameter waveLength,
             SimulationParameters parameters)
         {
             DispersionParameter dispersion =

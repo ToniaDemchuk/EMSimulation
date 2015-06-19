@@ -17,7 +17,15 @@ namespace Simulation.Models
         public ComplexCoordinate(Complex x, Complex y, Complex z)
             : base(x, y, z)
         {
-            this.Norm = Math.Sqrt(this.X.Magnitude * this.X.Magnitude + this.Y.Magnitude * this.Y.Magnitude + this.Z.Magnitude * this.Z.Magnitude);
+            this.LazyNorm = new Lazy<double>(
+                () =>
+                {
+                    double xmagn = this.X.Magnitude;
+                    double ymagn = this.Y.Magnitude;
+                    double zmagn = this.Z.Magnitude;
+                    return Math.Sqrt(xmagn * xmagn + ymagn * ymagn +
+                                     zmagn * zmagn);
+                });
         }
 
         public ComplexCoordinate(CartesianCoordinate point, double angle)
@@ -190,6 +198,5 @@ namespace Simulation.Models
         }
 
         #endregion
-
     }
 }

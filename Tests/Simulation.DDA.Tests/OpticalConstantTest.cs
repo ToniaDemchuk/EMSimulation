@@ -13,6 +13,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Simulation.Infrastructure;
 using Simulation.Models;
+using Simulation.Models.Extensions;
 
 namespace Simulation.DDA.Tests
 {
@@ -36,7 +37,7 @@ namespace Simulation.DDA.Tests
             var dict = new Dictionary<double, Complex>();
             foreach (var waveLength in optConst.WaveLengthList)
             {
-                var omeg = 2 * Math.PI * Fundamentals.LightVelocity / (waveLength * 1e-9);
+                var omeg = SpectrumParameterConverter.Convert(waveLength * 1e-9, SpectrumParameterType.WaveLength, SpectrumParameterType.CycleFrequency);
                 var compl = EpsInfinity -
                             OmegaP * OmegaP /
                             (omeg * omeg -
@@ -74,7 +75,7 @@ namespace Simulation.DDA.Tests
             var EpsInfinity = 1;//3.9943;
             var OmegaP = 1.369e+16;
             var DEps0 = 8.45e-1;
-            var Gamma0 = 7.292e+13;
+            var Gamma0 = 7.292e+13/(2*Math.PI);
 
             var dict = new Dictionary<double, Complex>();
             foreach (var waveLength in optConst.WaveLengthList)
@@ -91,6 +92,7 @@ namespace Simulation.DDA.Tests
 
             using (var gp = new GnuPlot())
             {
+
                 gp.HoldOn();
                 gp.Set("style data lines");
                 gp.Plot(optConst.WaveLengthList.ToArray(), optConst.PermittivityList.Select(x => x.Real).ToArray());

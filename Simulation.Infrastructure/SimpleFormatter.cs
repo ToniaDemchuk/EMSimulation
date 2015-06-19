@@ -11,13 +11,8 @@ namespace Simulation.Infrastructure
 {
     public static class SimpleFormatter
     {
-        public static void Write<T1, T2>(string filename, Dictionary<double, T1> cext, Func<T1, T2> valueSelector = null)
+        public static void Write(string filename, Dictionary<double, double> cext)
         {
-            
-            if (valueSelector == null)
-            {
-                valueSelector = x => (dynamic)x;
-            }
 
             var fileDir = new FileInfo(filename).Directory;
             if (fileDir != null && !fileDir.Exists)
@@ -30,7 +25,7 @@ namespace Simulation.Infrastructure
                 foreach (var pair in cext)
                 {
                     sw.WriteLine(string.Format(CultureInfo.InvariantCulture, "{0} {1}", pair.Key,
-                        valueSelector(pair.Value)));
+                        pair.Value));
                 }
             }
         }

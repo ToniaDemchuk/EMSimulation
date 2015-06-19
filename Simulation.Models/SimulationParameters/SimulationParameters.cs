@@ -21,7 +21,7 @@ namespace Simulation.Models
         /// <value>
         /// The wave configuration.
         /// </value>
-        public IEnumerable<double> WaveConfig { get; set; }
+        public OpticalSpectrum Spectrum { get; set; }
 
         /// <summary>
         /// Gets or sets the Euler angles.

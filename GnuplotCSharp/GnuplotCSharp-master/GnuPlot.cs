@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Linq;
@@ -43,18 +44,19 @@ namespace AwokeKnowing.GnuplotCSharp
         private void initOptions()
         {
             this.Set("terminal windows");
-            this.Set(@"print ""-"";");
-            this.Set(@"bind all ""Button1"" 'print MOUSE_X, MOUSE_Y;'");
+            this.Set(@"print ""-""");
+
+            this.WriteLine(@"bind all ""Button1"" 'print MOUSE_X, MOUSE_Y'");
         }
 
         private void extProOutputDataReceived(object sender, DataReceivedEventArgs e)
         {
             var split = e.Data.Split(' ');
             double mx;
-            double.TryParse(split[0], out mx);
+            double.TryParse(split[0], NumberStyles.Float,CultureInfo.InvariantCulture, out mx);
 
             double my;
-            double.TryParse(split[1], out my);
+            double.TryParse(split[1], NumberStyles.Float, CultureInfo.InvariantCulture, out my);
 
             var plotXY = this.PlotBuffer.Where(x => x.PlotType == PlotTypes.PlotXY)
                 .SelectMany(plot => plot.X.Zip(plot.Y, (x, y) => new Tuple<double, double>(x, y)));
@@ -90,7 +92,7 @@ namespace AwokeKnowing.GnuplotCSharp
 
         public void Wait()
         {
-            ExtPro.WaitForExit();
+            this.ExtPro.WaitForExit();
         }
 
         private static string getExePath()

@@ -17,10 +17,12 @@ namespace Simulation.DDA.Console
         {
             var result = Calculate();
 
-            SimpleFormatter.Write("rezult_ext.txt", result, x=>x.CrossSectionExtinction);
+            SimpleFormatter.Write("rezult_ext.txt",
+                result.ToDictionary(x => x.Key.ToType(SpectrumParameterType.WaveLength),
+                    x => x.Value.CrossSectionExtinction));
         }
 
-        public static Dictionary<double, SimulationResult> Calculate()
+        public static SimulationResultDictionary Calculate()
         {
             return Calculate(
                 "ddaParameters.xml",
@@ -28,7 +30,7 @@ namespace Simulation.DDA.Console
                 ParameterHelper.ReadSystemConfig("dipols.txt"));
         }
 
-        public static Dictionary<double, SimulationResult> Calculate(string ddaConfigFilename, string optConstTxt, SystemConfig systemConfig)
+        public static SimulationResultDictionary Calculate(string ddaConfigFilename, string optConstTxt, SystemConfig systemConfig)
         {
             var ddaConfig =
                 XmlSerializerHelper.DeserializeObject<DDAParameters>(ddaConfigFilename);
@@ -36,7 +38,7 @@ namespace Simulation.DDA.Console
             return Calculate(ddaConfig, systemConfig, ParameterHelper.ReadOpticalConstants(optConstTxt));
         }
 
-        public static Dictionary<double, SimulationResult> Calculate(DDAParameters ddaConfig, SystemConfig systemConfig, OpticalConstants readOpticalConstants)
+        public static SimulationResultDictionary Calculate(DDAParameters ddaConfig, SystemConfig systemConfig, OpticalConstants readOpticalConstants)
         {
             var manager = new MediumManager(readOpticalConstants, ddaConfig.SolidMaterial);
             var ext = new ExtinctionManager(manager);
@@ -46,7 +48,7 @@ namespace Simulation.DDA.Console
                 WavePropagation = ddaConfig.WavePropagation,
                 IncidentMagnitude = ddaConfig.IncidentMagnitude.ConvertToCartesian(),
                 SystemConfig = systemConfig,
-                WaveConfig = ParameterHelper.ReadWavelengthFromConfigration(ddaConfig)
+                Spectrum = ParameterHelper.ReadWavelengthFromConfigration(ddaConfig)
             };
 
             return ext.CalculateCrossExtinction(parameters);

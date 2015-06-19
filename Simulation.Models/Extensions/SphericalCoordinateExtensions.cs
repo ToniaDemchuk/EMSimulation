@@ -19,13 +19,14 @@ namespace Simulation.Models.Extensions
         /// </returns>
         public static CartesianCoordinate ConvertToCartesian(this SphericalCoordinate spherical)
         {
-            var sphericalRad = spherical.ConvertToRadians();
+            var sphericalRad = spherical.ToRadians();
+
+            double radsin = sphericalRad.Radius * Math.Sin(sphericalRad.Polar);
 
             return new CartesianCoordinate(
-                sphericalRad.Radius,
-                Math.Sin(sphericalRad.Polar) * Math.Cos(sphericalRad.Azimuth),
-                Math.Sin(sphericalRad.Polar) * Math.Sin(sphericalRad.Azimuth),
-                Math.Cos(sphericalRad.Polar));
+                radsin * Math.Cos(sphericalRad.Azimuth),
+                radsin * Math.Sin(sphericalRad.Azimuth),
+                sphericalRad.Radius * Math.Cos(sphericalRad.Polar));
         }
 
         /// <summary>
@@ -33,7 +34,7 @@ namespace Simulation.Models.Extensions
         /// </summary>
         /// <returns>New angles in radians.</returns>
         /// <exception cref="System.ComponentModel.InvalidEnumArgumentException">Throws if unit do not support conversion.</exception>
-        public static SphericalCoordinate ConvertToRadians(this SphericalCoordinate coordinate)
+        public static SphericalCoordinate ToRadians(this SphericalCoordinate coordinate)
         {
             switch (coordinate.Units)
             {
@@ -54,7 +55,7 @@ namespace Simulation.Models.Extensions
         /// </summary>
         /// <returns>New angles in radians.</returns>
         /// <exception cref="System.ComponentModel.InvalidEnumArgumentException">Throws if unit do not support conversion.</exception>
-        public static SphericalCoordinate ConvertToDegrees(this SphericalCoordinate coordinate)
+        public static SphericalCoordinate ToDegrees(this SphericalCoordinate coordinate)
         {
             switch (coordinate.Units)
             {

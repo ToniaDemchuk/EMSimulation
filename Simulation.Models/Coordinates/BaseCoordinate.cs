@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 
 namespace Simulation.Models
 {
@@ -19,10 +20,6 @@ namespace Simulation.Models
             this.X = x;
             this.Y = y;
             this.Z = z;
-        }
-
-        protected BaseCoordinate()
-        {
         }
 
         /// <summary>
@@ -49,12 +46,17 @@ namespace Simulation.Models
         /// </value>
         public T Z { get; protected set; }
 
+        protected Lazy<double> LazyNorm;
+
         /// <summary>
         /// Gets the norm of the coordinate.
         /// </summary>
         /// <value>
         /// The norm of the coordinate.
         /// </value>
-        public double Norm { get; protected set; }
+        public double Norm
+        {
+            get { return this.LazyNorm.Value; }
+        }
     }
 }

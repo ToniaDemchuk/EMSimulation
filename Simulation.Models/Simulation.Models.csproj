@@ -29,6 +29,24 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -40,13 +58,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConfigurationParameters\FDTDField.cs" />
+    <Compile Include="Coordinates\IndexStore.cs" />
+    <Compile Include="Extensions\ArrayExtensions.cs" />
+    <Compile Include="Extensions\LinearDiscreteExtensions.cs" />
+    <Compile Include="Extensions\SimulationResultExtensions.cs" />
+    <Compile Include="SimulationParameters\FDTDField.cs" />
     <Compile Include="Coordinates\CartesianCoordinate.cs" />
-    <Compile Include="Enums\MediumType.cs" />
-    <Compile Include="FDTDPulse.cs" />
-    <Compile Include="Fundamentals.cs" />
-    <Compile Include="IMedium.cs" />
-    <Compile Include="Medium.cs" />
+    <Compile Include="Enums\SpectrumParameterType.cs" />
+    <Compile Include="SimulationParameters\FDTDPulse.cs" />
+    <Compile Include="SimulationParameters\FourierSeries.cs" />
+    <Compile Include="Constants\Fundamentals.cs" />
+    <Compile Include="Medium\IMedium.cs" />
+    <Compile Include="Medium\Medium.cs" />
+    <Compile Include="SimulationParameters\OpticalSpectrum.cs" />
     <Compile Include="SimulationParameters\SimulationResult.cs" />
     <Compile Include="SimulationParameters\DispersionParameter.cs" />
     <Compile Include="Extensions\CoordinateHelper.cs" />
@@ -57,13 +81,16 @@
     <Compile Include="Coordinates\DyadCoordinate.cs" />
     <Compile Include="Coordinates\SphericalCoordinate.cs" />
     <Compile Include="Extensions\SphericalCoordinateExtensions.cs" />
-    <Compile Include="SimulationParameters\OpticalConstants.cs" />
+    <Compile Include="Medium\OpticalConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimulationParameters\SimulationParameters.cs" />
+    <Compile Include="Extensions\SpectrumParameterConverter.cs" />
+    <Compile Include="SimulationParameters\SimulationResultDictionary.cs" />
     <Compile Include="SimulationParameters\SystemConfig.cs" />
     <Compile Include="Enums\UnitOfMeasurement.cs" />
-    <Compile Include="SimulationParameters\LinearDiscreteCollection.cs" />
-    <Compile Include="ConfigurationParameters\WaveLengthElement.cs" />
+    <Compile Include="Common\LinearDiscreteCollection.cs" />
+    <Compile Include="ConfigurationParameters\LinearDiscreteElement.cs" />
+    <Compile Include="SimulationParameters\SpectrumParameter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

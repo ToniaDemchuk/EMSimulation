@@ -18,17 +18,17 @@ namespace Simulation.DDA
             this.opticalConstants = opticalConstants;
         }
 
-        public DispersionParameter GetDispersionParameters(double waveLength, SphericalCoordinate angle)
+        public DispersionParameter GetDispersionParameters(SpectrumParameter parameter, SphericalCoordinate angle)
         {
             var parameters = new DispersionParameter
             {
-                WaveLength = waveLength,
-                MediumRefractiveIndex = this.GetMediumCoeficient(waveLength),
-                Permitivity = this.opticalConstants.SelectOpticalConst(waveLength)
+                SpectrumParameter = parameter,
+                MediumRefractiveIndex = this.GetMediumCoeficient(parameter),
+                Permitivity = this.opticalConstants.SelectOpticalConst(parameter)
             };
 
             var waveVector = this.getWaveVector(
-                waveLength,
+                parameter,
                 parameters.MediumRefractiveIndex,
                 angle);
 
@@ -36,7 +36,7 @@ namespace Simulation.DDA
             return parameters;
         }
 
-        public double GetMediumCoeficient(double waveLength)
+        public double GetMediumCoeficient(SpectrumParameter waveLength)
         {
             double refractiveIndex;
 
@@ -86,13 +86,13 @@ namespace Simulation.DDA
         }
 
         private CartesianCoordinate getWaveVector(
-            double waveLength,
+            SpectrumParameter waveLength,
             double refractiveIndex,
             SphericalCoordinate angle)
         {
-            var radianAngles = angle.ConvertToRadians();
+            var radianAngles = angle.ToRadians();
 
-            radianAngles.Radius = 2.0 * Math.PI * refractiveIndex / waveLength; // k_mod
+            radianAngles.Radius = waveLength.ToType(SpectrumParameterType.WaveNumber) * refractiveIndex; // k_mod
 
             return radianAngles.ConvertToCartesian();
         }

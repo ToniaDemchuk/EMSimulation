@@ -9,7 +9,7 @@ namespace Simulation.Models
 {
     public class DispersionParameter
     {
-        public double WaveLength { get; set; }
+        public SpectrumParameter SpectrumParameter { get; set; }
 
         public Complex Permitivity { get; set; }
 

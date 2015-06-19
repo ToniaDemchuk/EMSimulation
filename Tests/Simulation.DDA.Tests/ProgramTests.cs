@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Simulation.DDA.Console;
 using Simulation.Infrastructure;
+using Simulation.Models;
 
 namespace Simulation.DDA.Tests
 {
@@ -26,7 +27,7 @@ namespace Simulation.DDA.Tests
             var dict = SimpleFormatter.Read(filename);
 
             // Act
-            var result = DDAProgram.Calculate().ToDictionary(x=>x.Key, x=>x.Value.CrossSectionExtinction);
+            var result = DDAProgram.Calculate().ToDictionary(x=>x.ToType(SpectrumParameterType.WaveLength), x=>x.CrossSectionExtinction);
 
             // Assert
             AssertHelper.DictionaryAreClose(dict, result, 0.01);

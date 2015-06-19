@@ -11,7 +11,7 @@ namespace Simulation.DDA.Console
 
         public SphericalCoordinate IncidentMagnitude { get; set; }
 
-        public WaveLengthElement WaveLengthConfig { get; set; }
+        public LinearDiscreteElement WaveLengthConfig { get; set; }
 
         public bool SolidMaterial { get; set; }
     }

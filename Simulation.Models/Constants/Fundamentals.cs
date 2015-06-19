@@ -16,9 +16,9 @@ namespace Simulation.Models
 
         public readonly double Eta0 = Math.Sqrt(Mu0 / Eps0);
 
-        public const double ConstPlank = 6.626e-34;
+        public const double PlanckConst = 6.626e-34;
 
-        public const double PlankDiv2Pi = ConstPlank / (2.0 * Math.PI);
+        public const double ReducedPlanckConst = PlanckConst / (2.0 * Math.PI);
 
         public const double QElektron = 1.602e-19;
 

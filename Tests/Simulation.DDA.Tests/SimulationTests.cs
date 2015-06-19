@@ -78,7 +78,7 @@ namespace Simulation.DDA.Tests
         }
 
         [TestMethod]
-        [Ignore]
+        //[Ignore]
         public void RadiusDistanceOutput_Azimuth0()
         {
             // Arrange
@@ -223,7 +223,7 @@ namespace Simulation.DDA.Tests
                         .ToDictionary(key => key.Key, value => value.Value);
 
                     var filename = this.getFileFormat(this.TestContext.TestName, distance, radius);
-                    SimpleFormatter.Write<double, double>(filename, azimSum);
+                    SimpleFormatter.Write(filename, azimSum);
                 }
             }
             this.writeParameters(radiuses, distances);
@@ -257,7 +257,7 @@ namespace Simulation.DDA.Tests
                         .ToDictionary(key => key.Key, value => value.Value);
 
                     var filename = this.getFileFormat(this.TestContext.TestName, distance, radius);
-                    SimpleFormatter.Write<double, double>(filename, azimSum);
+                    SimpleFormatter.Write(filename, azimSum);
                 }
             }
             this.writeParameters(radiuses, distances);
@@ -333,7 +333,6 @@ namespace Simulation.DDA.Tests
             var gp = new GnuPlot();
             gp.Set("style data lines");
             //gp.HoldOn();
-            gp.Set("terminal windows");
             radiuses.Reverse();
             foreach (double radius in radiuses)
             {
@@ -353,18 +352,18 @@ namespace Simulation.DDA.Tests
                     peaks90.Add(distance, azim90.Aggregate((l, r) => l.Value > r.Value ? l : r).Key);
                     
                 }
-                gp.Set(string.Format("term windows {0}",radius));
+                //gp.Set(string.Format("term windows {0}",radius));
                 gp.HoldOn();
 
                 gp.Plot(peaks0.Select(x => x.Key).ToArray(), peaks0.Select(x => x.Value).ToArray());
                 gp.Plot(peaks90.Select(x => x.Key).ToArray(), peaks90.Select(x => x.Value).ToArray());
                 gp.HoldOff();
                 var filename0 = string.Format(@"../{0}/peaks_0deg_{1}.txt", this.TestContext.TestName, radius);
-                SimpleFormatter.Write<double, double>(filename0, peaks0);
+                SimpleFormatter.Write(filename0, peaks0);
                 var filename90 = string.Format(@"../{0}/peaks_90deg_{1}.txt", this.TestContext.TestName, radius);
-                SimpleFormatter.Write<double, double>(filename90, peaks90);
+                SimpleFormatter.Write(filename90, peaks90);
             }
-            gp.Wait();
+            //gp.Wait();
         }
 
         #region Private methods
@@ -406,7 +405,7 @@ namespace Simulation.DDA.Tests
 
             var filename = this.getFileFormat(this.TestContext.TestName, distance, radius);
 
-            SimpleFormatter.Write(filename, result, valueSelector);
+            SimpleFormatter.Write(filename, result.ToDictionary(x=>x.ToType(SpectrumParameterType.WaveLength), valueSelector));
         }
 
         private string getFileFormat(string dirPath, double distance, double radius)

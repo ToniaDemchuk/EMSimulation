@@ -72,24 +72,18 @@ namespace Simulation.Infrastructure
             }
         }
 
-        public static LinearDiscreteCollection ReadWavelengthFromConfigration(string fileName)
+        public static OpticalSpectrum ReadWavelengthFromConfigration(string fileName)
         {
-            var waveLength = XmlSerializerHelper.DeserializeObject<DDAParameters>(fileName).WaveLengthConfig;
+            var config = XmlSerializerHelper.DeserializeObject<DDAParameters>(fileName);
 
-            return new LinearDiscreteCollection(
-                waveLength.Lower,
-                waveLength.Upper,
-                waveLength.Count);
+            return ReadWavelengthFromConfigration(config);
         }
 
-        public static LinearDiscreteCollection ReadWavelengthFromConfigration(DDAParameters config)
+        public static OpticalSpectrum ReadWavelengthFromConfigration(DDAParameters config)
         {
             var waveLength = config.WaveLengthConfig;
 
-            return new LinearDiscreteCollection(
-                waveLength.Lower,
-                waveLength.Upper,
-                waveLength.Count);
+            return new OpticalSpectrum(waveLength.ToLinearCollection(), SpectrumParameterType.WaveLength);
         }
 
         public static SphericalCoordinate ReadWavePropagationFromConfiguration(string fileName)

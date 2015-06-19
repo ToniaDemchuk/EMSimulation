@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Simulation.Models;
+﻿using Simulation.Models;
 using Simulation.Models.ConfigurationParameters;
+using Simulation.Models.Coordinates;
 using Simulation.Models.Extensions;
 
 namespace Simulation.FDTD
@@ -16,165 +11,161 @@ namespace Simulation.FDTD
         FDTDPulse pulse;
 
         IMedium[,,] medium;
+        private int time;
 
+        IndexStore indices = new IndexStore(50, 50, 50);
+
+        private double cellSize;
         void _calcFields()
         {
-            int IE = 50;
-            int JE = 50;
-            int KE = 50;
             var pmlLength = 7;
-            //int IE = fields->numCells.x;
-            //int JE = fields->numCells.y;
-            //int KE = fields->numCells.z;
 
             // границі розсіяного поля.
-            int iaPulse = pmlLength + 1;
-            int ibPulse = IE - pmlLength - 2;
-            int jaPulse = pmlLength + 1;
-            int jbPulse = JE - pmlLength - 2;
-            int kaPulse = pmlLength + 1;
-            int kbPulse = KE - pmlLength - 2;
-
-            // Calculate the Dx field
-            for (int i = 1; i < IE; i++)
-            {
-                for (int j = 1; j < JE; j++)
-                {
-                    for (int k = 1; k < KE; k++)
-                    {
-                        var rot_h = fields.H.Curl(i, j, k, -1);
-                        fields.ID[i, j, k]= fields.ID[i, j, k] + rot_h;
-
-                        var g3 = new CartesianCoordinate(
-                            fields.Gj3[j] * fields.Gk3[k],
-                            fields.Gi3[i] * fields.Gk3[k],
-                            fields.Gi3[i] * fields.Gj3[j]);
-
-                        var g2 = new CartesianCoordinate(
-                            fields.Gj2[j] * fields.Gk2[k],
-                            fields.Gi2[i] * fields.Gk2[k],
-                            fields.Gi2[i] * fields.Gj2[j]);
-
-                        var g1 = new CartesianCoordinate(
-                            fields.Gi1[i],
-                            fields.Gj1[j],
-                            fields.Gk1[k]);
-
-                        fields.D[i, j, k] = fields.D[i, j, k].ComponentProduct(g3) +
-                                            Fundamentals.CourantConst * (rot_h + g1.ComponentProduct(fields.ID[i, j, k]))
-                                                .ComponentProduct(g2);
-
-                    }
-                }
-            }
+            var pulseIndex = indices.ShiftLower(pmlLength + 1).ShiftUpper(pmlLength + 1);
             
-            pulse->ElectricFieldStepCalc(time);
-
-            // Incident Dy
-            for (int i = iaPulse; i <= ibPulse; i++)
-            {
-                for (int j = jaPulse; j <= jbPulse - 1; j++)
-                {
-                    fields->dy(i, j, kaPulse) = fields->dy(i, j, kaPulse) -
-                            Fundamentals.CourantConst * pulse->h(j);
-                    fields->dy(i, j, kbPulse + 1) = fields->dy(i, j, kbPulse + 1) +
-                            Fundamentals.CourantConst * pulse->h(j);
-                }
-            }
-            // Incident Dz
-            for (int i = iaPulse; i <= ibPulse; i++)
-            {
-                for (int k = kaPulse; k <= kbPulse; k++)
-                {
-                    fields->dz(i, jaPulse, k) = fields->dz(i, jaPulse, k) +
-                            Fundamentals.CourantConst * pulse->h(jaPulse - 1);
-                    fields->dz(i, jbPulse, k) = fields->dz(i, jbPulse, k) -
-                            Fundamentals.CourantConst * pulse->h(jbPulse);
-                }
-            }
+            this.calculateDField(pulseIndex);
 
             // Calculate the E from D field
+            indices.ShiftLower(1).ShiftUpper(1)
+                   .For((i, j, k) =>
+                   {
+                       fields.E[i, j, k] = medium[i, j, k].Solve(fields.D[i, j, k]);
+                   });
 
-            for (int i = 1; i < IE - 1; i++)
-            {
-                for (int j = 1; j < JE - 1; j++)
-                {
-                    for (int k = 1; k < KE - 1; k++)
-                    {
-
-                        fields.E[i, j, k] = medium[i, j, k].Solve(fields.D[i, j, k]);
-
-                    }
-                }
-            }
             double timeStep = cellSize * Fundamentals.CourantConst / (Fundamentals.LightVelocity);
-            fields->DoFourierField(time * timeStep, &(medium->mediumPhase));
-            pulse->DoFourierPulse(time * timeStep);
-
-
-            // Calculate the Hx field
-            for (int i = 0; i < IE - 1; i++)
-            {
-                for (int j = 0; j < JE - 1; j++)
-                {
-                    for (int k = 0; k < KE - 1; k++)
-                    {
-
-                        var rot_e = fields.E.Curl(i, j, k, +1);
-                        fields.IH[i, j, k] = fields.IH[i, j, k] + rot_e;
-
-
-                        var f3 = new CartesianCoordinate(
-                            fields.Fj3[j] * fields.Fk3[k],
-                            fields.Fi3[i] * fields.Fk3[k],
-                            fields.Fi3[i] * fields.Fj3[j]);
-
-                        var f2 = new CartesianCoordinate(
-                            fields.Fj2[j] * fields.Fk2[k],
-                            fields.Fi2[i] * fields.Fk2[k],
-                            fields.Fi2[i] * fields.Fj2[j]);
-
-                        var f1 = new CartesianCoordinate(
-                            fields.Fi1[i],
-                            fields.Fj1[j],
-                            fields.Fk1[k]);
-
-                        fields.H[i, j, k] = fields.H[i, j, k].ComponentProduct(f3)
-                                 + Fundamentals.CourantConst *
-                                (rot_e + fields.IH[i, j, k].ComponentProduct(f1)).ComponentProduct(f2);
-                    }
-                }
-            }
+            fields.DoFourierField(time * timeStep, this.medium);
+            pulse.DoFourierPulse(time * timeStep);
             
-            pulse->MagneticFieldStepCalc();
-
-            // Incident Hx
-            for (int i = iaPulse; i <= ibPulse; i++)
-            {
-                for (int k = kaPulse; k <= kbPulse; k++)
-                {
-                    fields->hx(i, jaPulse - 1, k) = fields->hx(i, jaPulse - 1, k) +
-                            Fundamentals.CourantConst * pulse->e(jaPulse);
-                    fields->hx(i, jbPulse, k) = fields->hx(i, jbPulse, k) -
-                            Fundamentals.CourantConst * pulse->e(jbPulse);
-                }
-            }
-            // Incident Hy
-            for (int j = jaPulse; j <= jbPulse; j++)
-            {
-                for (int k = kaPulse; k <= kbPulse; k++)
-                {
-                    fields->hy(iaPulse - 1, j, k) = fields->hy(iaPulse - 1, j, k) -
-                            Fundamentals.CourantConst * pulse->e(j);
-                    fields->hy(ibPulse, j, k) = fields->hy(ibPulse, j, k) +
-                            Fundamentals.CourantConst * pulse->e(j);
-                }
-            }
-
-
+            this.calculateHField(pulseIndex);
 
             time++;
         }
 
+        private void calculateHField(IndexStore pulseIndex)
+        {
+            // Calculate the Hx field
+            this.indices.ShiftUpper(1).For((i, j, k) =>
+            {
+                var rot_e = this.fields.E.Curl(i, j, k, +1);
+                this.fields.IH[i, j, k] = this.fields.IH[i, j, k] + rot_e;
+
+                var f3 = new CartesianCoordinate(
+                    this.fields.Fj3[j] * this.fields.Fk3[k],
+                    this.fields.Fi3[i] * this.fields.Fk3[k],
+                    this.fields.Fi3[i] * this.fields.Fj3[j]);
+
+                var f2 = new CartesianCoordinate(
+                    this.fields.Fj2[j] * this.fields.Fk2[k],
+                    this.fields.Fi2[i] * this.fields.Fk2[k],
+                    this.fields.Fi2[i] * this.fields.Fj2[j]);
+
+                var f1 = new CartesianCoordinate(
+                    this.fields.Fi1[i],
+                    this.fields.Fj1[j],
+                    this.fields.Fk1[k]);
+
+                this.fields.H[i, j, k] = this.fields.H[i, j, k].ComponentProduct(f3)
+                                    + Fundamentals.CourantConst *
+                                    (rot_e + this.fields.IH[i, j, k].ComponentProduct(f1)).ComponentProduct(f2);
+            });
+
+            this.pulse.MagneticFieldStepCalc();
+
+            // Incident Hx
+            pulseIndex.ForExceptJ((i, k) =>
+            {
+                this.fields.H[i, pulseIndex.Lower - 1, k] += new CartesianCoordinate(Fundamentals.CourantConst * this.pulse.E[pulseIndex.Lower], 0, 0);
+                this.fields.H[i, pulseIndex.Lower, k] -= new CartesianCoordinate(Fundamentals.CourantConst * this.pulse.E[pulseIndex.Lower], 0, 0);
+            });
+
+            // Incident Hy
+            pulseIndex.ForExceptI((j, k) =>
+            {
+                this.fields.H[pulseIndex.Lower - 1, j, k] -= new CartesianCoordinate(0, Fundamentals.CourantConst * this.pulse.E[j], 0);
+                this.fields.H[pulseIndex.Lower, j, k] -= new CartesianCoordinate(0, Fundamentals.CourantConst * this.pulse.E[j], 0);
+            });
+        }
+
+        private void calculateDField(IndexStore pulseIndex)
+        {
+            // Calculate the Dx field
+            this.indices.ShiftLower(1).For((i, j, k) =>
+            {
+                var rot_h = this.fields.H.Curl(i, j, k, -1);
+                this.fields.ID[i, j, k] += rot_h;
+
+                var g3 = new CartesianCoordinate(
+                    this.fields.Gj3[j] * this.fields.Gk3[k],
+                    this.fields.Gi3[i] * this.fields.Gk3[k],
+                    this.fields.Gi3[i] * this.fields.Gj3[j]);
+
+                var g2 = new CartesianCoordinate(
+                    this.fields.Gj2[j] * this.fields.Gk2[k],
+                    this.fields.Gi2[i] * this.fields.Gk2[k],
+                    this.fields.Gi2[i] * this.fields.Gj2[j]);
+
+                var g1 = new CartesianCoordinate(
+                    this.fields.Gi1[i],
+                    this.fields.Gj1[j],
+                    this.fields.Gk1[k]);
+
+                this.fields.D[i, j, k] = this.fields.D[i, j, k].ComponentProduct(g3) +
+                                    Fundamentals.CourantConst * (rot_h + g1.ComponentProduct(this.fields.ID[i, j, k]))
+                                                                    .ComponentProduct(g2);
+            });
+
+            this.pulse.ElectricFieldStepCalc(this.time);
+
+            // Incident Dy
+            pulseIndex.ForExceptK((i, j) =>
+            {
+                this.fields.D[i, j, pulseIndex.Lower] -= new CartesianCoordinate(0, Fundamentals.CourantConst * this.pulse.H[j], 0);
+                this.fields.D[i, j, pulseIndex.Lower + 1] -= new CartesianCoordinate(0, Fundamentals.CourantConst * this.pulse.H[j], 0);
+            });
+
+            // Incident Dz
+            pulseIndex.ForExceptJ((i, k) => { this.fields.D[i, pulseIndex.Lower, k] += new CartesianCoordinate(0, 0, Fundamentals.CourantConst * (this.pulse.H[pulseIndex.Lower - 1] - this.pulse.H[pulseIndex.JLength])); });
+        }
+
+        SimulationResultDictionary CalcExtinction(OpticalSpectrum frequency)
+        {
+            return frequency.ToSimulationResult(this.calculateExtinction);
+        }
+
+        private SimulationResult calculateExtinction(SpectrumParameter freq)
+        {
+            double extinction = 0.0;
+
+            double K = freq.ToType(SpectrumParameterType.CycleFrequency);
+
+            double area = 0.0;
+
+            indices.For((i, j, k) =>
+            {
+                if (this.medium[i, j, k].IsBody)
+                {
+                    var eps = this.medium[i, j, k].GetEpsilon(freq);
+
+                    var pulseMultiplier = 1 / this.pulse.FourierPulse[j][freq].Magnitude;
+                    double complexPart1 = -eps.Imaginary *
+                                          pulseMultiplier * this.fields.FourierField[i, j, k][freq].Norm;
+
+                    extinction += complexPart1;
+                }
+            });
+            indices.ForExceptJ((i, k) =>
+            {
+                area += this.medium[i, indices.JLength / 2, k].IsBody ? 1 : 0;
+            });
+
+            var resu = new SimulationResult();
+
+            extinction *= (K * this.cellSize * this.cellSize * this.cellSize);
+            resu.CrossSectionAbsorption = extinction;
+            extinction /= (area * this.cellSize * this.cellSize);
+            resu.EffectiveCrossSectionAbsorption = extinction;
+
+            return resu;
+        }
     }
 }

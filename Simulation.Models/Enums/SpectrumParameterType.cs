@@ -6,7 +6,13 @@ using System.Threading.Tasks;
 
 namespace Simulation.Models
 {
-    public class FDTDPulse
+    public enum SpectrumParameterType
     {
+        Frequency,
+        CycleFrequency,
+        WaveLength,
+        WaveNumber,
+        PhotonEnergy,
+        EVEnergy
     }
 }

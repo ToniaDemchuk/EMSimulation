@@ -16,20 +16,7 @@ namespace Simulation.Models
         public CartesianCoordinate(double x, double y, double z)
             : base(x, y, z)
         {
-            this.Norm = Math.Sqrt(this.X * this.X + this.Y * this.Y + this.Z * this.Z);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CartesianCoordinate"/> class.
-        /// </summary>
-        /// <param name="radius">The radius.</param>
-        /// <param name="unitX">The unit x coordinate.</param>
-        /// <param name="unitY">The unit y coordinate.</param>
-        /// <param name="unitZ">The unit z coordinate.</param>
-        public CartesianCoordinate(double radius, double unitX, double unitY, double unitZ)
-            : base(radius * unitX, radius * unitY, radius * unitZ)
-        {
-            this.Norm = radius;
+            this.LazyNorm = new Lazy<double>(() => Math.Sqrt(this.X * this.X + this.Y * this.Y + this.Z * this.Z));
         }
 
         #region Operators overload

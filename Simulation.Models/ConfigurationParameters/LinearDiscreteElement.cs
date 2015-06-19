@@ -1,8 +1,9 @@
 ﻿using System.Xml.Serialization;
+using Simulation.Models;
 
 namespace Simulation.DDA.Console
 {
-    public class WaveLengthElement
+    public class LinearDiscreteElement
     {
         /// <summary>
         /// Gets the unit.

@@ -36,8 +36,9 @@ namespace Simulation.Models
         /// </summary>
         /// <param name="waveLength">Length of the wave.</param>
         /// <returns>The complex epsilon.</returns>
-        public Complex SelectOpticalConst(double waveLength)
+        public Complex SelectOpticalConst(SpectrumParameter parameter)
         {
+            var waveLength = parameter.ToType(SpectrumParameterType.WaveLength);
             var tuple = this.getNearestIndexes(waveLength);
             var lower = tuple.Item1;
             var upper = tuple.Item2;

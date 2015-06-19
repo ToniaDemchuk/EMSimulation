@@ -1,42 +1,55 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-
-using Simulation.Models.Enums;
 using Simulation.Models.Extensions;
 
 namespace Simulation.Models
 {
-    public class Valuum : IMedium
+    public class Vacuum : IMedium
     {
+        public bool IsBody { get; set; }
 
         public CartesianCoordinate Solve(
             CartesianCoordinate displacementField)
         {
             return displacementField;
         }
+
+        public Complex GetEpsilon(SpectrumParameter frequency)
+        {
+            return Complex.One; //todo: check
+        }
     }
 
     public class Dielectric : IMedium
     {
+        protected double _epsilon;
+
         public Dielectric(double epsilon)
         {
+            this._epsilon = epsilon;
             Ga = 1 / epsilon;
         }
+
         public double Ga { get; set; }
+
+        public bool IsBody { get; set; }
 
         public CartesianCoordinate Solve(
             CartesianCoordinate displacementField)
         {
             return Ga * displacementField;
         }
+
+        public Complex GetEpsilon(SpectrumParameter frequency)
+        {
+            return _epsilon;
+        }
     }
 
     public class LossyDielectric : Dielectric, IMedium
     {
+        private double sigma;
         public Complex Permitivity { get; set; }
 
         public CartesianCoordinate IntegralField { get; set; }
@@ -57,16 +70,23 @@ namespace Simulation.Models
 
             Gb = sigma * timeStep / Fundamentals.Eps0;
 
+            this.sigma = sigma;
+        }
 
-            Permitivity = new Complex(epsilon, sigma / Fundamentals.Eps0);
+        public new Complex GetEpsilon(SpectrumParameter frequency)
+        {
+            double W = frequency.ToType(SpectrumParameterType.CycleFrequency);
+            return _epsilon - Complex.ImaginaryOne * sigma / Fundamentals.Eps0 / W;
         }
     }
 
     public class Drude : IMedium
     {
-        public double OmegaP { get; set; }
+        private double Gamma0;
+        private double DEps0;
+        protected double OmegaP { get; set; }
 
-        public double EpsInfinity { get; set; }
+        protected double EpsInfinity { get; set; }
 
         public double Ga { get; set; }
         public double Gb { get; set; }
@@ -78,23 +98,25 @@ namespace Simulation.Models
 
         public Drude(double timeStep)
         {
-
-            EpsInfinity = 1;//3.9943;
+            this.EpsInfinity = 1;//3.9943;
             this.OmegaP = 1.369e+16;
-            var DEps0 = 8.45e-1;
-            var Gamma0 = 7.292e+13 / (2 * Math.PI);
+            this.DEps0 = 8.45e-1;
+            this.Gamma0 = 7.292e+13;
 
             //        epsinf = 1;//3.9943;
             //        omegap = 1.803274e+011;
             //        deps0 = 1;
             //        gamma0 = 2.000000e+010 / (2*PI);
 
-            double epsvc = -Gamma0 * timeStep;
+            double epsvc = -(this.Gamma0 / (2 * Math.PI)) * timeStep;
             var exp = Math.Exp(epsvc);
             Ga = (1.0 + exp);
             Gb = exp;
-            Gc = ((this.OmegaP * this.OmegaP * DEps0) * timeStep / Gamma0) * (1.0 - exp);
+            Gc = ((this.OmegaP * this.OmegaP * this.DEps0) * timeStep / (this.Gamma0 / (2 * Math.PI))) * (1.0 - exp);
         }
+
+        public bool IsBody { get; set; }
+
         public CartesianCoordinate Solve(
             CartesianCoordinate displacementField)
         {
@@ -111,50 +133,65 @@ namespace Simulation.Models
 
         }
 
+        public Complex GetEpsilon(SpectrumParameter frequency)
+        {
+
+            double W = frequency.ToType(SpectrumParameterType.CycleFrequency);
+            Complex compl = EpsInfinity -
+                        OmegaP * OmegaP /
+                        (W * W -
+                         Complex.ImaginaryOne * Gamma0 * W);
+            return compl;
+        }
     }
 
     public class DrudeLorentz : Drude, IMedium
     {
+        public int LorentzOrder;
+        public double[] Omegak;
+        public double[] Depsk;
+        public double[] Gammak;
+
         public DrudeLorentz(double timeStep)
             : base(timeStep)
         {
-            var lorentz_order = 5;
+            this.LorentzOrder = 5;
 
-            double[] omegak = new double[lorentz_order];
-            omegak[0] = 1.24e+15;
-            omegak[1] = 6.808e+15;
-            omegak[2] = 1.244e+16;
-            omegak[3] = 1.38e+16;
-            omegak[4] = 3.083e+16;
+            this.Omegak = new double[this.LorentzOrder];
+            this.Omegak[0] = 1.24e+15;
+            this.Omegak[1] = 6.808e+15;
+            this.Omegak[2] = 1.244e+16;
+            this.Omegak[3] = 1.38e+16;
+            this.Omegak[4] = 3.083e+16;
 
-            double[] depsk = new double[lorentz_order];
+            this.Depsk = new double[this.LorentzOrder];
 
-            depsk[0] = 6.5e-2;
-            depsk[1] = 1.24e-1;
-            depsk[2] = 1.1e-2;
-            depsk[3] = 8.4e-1;
-            depsk[4] = 5.646;
+            this.Depsk[0] = 6.5e-2;
+            this.Depsk[1] = 1.24e-1;
+            this.Depsk[2] = 1.1e-2;
+            this.Depsk[3] = 8.4e-1;
+            this.Depsk[4] = 5.646;
 
-            double[] gammak = new double[lorentz_order];
+            this.Gammak = new double[this.LorentzOrder];
 
-            gammak[0] = 5.904e+15 / (2 * Math.PI);
-            gammak[1] = 6.867e+14 / (2 * Math.PI);
-            gammak[2] = 9.875e+13 / (2 * Math.PI);
-            gammak[3] = 1.392e+15 / (2 * Math.PI);
-            gammak[4] = 3.675e+15 / (2 * Math.PI);
+            this.Gammak[0] = 5.904e+15 / (2 * Math.PI);
+            this.Gammak[1] = 6.867e+14 / (2 * Math.PI);
+            this.Gammak[2] = 9.875e+13 / (2 * Math.PI);
+            this.Gammak[3] = 1.392e+15 / (2 * Math.PI);
+            this.Gammak[4] = 3.675e+15 / (2 * Math.PI);
 
-            Gal = new double[lorentz_order];
-            Gbl = new double[lorentz_order];
-            Gcl = new double[lorentz_order];
+            Gal = new double[this.LorentzOrder];
+            Gbl = new double[this.LorentzOrder];
+            Gcl = new double[this.LorentzOrder];
 
-            for (int l = 0; l < lorentz_order; l++)
+            for (int l = 0; l < this.LorentzOrder; l++)
             {
-                double alfadt = (gammak[l] / 2.0) * timeStep;
+                double alfadt = (this.Gammak[l] / 2.0) * timeStep;
                 double sqrtl =
-                    Math.Sqrt(Math.Pow(omegak[l], 2.0) - (Math.Pow(gammak[l], 2.0) / 4.0));
+                    Math.Sqrt(Math.Pow(this.Omegak[l], 2.0) - (Math.Pow(this.Gammak[l], 2.0) / 4.0));
                 double betadt = sqrtl * timeStep;
 
-                double gammadt = Math.Pow(this.OmegaP, 2.0) / sqrtl * depsk[l] * timeStep;
+                double gammadt = Math.Pow(this.OmegaP, 2.0) / sqrtl * this.Depsk[l] * timeStep;
                 double exp = Math.Exp(-alfadt);
                 Gal[l] = 2.0 * exp * Math.Cos(betadt);
                 Gbl[l] = Math.Exp(-2.0 * alfadt);
@@ -191,6 +228,25 @@ namespace Simulation.Models
 
             return efield;
 
+        }
+
+        public new Complex GetEpsilon(SpectrumParameter frequency)
+        {
+            double W = frequency.ToType(SpectrumParameterType.CycleFrequency);
+
+
+            var compl = base.GetEpsilon(frequency);
+
+            for (int l = 0; l < LorentzOrder; l++)
+            {
+                var complorentz =
+                    Depsk[l] * Omegak[l] * Omegak[l] /
+                    (Omegak[l] * Omegak[l] + W * W - Complex.ImaginaryOne * Gammak[l] * W);
+
+                compl += complorentz;
+
+            }
+            return compl;
         }
 
     }
