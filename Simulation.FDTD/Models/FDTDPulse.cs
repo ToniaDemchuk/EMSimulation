@@ -15,22 +15,20 @@ namespace Simulation.Models
         private readonly int medLength; // length of 1D medium
 
         private readonly OpticalSpectrum spectrum;
-        readonly Func<double, double> pulseFunc;
+        private readonly Func<double, double> pulseFunc;
 
-        double eMH1;
-        double eMH2;
-        double eML1;
-        double eML2;
-
-        double signalExistingCondition; // defines existing of pulse
+        private double eMH1;
+        private double eMH2;
+        private double eML1;
+        private double eML2;
 
         public FourierSeries<Complex>[] FourierPulse;
 
         public FDTDPulse(Func<double, double> waveFunc, int length, OpticalSpectrum spectrum)
         {
-            medLength = 2 * length; //
-            E = new double[medLength];// electric field
-            H = new double[medLength];// magnetic field
+            medLength = 2 * length;
+            E = new double[medLength]; // electric field
+            H = new double[medLength]; // magnetic field
 
             eMH2 = eMH1 = 0.0;
             eML2 = eML1 = 0.0;
@@ -38,8 +36,6 @@ namespace Simulation.Models
 
             pulseFunc = waveFunc;
             this.spectrum = spectrum;
-
-            signalExistingCondition = 1.0;
 
             InitFourier();
         }
@@ -70,7 +66,6 @@ namespace Simulation.Models
             // частини сигналу через досліджуванну область
             if (t >= 300)
             {
-
                 eMH2 = 0.0;
                 eMH1 = 0.0;
                 eML2 = 0.0;
@@ -91,7 +86,6 @@ namespace Simulation.Models
             {
                 H[i] += Fundamentals.CourantConst * (E[i] - E[i + 1]);
             }
-
         }
 
         private void InitFourier()
@@ -108,12 +102,9 @@ namespace Simulation.Models
                 var angle = cycleFreq.ToType(SpectrumParameterType.CycleFrequency) * time;
                 for (int m = 0; m < medLength; m++)
                 {
-
                     FourierPulse[m].Add(cycleFreq, Complex.FromPolarCoordinates(E[m], angle));
                 }
             }
         }
-
-
     }
 }

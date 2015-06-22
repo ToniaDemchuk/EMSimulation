@@ -44,7 +44,7 @@ namespace Simulation.Models.Extensions
                     double polar = coordinate.Polar * RadianTransformationCoefficient;
                     double azimuth = coordinate.Azimuth * RadianTransformationCoefficient;
 
-                    return new SphericalCoordinate(coordinate.Radius, polar, azimuth);
+                    return new SphericalCoordinate(coordinate.Radius, polar, azimuth, UnitOfMeasurement.Radian);
                 default:
                     throw new InvalidEnumArgumentException(string.Format("Cannot convert from unit {0}", coordinate.Units));
             }
@@ -65,7 +65,7 @@ namespace Simulation.Models.Extensions
                     double polar = coordinate.Polar / RadianTransformationCoefficient;
                     double azimuth = coordinate.Azimuth / RadianTransformationCoefficient;
 
-                    return new SphericalCoordinate(coordinate.Radius, polar, azimuth);
+                    return new SphericalCoordinate(coordinate.Radius, polar, azimuth, UnitOfMeasurement.Degree);
 
                 default:
                     throw new InvalidEnumArgumentException(string.Format("Cannot convert from unit {0}", coordinate.Units));

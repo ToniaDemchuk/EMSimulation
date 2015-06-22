@@ -15,17 +15,6 @@ namespace Simulation.Models
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SphericalCoordinate" /> class.
-        /// </summary>
-        /// <param name="radius">The radius.</param>
-        /// <param name="polar">The polar.</param>
-        /// <param name="azimuth">The azimuth.</param>
-        public SphericalCoordinate(double radius, double polar, double azimuth)
-            : this(radius, polar, azimuth, UnitOfMeasurement.Degree)
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="SphericalCoordinate" /> class with units of measurement.
         /// </summary>
         /// <param name="radius">The radius.</param>

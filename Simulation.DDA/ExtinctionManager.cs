@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
-
+using Simulation.DDA.Models;
 using Simulation.Infrastructure;
 using Simulation.Models;
 using Simulation.Models.Extensions;
@@ -166,7 +166,7 @@ namespace Simulation.DDA
             result.CrossSectionExtinction = crossSectionExt;
             result.EffectiveCrossSectionExtinction =
                 crossSectionExt /
-                parameters.SystemConfig.Radius.Sum(radius => MathHelper.Area(radius)); //todo
+                parameters.SystemConfig.Radius.Sum(radius => Math.PI * radius * radius); // todo
         }
 
     }

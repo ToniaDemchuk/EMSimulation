@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using AwokeKnowing.GnuplotCSharp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using Simulation.DDA.Console;
 using Simulation.Infrastructure;
 using Simulation.Models;
@@ -31,14 +29,8 @@ namespace Simulation.DDA.Tests
         /// </value>
         public TestContext TestContext
         {
-            get
-            {
-                return this.testContextInstance;
-            }
-            set
-            {
-                this.testContextInstance = value;
-            }
+            get { return this.testContextInstance; }
+            set { this.testContextInstance = value; }
         }
 
         /// <summary>
@@ -70,15 +62,15 @@ namespace Simulation.DDA.Tests
             {
                 foreach (double distance in distances)
                 {
-                    this.calculateOneStep(radius, distance, maxRadius, x=>x.CrossSectionExtinction);
+                    this.calculateOneStep(radius, distance, maxRadius, x => x.CrossSectionExtinction);
                 }
             }
-            
+
             this.writeParameters(radiuses, distances);
         }
 
         [TestMethod]
-        //[Ignore]
+        [Ignore]
         public void RadiusDistanceOutput_Azimuth0()
         {
             // Arrange
@@ -218,9 +210,11 @@ namespace Simulation.DDA.Tests
                     var azim90 = SimpleFormatter.Read(
                         this.getFileFormat(dirAzimuth90, distance, radius));
 
-                    var azimSum = azim0.Zip(azim90, (x, y) => 
+                    var azimSum = azim0.Zip(
+                        azim90,
+                        (x, y) =>
                         new KeyValuePair<double, double>(x.Key, (x.Value + y.Value) / 2))
-                        .ToDictionary(key => key.Key, value => value.Value);
+                                       .ToDictionary(key => key.Key, value => value.Value);
 
                     var filename = this.getFileFormat(this.TestContext.TestName, distance, radius);
                     SimpleFormatter.Write(filename, azimSum);
@@ -252,9 +246,11 @@ namespace Simulation.DDA.Tests
                     var azim90 = SimpleFormatter.Read(
                         this.getFileFormat(dirAzimuth90, distance, radius));
 
-                    var azimSum = azim0.Zip(azim90, (x, y) =>
+                    var azimSum = azim0.Zip(
+                        azim90,
+                        (x, y) =>
                         new KeyValuePair<double, double>(x.Key, (x.Value + y.Value) / 2))
-                        .ToDictionary(key => key.Key, value => value.Value);
+                                       .ToDictionary(key => key.Key, value => value.Value);
 
                     var filename = this.getFileFormat(this.TestContext.TestName, distance, radius);
                     SimpleFormatter.Write(filename, azimSum);
@@ -281,9 +277,9 @@ namespace Simulation.DDA.Tests
                 foreach (double distance in distances)
                 {
                     var azim45 = SimpleFormatter.Read(
-                            this.getFileFormat(dirAzimuth45, distance, radius));
+                        this.getFileFormat(dirAzimuth45, distance, radius));
                     var azimSum = SimpleFormatter.Read(
-                            this.getFileFormat(dirAzimuthSum, distance, radius));
+                        this.getFileFormat(dirAzimuthSum, distance, radius));
                     gp.HoldOn();
 
                     gp.Plot(azim45.Keys.ToArray(), azim45.Values.ToArray());
@@ -292,7 +288,6 @@ namespace Simulation.DDA.Tests
                     AssertHelper.DictionaryAreClose(azim45, azimSum, 0.5);
                 }
             }
-            
         }
 
         [TestMethod]
@@ -311,9 +306,9 @@ namespace Simulation.DDA.Tests
                 foreach (double distance in distances)
                 {
                     var azim45 = SimpleFormatter.Read(
-                            this.getFileFormat(dirAzimuth45, distance, radius));
+                        this.getFileFormat(dirAzimuth45, distance, radius));
                     var azimSum = SimpleFormatter.Read(
-                            this.getFileFormat(dirAzimuthSum, distance, radius));
+                        this.getFileFormat(dirAzimuthSum, distance, radius));
 
                     AssertHelper.DictionaryAreClose(azim45, azimSum, 0.1);
                 }
@@ -332,7 +327,7 @@ namespace Simulation.DDA.Tests
             var dirAzimuth90 = "RadiusDistanceOutput_Azimuth90";
             var gp = new GnuPlot();
             gp.Set("style data lines");
-            //gp.HoldOn();
+            gp.HoldOn();
             radiuses.Reverse();
             foreach (double radius in radiuses)
             {
@@ -343,27 +338,25 @@ namespace Simulation.DDA.Tests
                 foreach (double distance in distances)
                 {
                     var azim0 = SimpleFormatter.Read(
-                            this.getFileFormat(dirAzimuth0, distance, radius));
+                        this.getFileFormat(dirAzimuth0, distance, radius));
                     var azim90 = SimpleFormatter.Read(
-                            this.getFileFormat(dirAzimuth90, distance, radius));
+                        this.getFileFormat(dirAzimuth90, distance, radius));
 
                     peaks0.Add(distance, azim0.Aggregate((l, r) => l.Value > r.Value ? l : r).Key);
 
                     peaks90.Add(distance, azim90.Aggregate((l, r) => l.Value > r.Value ? l : r).Key);
-                    
                 }
-                //gp.Set(string.Format("term windows {0}",radius));
-                gp.HoldOn();
-
+                // gp.HoldOn();
+                // gp.Set(string.Format("terminal win {0}", radius));
                 gp.Plot(peaks0.Select(x => x.Key).ToArray(), peaks0.Select(x => x.Value).ToArray());
                 gp.Plot(peaks90.Select(x => x.Key).ToArray(), peaks90.Select(x => x.Value).ToArray());
-                gp.HoldOff();
+                // gp.HoldOff();
                 var filename0 = string.Format(@"../{0}/peaks_0deg_{1}.txt", this.TestContext.TestName, radius);
                 SimpleFormatter.Write(filename0, peaks0);
                 var filename90 = string.Format(@"../{0}/peaks_90deg_{1}.txt", this.TestContext.TestName, radius);
                 SimpleFormatter.Write(filename90, peaks90);
             }
-            //gp.Wait();
+            gp.Wait();
         }
 
         #region Private methods
@@ -405,16 +398,17 @@ namespace Simulation.DDA.Tests
 
             var filename = this.getFileFormat(this.TestContext.TestName, distance, radius);
 
-            SimpleFormatter.Write(filename, result.ToDictionary(x=>x.ToType(SpectrumParameterType.WaveLength), valueSelector));
+            SimpleFormatter.Write(filename, result.ToDictionary(x => x.ToType(SpectrumParameterType.WaveLength), valueSelector));
         }
 
         private string getFileFormat(string dirPath, double distance, double radius)
         {
-            return string.Format(CultureInfo.InvariantCulture,
+            return string.Format(
+                CultureInfo.InvariantCulture,
                 @"../{0}/rezult_ext_{1}_{2}.txt",
                 dirPath,
-                (decimal)distance,
-                (decimal)radius);
+                (decimal) distance,
+                (decimal) radius);
         }
 
         private void writeParameters(List<double> radiuses, List<double> distances)
@@ -426,16 +420,15 @@ namespace Simulation.DDA.Tests
                     "radius = {0}",
                     string.Join(
                         ",",
-                        radiuses.Select(x => string.Format(CultureInfo.InvariantCulture, "{0}", (decimal)x))));
+                        radiuses.Select(x => string.Format(CultureInfo.InvariantCulture, "{0}", (decimal) x))));
                 sw.WriteLine(
                     "distance = {0}",
                     string.Join(
                         ",",
-                        distances.Select(x => string.Format(CultureInfo.InvariantCulture, "{0}", (decimal)x))));
+                        distances.Select(x => string.Format(CultureInfo.InvariantCulture, "{0}", (decimal) x))));
             }
         }
 
         #endregion
-
     }
 }

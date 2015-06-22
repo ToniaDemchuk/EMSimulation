@@ -46,7 +46,7 @@ namespace Simulation.Models
         /// </value>
         public T Z { get; protected set; }
 
-        protected Lazy<double> LazyNorm;
+        protected Lazy<double> LazyNorm { get; set; }
 
         /// <summary>
         /// Gets the norm of the coordinate.

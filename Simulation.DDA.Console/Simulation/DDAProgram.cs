@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using Simulation.DDA.Models;
 using Simulation.Infrastructure;
 using Simulation.Models;
 using Simulation.Models.Extensions;
@@ -17,8 +17,10 @@ namespace Simulation.DDA.Console
         {
             var result = Calculate();
 
-            SimpleFormatter.Write("rezult_ext.txt",
-                result.ToDictionary(x => x.Key.ToType(SpectrumParameterType.WaveLength),
+            SimpleFormatter.Write(
+                "rezult_ext.txt",
+                result.ToDictionary(
+                    x => x.Key.ToType(SpectrumParameterType.WaveLength),
                     x => x.Value.CrossSectionExtinction));
         }
 
@@ -53,6 +55,5 @@ namespace Simulation.DDA.Console
 
             return ext.CalculateCrossExtinction(parameters);
         }
-
     }
 }

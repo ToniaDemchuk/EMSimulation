@@ -68,7 +68,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DDAProgram.cs" />
+    <Compile Include="Simulation\DDAProgram.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -82,6 +82,10 @@
     <ProjectReference Include="..\Simulation.Infrastructure\Simulation.Infrastructure.csproj">
       <Project>{e43fabf6-e2f6-43b1-a0e0-c906beb6fdb2}</Project>
       <Name>Simulation.Infrastructure</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Simulation.Medium\Simulation.Medium.csproj">
+      <Project>{38F1FA9E-F687-4F27-9147-88222766FE3A}</Project>
+      <Name>Simulation.Medium</Name>
     </ProjectReference>
     <ProjectReference Include="..\Simulation.Models\Simulation.Models.csproj">
       <Project>{866ca2c4-c878-45a2-a947-7c89b0a2ae61}</Project>

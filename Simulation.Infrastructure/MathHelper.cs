@@ -15,10 +15,5 @@ namespace Simulation.Infrastructure
             var relativeDiff = Math.Abs((value1 - value2) / max);
             return relativeDiff < epsilon;
         }
-
-        public static double Area(double radius)
-        {
-            return Math.PI * radius * radius;
-        }
     }
 }

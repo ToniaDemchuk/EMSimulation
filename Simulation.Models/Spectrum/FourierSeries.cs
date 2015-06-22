@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Simulation.Models
 {
-    public class FourierSeries<T> : Dictionary<SpectrumParameter,T>
+    public class FourierSeries<T> : Dictionary<SpectrumParameter, T>
     {
     }
 }

@@ -37,7 +37,9 @@ namespace Simulation.Models.Coordinates
         }
 
         public int ILength { get; private set; }
+
         public int JLength { get; private set; }
+
         public int KLength { get; private set; }
 
         public int Lower { get; private set; }

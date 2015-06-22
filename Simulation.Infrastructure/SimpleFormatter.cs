@@ -4,7 +4,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-
 using Simulation.Models;
 
 namespace Simulation.Infrastructure
@@ -13,7 +12,6 @@ namespace Simulation.Infrastructure
     {
         public static void Write(string filename, Dictionary<double, double> cext)
         {
-
             var fileDir = new FileInfo(filename).Directory;
             if (fileDir != null && !fileDir.Exists)
             {
@@ -24,8 +22,12 @@ namespace Simulation.Infrastructure
             {
                 foreach (var pair in cext)
                 {
-                    sw.WriteLine(string.Format(CultureInfo.InvariantCulture, "{0} {1}", pair.Key,
-                        pair.Value));
+                    sw.WriteLine(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "{0} {1}",
+                            pair.Key,
+                            pair.Value));
                 }
             }
         }
@@ -42,14 +44,12 @@ namespace Simulation.Infrastructure
                     var split = str.Split(
                         new[] { ' ' },
                         StringSplitOptions.RemoveEmptyEntries)
-                        .Select(s => double.Parse(s, CultureInfo.InvariantCulture)).ToArray();
+                                   .Select(s => double.Parse(s, CultureInfo.InvariantCulture)).ToArray();
 
                     dict.Add(split[0], split[1]);
-
                 }
                 return dict;
             }
         }
-
     }
 }

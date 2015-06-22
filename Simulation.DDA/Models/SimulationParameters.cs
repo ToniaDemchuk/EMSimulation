@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Simulation.Models;
 
-namespace Simulation.Models
+namespace Simulation.DDA.Models
 {
     /// <summary>
     /// The SimulationParameters class.

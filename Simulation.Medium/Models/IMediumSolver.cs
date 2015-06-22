@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Simulation.Models
 {
-    public interface IMedium
+    public interface IMediumSolver
     {
         bool IsBody { get; set; }
 

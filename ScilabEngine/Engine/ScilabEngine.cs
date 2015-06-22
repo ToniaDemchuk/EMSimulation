@@ -1,10 +1,9 @@
 ﻿using System;
-
 using ScilabEngine.Helpers;
 
 namespace ScilabEngine.Engine
 {
-    public class ScilabEngine:IDisposable
+    public class ScilabEngine : IDisposable
     {
         public ScilabEngine()
         {

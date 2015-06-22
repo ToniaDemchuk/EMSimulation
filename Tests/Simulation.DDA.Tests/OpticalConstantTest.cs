@@ -6,23 +6,17 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-
 using AwokeKnowing.GnuplotCSharp;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using Simulation.Infrastructure;
 using Simulation.Models;
 using Simulation.Models.Extensions;
 
 namespace Simulation.DDA.Tests
 {
-
     [TestClass]
     public class OpticalConstantTest
     {
-
-
         [TestMethod]
         public void CalculateOpticalConstants_ScilabEngine()
         {
@@ -49,7 +43,7 @@ namespace Simulation.DDA.Tests
 
             using (var engine = new ScilabEngine.Engine.ScilabEngine())
             {
-                string waveLength = ScilabHelper.FormatToArray(dict.Select(x=>x.Key));
+                string waveLength = ScilabHelper.FormatToArray(dict.Select(x => x.Key));
                 var strReal = ScilabHelper.FormatToArray(dict.Select(x => x.Value.Real));
                 var strImag = ScilabHelper.FormatToArray(dict.Select(x => x.Value.Imaginary));
                 engine.Execute(@"plot({0}, {1}, {0}, {2})", waveLength, strReal, strImag);
@@ -58,7 +52,7 @@ namespace Simulation.DDA.Tests
                 strReal = ScilabHelper.FormatToArray(optConst.PermittivityList.Select(x => x.Real));
                 strImag = ScilabHelper.FormatToArray(optConst.PermittivityList.Select(x => x.Imaginary));
                 engine.Execute(@"plot({0}, {1}, {0}, {2})", waveLength, strReal, strImag);
-                //engine.Wait();
+                // engine.Wait();
             }
 
             // Act
@@ -72,10 +66,10 @@ namespace Simulation.DDA.Tests
             // Arrange
             var optConst = ParameterHelper.ReadOpticalConstants("opt_const.txt");
 
-            var EpsInfinity = 1;//3.9943;
+            var EpsInfinity = 1; // 3.9943;
             var OmegaP = 1.369e+16;
             var DEps0 = 8.45e-1;
-            var Gamma0 = 7.292e+13/(2*Math.PI);
+            var Gamma0 = 7.292e+13 / (2 * Math.PI);
 
             var dict = new Dictionary<double, Complex>();
             foreach (var waveLength in optConst.WaveLengthList)
@@ -92,7 +86,6 @@ namespace Simulation.DDA.Tests
 
             using (var gp = new GnuPlot())
             {
-
                 gp.HoldOn();
                 gp.Set("style data lines");
                 gp.Plot(optConst.WaveLengthList.ToArray(), optConst.PermittivityList.Select(x => x.Real).ToArray());

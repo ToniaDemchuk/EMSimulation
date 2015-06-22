@@ -53,7 +53,7 @@ namespace AwokeKnowing.GnuplotCSharp
         {
             var split = e.Data.Split(' ');
             double mx;
-            double.TryParse(split[0], NumberStyles.Float,CultureInfo.InvariantCulture, out mx);
+            double.TryParse(split[0], NumberStyles.Float, CultureInfo.InvariantCulture, out mx);
 
             double my;
             double.TryParse(split[1], NumberStyles.Float, CultureInfo.InvariantCulture, out my);
@@ -87,7 +87,7 @@ namespace AwokeKnowing.GnuplotCSharp
             double c1 = Math.Abs(a.Item1 - mx) / a.Item1;
             double d1 = Math.Abs(a.Item2 - my) / a.Item2;
 
-            return c1*c1+d1*d1;
+            return c1 * c1 + d1 * d1;
         }
 
         private void setCursor(Tuple<double, double> point)

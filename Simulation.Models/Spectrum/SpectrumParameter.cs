@@ -25,7 +25,6 @@ namespace Simulation.Models
         
         public override bool Equals(object obj)
         {
-            // If parameter cannot be cast to Point return false.
             SpectrumParameter p = obj as SpectrumParameter;
             if (p == null)
             {

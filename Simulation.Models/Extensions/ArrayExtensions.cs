@@ -24,7 +24,7 @@ namespace Simulation.Models.Extensions
             }
         }
 
-        public static void For<T>(this T[, ,] array, Func<int, int, int, T> function)
+        public static void For<T>(this T[,,] array, Func<int, int, int, T> function)
         {
             for (int i = 0; i < array.GetLength(0); i++)
             {
@@ -83,6 +83,13 @@ namespace Simulation.Models.Extensions
                     action(i, j);
                 }
             }
+        }
+
+        public static T[,,] CreateArray<T>(this IndexStore indices)
+        {
+            var array = new T[indices.ILength, indices.JLength, indices.KLength];
+            array.Initialize();
+            return array;
         }
     }
 }

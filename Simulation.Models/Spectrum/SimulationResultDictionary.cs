@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Simulation.Models
 {
-    public class SimulationResultDictionary:Dictionary<SpectrumParameter, SimulationResult>
+    public class SimulationResultDictionary : Dictionary<SpectrumParameter, SimulationResult>
     {
         public Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(Func<SpectrumParameter, TKey> keySelector, Func<SimulationResult, TValue> valueSelector)
         {

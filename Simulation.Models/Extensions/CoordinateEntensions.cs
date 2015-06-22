@@ -43,7 +43,7 @@ namespace Simulation.Models.Extensions
                 a.X * b.Y - a.Y * b.X);
         }
 
-        public static CartesianCoordinate Curl(this CartesianCoordinate[, ,] field, int i, int j, int k, int shift)
+        public static CartesianCoordinate Curl(this CartesianCoordinate[,,] field, int i, int j, int k, int shift)
         {
             CartesianCoordinate current = field[i, j, k];
             CartesianCoordinate shiftedI = field[i + shift, j, k];

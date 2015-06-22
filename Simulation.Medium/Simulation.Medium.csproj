@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{35819F8B-180E-4BE8-91F7-E636510244E9}</ProjectGuid>
+    <ProjectGuid>{38F1FA9E-F687-4F27-9147-88222766FE3A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Simulation.DDA</RootNamespace>
-    <AssemblyName>Simulation.DDA</AssemblyName>
+    <RootNamespace>Simulation.Medium</RootNamespace>
+    <AssemblyName>Simulation.Medium</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -29,29 +29,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ModernKDDA, Version=0.0.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libs\ModernKDDA.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
@@ -62,24 +40,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ExtinctionManager.cs" />
-    <Compile Include="Models\DDAParameters.cs" />
-    <Compile Include="Models\SimulationParameters.cs" />
-    <Compile Include="Models\SystemConfig.cs" />
-    <Compile Include="ParameterHelper.cs" />
+    <Compile Include="DispersionParameter.cs" />
+    <Compile Include="MediumManager.cs" />
+    <Compile Include="Models\BaseMedium.cs" />
+    <Compile Include="Models\BaseMediumSolver.cs" />
+    <Compile Include="Models\IMediumSolver.cs" />
+    <Compile Include="Models\Medium.cs" />
+    <Compile Include="Models\OpticalConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Simulation.Infrastructure\Simulation.Infrastructure.csproj">
-      <Project>{E43FABF6-E2F6-43B1-A0E0-C906BEB6FDB2}</Project>
-      <Name>Simulation.Infrastructure</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Simulation.Medium\Simulation.Medium.csproj">
-      <Project>{38F1FA9E-F687-4F27-9147-88222766FE3A}</Project>
-      <Name>Simulation.Medium</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Simulation.Models\Simulation.Models.csproj">
-      <Project>{866ca2c4-c878-45a2-a947-7c89b0a2ae61}</Project>
+      <Project>{866CA2C4-C878-45A2-A947-7C89B0A2AE61}</Project>
       <Name>Simulation.Models</Name>
     </ProjectReference>
   </ItemGroup>
