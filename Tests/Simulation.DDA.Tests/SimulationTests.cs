@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+
 using AwokeKnowing.GnuplotCSharp;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 using Simulation.DDA.Console;
 using Simulation.Infrastructure;
 using Simulation.Models;
@@ -19,6 +22,8 @@ namespace Simulation.DDA.Tests
         private DDAParameters ddaConfig;
 
         private OpticalConstants opticalConstants;
+
+        private const string BasePath = @"../../SimulationResults";
 
         /// <summary>
         /// Gets or sets the test context which provides
@@ -351,9 +356,19 @@ namespace Simulation.DDA.Tests
                 gp.Plot(peaks0.Select(x => x.Key).ToArray(), peaks0.Select(x => x.Value).ToArray());
                 gp.Plot(peaks90.Select(x => x.Key).ToArray(), peaks90.Select(x => x.Value).ToArray());
                 // gp.HoldOff();
-                var filename0 = string.Format(@"../{0}/peaks_0deg_{1}.txt", this.TestContext.TestName, radius);
+
+                var basepath = Path.Combine(BasePath, this.TestContext.TestName);
+                var filename0 = Path.Combine(
+                    basepath,
+                    string.Format(
+                        "peaks_0deg_{0}.txt",
+                        radius));
                 SimpleFormatter.Write(filename0, peaks0);
-                var filename90 = string.Format(@"../{0}/peaks_90deg_{1}.txt", this.TestContext.TestName, radius);
+                var filename90 = Path.Combine(
+                    basepath,
+                    string.Format(
+                        "peaks_90deg_{0}.txt",
+                        radius));
                 SimpleFormatter.Write(filename90, peaks90);
             }
             gp.Wait();
@@ -398,34 +413,38 @@ namespace Simulation.DDA.Tests
 
             var filename = this.getFileFormat(this.TestContext.TestName, distance, radius);
 
-            SimpleFormatter.Write(filename, result.ToDictionary(x => x.ToType(SpectrumParameterType.WaveLength), valueSelector));
+            SimpleFormatter.Write(
+                filename,
+                result.ToDictionary(x => x.ToType(SpectrumParameterType.WaveLength), valueSelector));
         }
 
         private string getFileFormat(string dirPath, double distance, double radius)
         {
-            return string.Format(
-                CultureInfo.InvariantCulture,
-                @"../{0}/rezult_ext_{1}_{2}.txt",
+            return Path.Combine(
+                BasePath,
                 dirPath,
-                (decimal) distance,
-                (decimal) radius);
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "rezult_ext_{0}_{1}.txt",
+                    (decimal) distance,
+                    (decimal) radius));
         }
 
         private void writeParameters(List<double> radiuses, List<double> distances)
         {
-            var filename = string.Format(CultureInfo.InvariantCulture, @"../{0}/parameters.txt", this.TestContext.TestName);
+            var filename = Path.Combine(BasePath, this.TestContext.TestName, "parameters.txt");
             using (var sw = new StreamWriter(filename))
             {
                 sw.WriteLine(
                     "radius = {0}",
                     string.Join(
                         ",",
-                        radiuses.Select(x => string.Format(CultureInfo.InvariantCulture, "{0}", (decimal) x))));
+                        radiuses.Select(x => ((decimal) x).ToString(CultureInfo.InvariantCulture))));
                 sw.WriteLine(
                     "distance = {0}",
                     string.Join(
                         ",",
-                        distances.Select(x => string.Format(CultureInfo.InvariantCulture, "{0}", (decimal) x))));
+                        distances.Select(x => ((decimal) x).ToString(CultureInfo.InvariantCulture))));
             }
         }
 
