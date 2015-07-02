@@ -11,12 +11,17 @@ namespace AwokeKnowing.GnuplotCSharp
     public class GnuPlot : IDisposable
     {
         private Process ExtPro;
+
         private StreamWriter GnupStWr;
+
         private List<StoredPlot> PlotBuffer;
+
         private List<StoredPlot> SPlotBuffer;
+
         private bool ReplotWithSplot;
 
         private StreamReader StrRead;
+
         public bool Hold { get; private set; }
 
         public GnuPlot()
@@ -59,9 +64,9 @@ namespace AwokeKnowing.GnuplotCSharp
             double.TryParse(split[1], NumberStyles.Float, CultureInfo.InvariantCulture, out my);
 
             var plotXY = this.PlotBuffer.Where(x => x.PlotType == PlotTypes.PlotXY)
-                .SelectMany(plot => plot.X.Zip(plot.Y, (x, y) => new Tuple<double, double>(x, y)));
+                             .SelectMany(plot => plot.X.Zip(plot.Y, (x, y) => new Tuple<double, double>(x, y)));
             var plotY = this.PlotBuffer.Where(x => x.PlotType == PlotTypes.PlotY)
-                .SelectMany(p => p.Y.Select((y, i) => new Tuple<double, double>(i, y)));
+                            .SelectMany(p => p.Y.Select((y, i) => new Tuple<double, double>(i, y)));
 
             var plots = plotXY.Concat(plotY);
 
@@ -71,15 +76,14 @@ namespace AwokeKnowing.GnuplotCSharp
             }
 
             var min = plots.Aggregate(
-                    (a, b) =>
-                    {
-                        double distancea = getDistance(a, mx, my);
-                        double distanceb = getDistance(b, mx, my);
+                (a, b) =>
+                {
+                    double distancea = getDistance(a, mx, my);
+                    double distanceb = getDistance(b, mx, my);
 
-                        return distancea < distanceb ? a : b;
-                    });
+                    return distancea < distanceb ? a : b;
+                });
             this.setCursor(min);
-
         }
 
         private static double getDistance(Tuple<double, double> a, double mx, double my)
@@ -99,7 +103,7 @@ namespace AwokeKnowing.GnuplotCSharp
                     point.Item2,
                     1,
                     16,
-                    (int)PointStyles.Star));
+                    (int) PointStyles.Star));
             this.Replot();
         }
 
@@ -121,7 +125,6 @@ namespace AwokeKnowing.GnuplotCSharp
 
         public void WriteLine(string gnuplotcommands)
         {
-
             GnupStWr.WriteLine(gnuplotcommands);
             GnupStWr.Flush();
         }
@@ -135,14 +138,17 @@ namespace AwokeKnowing.GnuplotCSharp
         public void Set(params string[] options)
         {
             for (int i = 0; i < options.Length; i++)
+            {
                 GnupStWr.WriteLine("set " + options[i]);
-
+            }
         }
 
         public void Unset(params string[] options)
         {
             for (int i = 0; i < options.Length; i++)
+            {
                 GnupStWr.WriteLine("unset " + options[i]);
+            }
         }
 
         #region SaveData
@@ -194,170 +200,49 @@ namespace AwokeKnowing.GnuplotCSharp
 
         #endregion
 
-
         public void Replot()
         {
             if (ReplotWithSplot)
+            {
                 SPlot(SPlotBuffer);
+            }
             else
+            {
                 Plot(PlotBuffer);
+            }
         }
 
         #region Plot
 
         public void Plot(string filenameOrFunction, string options = "")
         {
-            if (!Hold) PlotBuffer.Clear();
+            if (!Hold)
+            {
+                PlotBuffer.Clear();
+            }
             PlotBuffer.Add(new StoredPlot(filenameOrFunction, options));
             Plot(PlotBuffer);
         }
 
         public void Plot(double[] y, string options = "")
         {
-            if (!Hold) PlotBuffer.Clear();
+            if (!Hold)
+            {
+                PlotBuffer.Clear();
+            }
             PlotBuffer.Add(new StoredPlot(y, options));
             Plot(PlotBuffer);
         }
 
         public void Plot(double[] x, double[] y, string options = "")
         {
-            if (!Hold) PlotBuffer.Clear();
+            if (!Hold)
+            {
+                PlotBuffer.Clear();
+            }
             PlotBuffer.Add(new StoredPlot(x, y, options));
             Plot(PlotBuffer);
         }
-
-        #endregion
-
-        #region Contour
-
-        public void Contour(
-            string filenameOrFunction,
-            string options = "",
-            bool labelContours = true)
-        {
-            if (!Hold) PlotBuffer.Clear();
-            var p = new StoredPlot(
-                filenameOrFunction,
-                options,
-                PlotTypes.ContourFileOrFunction);
-            p.LabelContours = labelContours;
-            PlotBuffer.Add(p);
-            Plot(PlotBuffer);
-        }
-
-        public void Contour(
-            int sizeY,
-            double[] z,
-            string options = "",
-            bool labelContours = true)
-        {
-            if (!Hold) PlotBuffer.Clear();
-            var p = new StoredPlot(sizeY, z, options, PlotTypes.ContourZ);
-            p.LabelContours = labelContours;
-            PlotBuffer.Add(p);
-            Plot(PlotBuffer);
-        }
-
-        public void Contour(
-            double[] x,
-            double[] y,
-            double[] z,
-            string options = "",
-            bool labelContours = true)
-        {
-            if (!Hold) PlotBuffer.Clear();
-            var p = new StoredPlot(x, y, z, options, PlotTypes.ContourXYZ);
-            p.LabelContours = labelContours;
-            PlotBuffer.Add(p);
-            Plot(PlotBuffer);
-        }
-
-        public void Contour(double[,] zz, string options = "", bool labelContours = true)
-        {
-            if (!Hold) PlotBuffer.Clear();
-            var p = new StoredPlot(zz, options, PlotTypes.ContourZZ);
-            p.LabelContours = labelContours;
-            PlotBuffer.Add(p);
-            Plot(PlotBuffer);
-        }
-
-        #endregion
-
-        #region HeatMap
-
-        public void HeatMap(string filenameOrFunction, string options = "")
-        {
-            if (!Hold) PlotBuffer.Clear();
-            PlotBuffer.Add(
-                new StoredPlot(
-                    filenameOrFunction,
-                    options,
-                    PlotTypes.ColorMapFileOrFunction));
-            Plot(PlotBuffer);
-        }
-
-        public void HeatMap(int sizeY, double[] intensity, string options = "")
-        {
-            if (!Hold) PlotBuffer.Clear();
-            PlotBuffer.Add(new StoredPlot(sizeY, intensity, options, PlotTypes.ColorMapZ));
-            Plot(PlotBuffer);
-        }
-
-        public void HeatMap(
-            double[] x,
-            double[] y,
-            double[] intensity,
-            string options = "")
-        {
-            if (!Hold) PlotBuffer.Clear();
-            PlotBuffer.Add(
-                new StoredPlot(x, y, intensity, options, PlotTypes.ColorMapXYZ));
-            Plot(PlotBuffer);
-        }
-
-        public void HeatMap(double[,] intensityGrid, string options = "")
-        {
-            if (!Hold) PlotBuffer.Clear();
-            PlotBuffer.Add(new StoredPlot(intensityGrid, options, PlotTypes.ColorMapZZ));
-            Plot(PlotBuffer);
-        }
-
-        #endregion
-
-        #region SPlot
-
-        public void SPlot(string filenameOrFunction, string options = "")
-        {
-            if (!Hold) SPlotBuffer.Clear();
-            SPlotBuffer.Add(
-                new StoredPlot(filenameOrFunction, options, PlotTypes.SplotFileOrFunction));
-            SPlot(SPlotBuffer);
-        }
-
-        public void SPlot(int sizeY, double[] z, string options = "")
-        {
-            if (!Hold) SPlotBuffer.Clear();
-            SPlotBuffer.Add(new StoredPlot(sizeY, z, options));
-            SPlot(SPlotBuffer);
-        }
-
-        public void SPlot(double[] x, double[] y, double[] z, string options = "")
-        {
-            if (!Hold) SPlotBuffer.Clear();
-            SPlotBuffer.Add(new StoredPlot(x, y, z, options));
-            SPlot(SPlotBuffer);
-        }
-
-        public void SPlot(double[,] zz, string options = "")
-        {
-            if (!Hold) SPlotBuffer.Clear();
-            SPlotBuffer.Add(new StoredPlot(zz, options));
-            SPlot(SPlotBuffer);
-        }
-
-        #endregion
-
-
 
         public void Plot(List<StoredPlot> storedPlots)
         {
@@ -370,14 +255,20 @@ namespace AwokeKnowing.GnuplotCSharp
             for (int i = 0; i < storedPlots.Count; i++)
             {
                 var p = storedPlots[i];
-                defcntopts = (p.Options.Length > 0 && (p.Options.Contains(" w") || p.Options[0] == 'w')) ? " " : " with lines ";
+                defcntopts = (p.Options.Length > 0 && (p.Options.Contains(" w") || p.Options[0] == 'w'))
+                                 ? " "
+                                 : " with lines ";
                 switch (p.PlotType)
                 {
                     case PlotTypes.PlotFileOrFunction:
                         if (p.File != null)
+                        {
                             plotstring += (plot + plotPath(p.File) + " " + p.Options);
+                        }
                         else
+                        {
                             plotstring += (plot + p.Function + " " + p.Options);
+                        }
                         break;
                     case PlotTypes.PlotXY:
                     case PlotTypes.PlotY:
@@ -386,34 +277,49 @@ namespace AwokeKnowing.GnuplotCSharp
                     case PlotTypes.ContourFileOrFunction:
                         contfile = Path.GetTempPath() + "_cntrtempdata" + i + ".dat";
                         makeContourFile((p.File != null ? plotPath(p.File) : p.Function), contfile);
-                        if (p.LabelContours) setContourLabels(contfile);
+                        if (p.LabelContours)
+                        {
+                            setContourLabels(contfile);
+                        }
                         plotstring += (plot + plotPath(contfile) + defcntopts + p.Options);
                         break;
                     case PlotTypes.ContourXYZ:
                         contfile = Path.GetTempPath() + "_cntrtempdata" + i + ".dat";
                         makeContourFile(p.X, p.Y, p.Z, contfile);
-                        if (p.LabelContours) setContourLabels(contfile);
+                        if (p.LabelContours)
+                        {
+                            setContourLabels(contfile);
+                        }
                         plotstring += (plot + plotPath(contfile) + defcntopts + p.Options);
                         break;
                     case PlotTypes.ContourZZ:
                         contfile = Path.GetTempPath() + "_cntrtempdata" + i + ".dat";
                         makeContourFile(p.ZZ, contfile);
-                        if (p.LabelContours) setContourLabels(contfile);
+                        if (p.LabelContours)
+                        {
+                            setContourLabels(contfile);
+                        }
                         plotstring += (plot + plotPath(contfile) + defcntopts + p.Options);
                         break;
                     case PlotTypes.ContourZ:
                         contfile = Path.GetTempPath() + "_cntrtempdata" + i + ".dat";
                         makeContourFile(p.YSize, p.Z, contfile);
-                        if (p.LabelContours) setContourLabels(contfile);
+                        if (p.LabelContours)
+                        {
+                            setContourLabels(contfile);
+                        }
                         plotstring += (plot + plotPath(contfile) + defcntopts + p.Options);
                         break;
 
-
                     case PlotTypes.ColorMapFileOrFunction:
                         if (p.File != null)
+                        {
                             plotstring += (plot + plotPath(p.File) + " with image " + p.Options);
+                        }
                         else
+                        {
                             plotstring += (plot + p.Function + " with image " + p.Options);
+                        }
                         break;
                     case PlotTypes.ColorMapXYZ:
                     case PlotTypes.ColorMapZ:
@@ -423,7 +329,10 @@ namespace AwokeKnowing.GnuplotCSharp
                         plotstring += (plot + @"""-"" " + "matrix with image " + p.Options);
                         break;
                 }
-                if (i == 0) plot = ", ";
+                if (i == 0)
+                {
+                    plot = ", ";
+                }
             }
             GnupStWr.WriteLine(plotstring);
 
@@ -453,10 +362,174 @@ namespace AwokeKnowing.GnuplotCSharp
                         GnupStWr.WriteLine("e");
                         GnupStWr.WriteLine("e");
                         break;
-
                 }
             }
             GnupStWr.Flush();
+        }
+
+        #endregion
+
+        #region Contour
+
+        public void Contour(
+            string filenameOrFunction,
+            string options = "",
+            bool labelContours = true)
+        {
+            if (!Hold)
+            {
+                PlotBuffer.Clear();
+            }
+            var p = new StoredPlot(
+                filenameOrFunction,
+                options,
+                PlotTypes.ContourFileOrFunction);
+            p.LabelContours = labelContours;
+            PlotBuffer.Add(p);
+            Plot(PlotBuffer);
+        }
+
+        public void Contour(
+            int sizeY,
+            double[] z,
+            string options = "",
+            bool labelContours = true)
+        {
+            if (!Hold)
+            {
+                PlotBuffer.Clear();
+            }
+            var p = new StoredPlot(sizeY, z, options, PlotTypes.ContourZ);
+            p.LabelContours = labelContours;
+            PlotBuffer.Add(p);
+            Plot(PlotBuffer);
+        }
+
+        public void Contour(
+            double[] x,
+            double[] y,
+            double[] z,
+            string options = "",
+            bool labelContours = true)
+        {
+            if (!Hold)
+            {
+                PlotBuffer.Clear();
+            }
+            var p = new StoredPlot(x, y, z, options, PlotTypes.ContourXYZ);
+            p.LabelContours = labelContours;
+            PlotBuffer.Add(p);
+            Plot(PlotBuffer);
+        }
+
+        public void Contour(double[,] zz, string options = "", bool labelContours = true)
+        {
+            if (!Hold)
+            {
+                PlotBuffer.Clear();
+            }
+            var p = new StoredPlot(zz, options, PlotTypes.ContourZZ);
+            p.LabelContours = labelContours;
+            PlotBuffer.Add(p);
+            Plot(PlotBuffer);
+        }
+
+        #endregion
+
+        #region HeatMap
+
+        public void HeatMap(string filenameOrFunction, string options = "")
+        {
+            if (!Hold)
+            {
+                PlotBuffer.Clear();
+            }
+            PlotBuffer.Add(
+                new StoredPlot(
+                    filenameOrFunction,
+                    options,
+                    PlotTypes.ColorMapFileOrFunction));
+            Plot(PlotBuffer);
+        }
+
+        public void HeatMap(int sizeY, double[] intensity, string options = "")
+        {
+            if (!Hold)
+            {
+                PlotBuffer.Clear();
+            }
+            PlotBuffer.Add(new StoredPlot(sizeY, intensity, options, PlotTypes.ColorMapZ));
+            Plot(PlotBuffer);
+        }
+
+        public void HeatMap(
+            double[] x,
+            double[] y,
+            double[] intensity,
+            string options = "")
+        {
+            if (!Hold)
+            {
+                PlotBuffer.Clear();
+            }
+            PlotBuffer.Add(
+                new StoredPlot(x, y, intensity, options, PlotTypes.ColorMapXYZ));
+            Plot(PlotBuffer);
+        }
+
+        public void HeatMap(double[,] intensityGrid, string options = "")
+        {
+            if (!Hold)
+            {
+                PlotBuffer.Clear();
+            }
+            PlotBuffer.Add(new StoredPlot(intensityGrid, options, PlotTypes.ColorMapZZ));
+            Plot(PlotBuffer);
+        }
+
+        #endregion
+
+        #region SPlot
+
+        public void SPlot(string filenameOrFunction, string options = "")
+        {
+            if (!Hold)
+            {
+                SPlotBuffer.Clear();
+            }
+            SPlotBuffer.Add(
+                new StoredPlot(filenameOrFunction, options, PlotTypes.SplotFileOrFunction));
+            SPlot(SPlotBuffer);
+        }
+
+        public void SPlot(int sizeY, double[] z, string options = "")
+        {
+            if (!Hold)
+            {
+                SPlotBuffer.Clear();
+            }
+            SPlotBuffer.Add(new StoredPlot(sizeY, z, options));
+            SPlot(SPlotBuffer);
+        }
+
+        public void SPlot(double[] x, double[] y, double[] z, string options = "")
+        {
+            if (!Hold)
+            {
+                SPlotBuffer.Clear();
+            }
+            SPlotBuffer.Add(new StoredPlot(x, y, z, options));
+            SPlot(SPlotBuffer);
+        }
+
+        public void SPlot(double[,] zz, string options = "")
+        {
+            if (!Hold)
+            {
+                SPlotBuffer.Clear();
+            }
+            SPlotBuffer.Add(new StoredPlot(zz, options));
+            SPlot(SPlotBuffer);
         }
 
         public void SPlot(List<StoredPlot> storedPlots)
@@ -469,14 +542,20 @@ namespace AwokeKnowing.GnuplotCSharp
             for (int i = 0; i < storedPlots.Count; i++)
             {
                 var p = storedPlots[i];
-                defopts = (p.Options.Length > 0 && (p.Options.Contains(" w") || p.Options[0] == 'w')) ? " " : " with lines ";
+                defopts = (p.Options.Length > 0 && (p.Options.Contains(" w") || p.Options[0] == 'w'))
+                              ? " "
+                              : " with lines ";
                 switch (p.PlotType)
                 {
                     case PlotTypes.SplotFileOrFunction:
                         if (p.File != null)
+                        {
                             plotstring += (splot + plotPath(p.File) + defopts + p.Options);
+                        }
                         else
+                        {
                             plotstring += (splot + p.Function + defopts + p.Options);
+                        }
                         break;
                     case PlotTypes.SplotXYZ:
                     case PlotTypes.SplotZ:
@@ -486,7 +565,10 @@ namespace AwokeKnowing.GnuplotCSharp
                         plotstring += (splot + @"""-"" matrix " + defopts + p.Options);
                         break;
                 }
-                if (i == 0) splot = ", ";
+                if (i == 0)
+                {
+                    splot = ", ";
+                }
             }
             GnupStWr.WriteLine(plotstring);
 
@@ -513,13 +595,21 @@ namespace AwokeKnowing.GnuplotCSharp
             GnupStWr.Flush();
         }
 
+        #endregion
+
         #region WriteData
 
         public void WriteData(double[] y, StreamWriter stream, bool flush = true)
         {
-            for (int i = 0; i < y.Length; i++) stream.WriteLine(y[i].ToString(CultureInfo.InvariantCulture));
+            for (int i = 0; i < y.Length; i++)
+            {
+                stream.WriteLine(y[i].ToString(CultureInfo.InvariantCulture));
+            }
 
-            if (flush) stream.Flush();
+            if (flush)
+            {
+                stream.Flush();
+            }
         }
 
         public void WriteData(
@@ -528,9 +618,16 @@ namespace AwokeKnowing.GnuplotCSharp
             StreamWriter stream,
             bool flush = true)
         {
-            for (int i = 0; i < y.Length; i++) stream.WriteLine(x[i].ToString(CultureInfo.InvariantCulture) + " " + y[i].ToString(CultureInfo.InvariantCulture));
+            for (int i = 0; i < y.Length; i++)
+            {
+                stream.WriteLine(
+                    x[i].ToString(CultureInfo.InvariantCulture) + " " + y[i].ToString(CultureInfo.InvariantCulture));
+            }
 
-            if (flush) stream.Flush();
+            if (flush)
+            {
+                stream.Flush();
+            }
         }
 
         public void WriteData(
@@ -541,11 +638,17 @@ namespace AwokeKnowing.GnuplotCSharp
         {
             for (int i = 0; i < z.Length; i++)
             {
-                if (i > 0 && i % ySize == 0) stream.WriteLine();
+                if (i > 0 && i % ySize == 0)
+                {
+                    stream.WriteLine();
+                }
                 stream.WriteLine(z[i].ToString(CultureInfo.InvariantCulture));
             }
 
-            if (flush) stream.Flush();
+            if (flush)
+            {
+                stream.Flush();
+            }
         }
 
         public void WriteData(double[,] zz, StreamWriter stream, bool flush = true)
@@ -556,11 +659,17 @@ namespace AwokeKnowing.GnuplotCSharp
             for (int i = 0; i < m; i++)
             {
                 line = "";
-                for (int j = 0; j < n; j++) line += zz[i, j].ToString(CultureInfo.InvariantCulture) + " ";
+                for (int j = 0; j < n; j++)
+                {
+                    line += zz[i, j].ToString(CultureInfo.InvariantCulture) + " ";
+                }
                 stream.WriteLine(line.TrimEnd());
             }
 
-            if (flush) stream.Flush();
+            if (flush)
+            {
+                stream.Flush();
+            }
         }
 
         public void WriteData(
@@ -574,17 +683,24 @@ namespace AwokeKnowing.GnuplotCSharp
             m = Math.Min(m, z.Length);
             for (int i = 0; i < m; i++)
             {
-                if (i > 0 && x[i] != x[i - 1]) stream.WriteLine("");
-                stream.WriteLine(x[i].ToString(CultureInfo.InvariantCulture) + " " + y[i].ToString(CultureInfo.InvariantCulture) + " " + z[i].ToString(CultureInfo.InvariantCulture));
+                if (i > 0 && x[i] != x[i - 1])
+                {
+                    stream.WriteLine("");
+                }
+                stream.WriteLine(
+                    x[i].ToString(CultureInfo.InvariantCulture) + " " + y[i].ToString(CultureInfo.InvariantCulture) +
+                    " " + z[i].ToString(CultureInfo.InvariantCulture));
             }
 
-            if (flush) stream.Flush();
+            if (flush)
+            {
+                stream.Flush();
+            }
         }
 
         #endregion
 
-
-        string plotPath(string path)
+        private string plotPath(string path)
         {
             return "\"" + path.Replace(@"\", @"\\") + "\"";
         }
@@ -592,30 +708,34 @@ namespace AwokeKnowing.GnuplotCSharp
         public void SaveSetState(string filename = null)
         {
             if (filename == null)
+            {
                 filename = Path.GetTempPath() + "setstate.tmp";
+            }
             GnupStWr.WriteLine("save set " + plotPath(filename));
             GnupStWr.Flush();
             waitForFile(filename);
         }
+
         public void LoadSetState(string filename = null)
         {
             if (filename == null)
+            {
                 filename = Path.GetTempPath() + "setstate.tmp";
+            }
             GnupStWr.WriteLine("load " + plotPath(filename));
             GnupStWr.Flush();
         }
 
         //these makecontourFile functions should probably be merged into one function and use a StoredPlot parameter
-        void makeContourFile(string fileOrFunction, string outputFile)//if it's a file, fileOrFunction needs quotes and escaped backslashes
+        private void makeContourFile(string fileOrFunction, string outputFile)
+            //if it's a file, fileOrFunction needs quotes and escaped backslashes
         {
             this.prepareContour(outputFile);
             GnupStWr.WriteLine(@"splot " + fileOrFunction);
             this.postContour(outputFile);
         }
 
-
-
-        void makeContourFile(double[] x, double[] y, double[] z, string outputFile)
+        private void makeContourFile(double[] x, double[] y, double[] z, string outputFile)
         {
             this.prepareContour(outputFile);
             GnupStWr.WriteLine(@"splot ""-""");
@@ -624,7 +744,7 @@ namespace AwokeKnowing.GnuplotCSharp
             this.postContour(outputFile);
         }
 
-        void makeContourFile(double[,] zz, string outputFile)
+        private void makeContourFile(double[,] zz, string outputFile)
         {
             this.prepareContour(outputFile);
             GnupStWr.WriteLine(@"splot ""-"" matrix");
@@ -634,7 +754,7 @@ namespace AwokeKnowing.GnuplotCSharp
             this.postContour(outputFile);
         }
 
-        void makeContourFile(int sizeY, double[] z, string outputFile)
+        private void makeContourFile(int sizeY, double[] z, string outputFile)
         {
             this.prepareContour(outputFile);
             GnupStWr.WriteLine(@"splot ""-""");
@@ -643,7 +763,6 @@ namespace AwokeKnowing.GnuplotCSharp
             this.postContour(outputFile);
         }
 
-
         private void prepareContour(string outputFile)
         {
             this.SaveSetState();
@@ -651,6 +770,7 @@ namespace AwokeKnowing.GnuplotCSharp
             this.Set("contour base");
             this.Unset("surface");
         }
+
         private void postContour(string outputFile)
         {
             this.Unset("table");
@@ -659,8 +779,9 @@ namespace AwokeKnowing.GnuplotCSharp
             this.waitForFile(outputFile);
         }
 
-        int contourLabelCount = 50000;
-        void setContourLabels(string contourFile)
+        private int contourLabelCount = 50000;
+
+        private void setContourLabels(string contourFile)
         {
             var file = new StreamReader(contourFile);
             string line;
@@ -669,32 +790,46 @@ namespace AwokeKnowing.GnuplotCSharp
                 if (line.Contains("label:"))
                 {
                     string[] c = file.ReadLine().Trim().Replace("   ", " ").Replace("  ", " ").Split(' ');
-                    GnupStWr.WriteLine("set object " + ++contourLabelCount + " rectangle center " + c[0] + "," + c[1] + " size char " + (c[2].ToString().Length + 1) + ",char 1 fs transparent solid .7 noborder fc rgb \"white\"  front");
-                    GnupStWr.WriteLine("set label " + contourLabelCount + " \"" + c[2] + "\" at " + c[0] + "," + c[1] + " front center");
+                    GnupStWr.WriteLine(
+                        "set object " + ++contourLabelCount + " rectangle center " + c[0] + "," + c[1] + " size char " +
+                        (c[2].ToString().Length + 1) +
+                        ",char 1 fs transparent solid .7 noborder fc rgb \"white\"  front");
+                    GnupStWr.WriteLine(
+                        "set label " + contourLabelCount + " \"" + c[2] + "\" at " + c[0] + "," + c[1] + " front center");
                 }
             }
             file.Close();
         }
-        void removeContourLabels()
+
+        private void removeContourLabels()
         {
             while (contourLabelCount > 50000)
+            {
                 GnupStWr.WriteLine("unset object " + contourLabelCount + ";unset label " + contourLabelCount--);
+            }
         }
 
-        bool waitForFile(string filename, int timeout = 10000)
+        private bool waitForFile(string filename, int timeout = 10000)
         {
             Thread.Sleep(20);
             int attempts = timeout / 100;
             StreamReader file = null;
             while (file == null)
             {
-                try { file = new StreamReader(filename); }
+                try
+                {
+                    file = new StreamReader(filename);
+                }
                 catch
                 {
                     if (attempts-- > 0)
+                    {
                         Thread.Sleep(100);
+                    }
                     else
+                    {
                         return false;
+                    }
                 }
             }
             file.Close();
