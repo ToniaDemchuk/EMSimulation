@@ -3,8 +3,13 @@
     <StringProperty Name="MergeSettingsFiles">NoMerge</StringProperty>
     <CollectionProperty Name="RecognizedWords">
       <Value>api</Value>
-      <Value>db</Value>
       <Value>builder</Value>
+      <Value>db</Value>
+      <Value>dda</Value>
+      <Value>Drude</Value>
+      <Value>lossy</Value>
+      <Value>pml</Value>
+      <Value>scilab</Value>
     </CollectionProperty>
   </GlobalSettings>
   <Analyzers>
