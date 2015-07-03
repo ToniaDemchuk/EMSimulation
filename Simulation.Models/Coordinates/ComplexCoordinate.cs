@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Numerics;
 
-namespace Simulation.Models
+namespace Simulation.Models.Coordinates
 {
     /// <summary>
     /// The CartesianCoordinate class.
@@ -28,6 +28,11 @@ namespace Simulation.Models
                 });
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ComplexCoordinate"/> class.
+        /// </summary>
+        /// <param name="point">The cartesian point.</param>
+        /// <param name="angle">The angle.</param>
         public ComplexCoordinate(CartesianCoordinate point, double angle)
             : this(Complex.FromPolarCoordinates(point.X, angle), Complex.FromPolarCoordinates(point.Y, angle), Complex.FromPolarCoordinates(point.Z, angle))
         {
@@ -45,9 +50,9 @@ namespace Simulation.Models
         /// </returns>
         public static ComplexCoordinate operator +(ComplexCoordinate point1, ComplexCoordinate point2)
         {
-            dynamic x = point1.X + point2.X;
-            dynamic y = point1.Y + point2.Y;
-            dynamic z = point1.Z + point2.Z;
+            Complex x = point1.X + point2.X;
+            Complex y = point1.Y + point2.Y;
+            Complex z = point1.Z + point2.Z;
 
             return new ComplexCoordinate(x, y, z);
         }
@@ -62,9 +67,9 @@ namespace Simulation.Models
         /// </returns>
         public static ComplexCoordinate operator +(ComplexCoordinate point1, Complex num)
         {
-            var x = point1.X + num;
-            var y = point1.Y + num;
-            var z = point1.Z + num;
+            Complex x = point1.X + num;
+            Complex y = point1.Y + num;
+            Complex z = point1.Z + num;
 
             return new ComplexCoordinate(x, y, z);
         }
@@ -92,9 +97,9 @@ namespace Simulation.Models
         /// </returns>
         public static ComplexCoordinate operator -(ComplexCoordinate point1, ComplexCoordinate point2)
         {
-            var x = point1.X - point2.X;
-            var y = point1.Y - point2.Y;
-            var z = point1.Z - point2.Z;
+            Complex x = point1.X - point2.X;
+            Complex y = point1.Y - point2.Y;
+            Complex z = point1.Z - point2.Z;
 
             return new ComplexCoordinate(x, y, z);
         }
@@ -109,9 +114,9 @@ namespace Simulation.Models
         /// </returns>
         public static ComplexCoordinate operator -(ComplexCoordinate point1, Complex num)
         {
-            var x = point1.X - num;
-            var y = point1.Y - num;
-            var z = point1.Z - num;
+            Complex x = point1.X - num;
+            Complex y = point1.Y - num;
+            Complex z = point1.Z - num;
 
             return new ComplexCoordinate(x, y, z);
         }
@@ -125,9 +130,9 @@ namespace Simulation.Models
         /// </returns>
         public static ComplexCoordinate operator -(ComplexCoordinate point1)
         {
-            var x = -point1.X;
-            var y = -point1.Y;
-            var z = -point1.Z;
+            Complex x = -point1.X;
+            Complex y = -point1.Y;
+            Complex z = -point1.Z;
 
             return new ComplexCoordinate(x, y, z);
         }
@@ -155,9 +160,9 @@ namespace Simulation.Models
         /// </returns>
         public static ComplexCoordinate operator *(ComplexCoordinate point1, Complex num)
         {
-            var x = point1.X * num;
-            var y = point1.Y * num;
-            var z = point1.Z * num;
+            Complex x = point1.X * num;
+            Complex y = point1.Y * num;
+            Complex z = point1.Z * num;
 
             return new ComplexCoordinate(x, y, z);
         }
@@ -165,8 +170,8 @@ namespace Simulation.Models
         /// <summary>
         /// Implements the operator * (Multiply coordinates on number).
         /// </summary>
-        /// <param name="point1">The point1.</param>
         /// <param name="num">The number.</param>
+        /// <param name="point1">The point1.</param>
         /// <returns>
         /// The result of the operator.
         /// </returns>
@@ -175,11 +180,19 @@ namespace Simulation.Models
             return point1 * num;
         }
 
+        /// <summary>
+        /// Implements the operator / (Divide coordinates to complex).
+        /// </summary>
+        /// <param name="point1">The point1.</param>
+        /// <param name="num">The number.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
         public static ComplexCoordinate operator /(ComplexCoordinate point1, Complex num)
         {
-            var x = point1.X / num;
-            var y = point1.Y / num;
-            var z = point1.Z / num;
+            Complex x = point1.X / num;
+            Complex y = point1.Y / num;
+            Complex z = point1.Z / num;
 
             return new ComplexCoordinate(x, y, z);
         }

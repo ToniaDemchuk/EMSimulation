@@ -1,63 +1,73 @@
-﻿using Simulation.FDTD.Models;
+﻿using Simulation.Medium.Models;
 using Simulation.Models.Coordinates;
+using Simulation.Models.Enums;
 using Simulation.Models.Extensions;
+using Simulation.Models.Spectrum;
 
-namespace Simulation.Models.ConfigurationParameters
+namespace Simulation.FDTD.Models
 {
+    /// <summary>
+    /// The FDTDField class.
+    /// </summary>
     public class FDTDField
     {
+        /// <summary>
+        /// Gets or sets the displacement field.
+        /// </summary>
+        /// <value>
+        /// The displacement field.
+        /// </value>
         public CartesianCoordinate[,,] D { get; set; }
 
+        /// <summary>
+        /// Gets or sets the electric field.
+        /// </summary>
+        /// <value>
+        /// The electric field.
+        /// </value>
         public CartesianCoordinate[,,] E { get; set; }
 
+        /// <summary>
+        /// Gets or sets the magnetizing field.
+        /// </summary>
+        /// <value>
+        /// The magnetizing field.
+        /// </value>
         public CartesianCoordinate[,,] H { get; set; }
 
-        public CartesianCoordinate[,,] ID { get; set; }
+        /// <summary>
+        /// Gets or sets the integral displacement field.
+        /// </summary>
+        /// <value>
+        /// The integral displacement field.
+        /// </value>
+        public CartesianCoordinate[,,] IntegralD { get; set; }
 
-        public CartesianCoordinate[,,] IH { get; set; }
+        /// <summary>
+        /// Gets or sets the integral magnetizing field.
+        /// </summary>
+        /// <value>
+        /// The integral magnetizing field.
+        /// </value>
+        public CartesianCoordinate[,,] IntegralH { get; set; }
 
+        /// <summary>
+        /// Gets or sets the fourier series of the field.
+        /// </summary>
+        /// <value>
+        /// The fourier series of the field..
+        /// </value>
         public FourierSeries<ComplexCoordinate>[,,] FourierField { get; set; }
 
-        private IndexStore indices;
+        private readonly IndexStore indices;
 
-        private OpticalSpectrum spectrum;
+        private readonly OpticalSpectrum spectrum;
 
-        public double[] Gi1 { get; set; }
-
-        public double[] Gi2 { get; set; }
-
-        public double[] Gi3 { get; set; }
-
-        public double[] Gj1 { get; set; }
-
-        public double[] Gj2 { get; set; }
-
-        public double[] Gj3 { get; set; }
-
-        public double[] Gk1 { get; set; }
-
-        public double[] Gk2 { get; set; }
-
-        public double[] Gk3 { get; set; }
-
-        public double[] Fi1 { get; set; }
-
-        public double[] Fi2 { get; set; }
-
-        public double[] Fi3 { get; set; }
-
-        public double[] Fj1 { get; set; }
-
-        public double[] Fj2 { get; set; }
-
-        public double[] Fj3 { get; set; }
-
-        public double[] Fk1 { get; set; }
-
-        public double[] Fk2 { get; set; }
-
-        public double[] Fk3 { get; set; }
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FDTDField"/> class.
+        /// </summary>
+        /// <param name="indices">The indices.</param>
+        /// <param name="spectrum">The spectrum.</param>
         public FDTDField(IndexStore indices, OpticalSpectrum spectrum)
         {
             this.indices = indices;
@@ -66,25 +76,26 @@ namespace Simulation.Models.ConfigurationParameters
             this.D = indices.CreateArray<CartesianCoordinate>();
             this.E = indices.CreateArray<CartesianCoordinate>();
             this.H = indices.CreateArray<CartesianCoordinate>();
-            this.ID = indices.CreateArray<CartesianCoordinate>();
-            this.IH = indices.CreateArray<CartesianCoordinate>();
+            this.IntegralD = indices.CreateArray<CartesianCoordinate>();
+            this.IntegralH = indices.CreateArray<CartesianCoordinate>();
         }
 
-        // _boundaryConditionsCalc();
-
+        /// <summary>
+        /// Calculates the fourier series of the field.
+        /// </summary>
+        /// <param name="time">The time value.</param>
+        /// <param name="medium">The medium matrix.</param>
         public void DoFourierField(double time, IMediumSolver[,,] medium)
         {
-            // Fourier transform of EZ
-
             foreach (var freq in this.spectrum)
             {
-                var angle = freq.ToType(SpectrumParameterType.CycleFrequency) * time;
-                indices.For(
+                var angle = freq.ToType(SpectrumUnitType.CycleFrequency) * time;
+                this.indices.For(
                     (i, j, k) =>
                     {
                         if (medium[i, j, k].IsBody)
                         {
-                            FourierField[i, j, k].Add(freq, new ComplexCoordinate(E[i, j, k], angle));
+                            this.FourierField[i, j, k].Add(freq, new ComplexCoordinate(this.E[i, j, k], angle));
                         }
                     });
             }

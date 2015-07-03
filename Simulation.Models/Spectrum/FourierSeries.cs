@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace Simulation.Models
+namespace Simulation.Models.Spectrum
 {
-    public class FourierSeries<T> : Dictionary<SpectrumParameter, T>
+    /// <summary>
+    /// The FourierSeries class.
+    /// </summary>
+    /// <typeparam name="T">The type of sequence values.</typeparam>
+    public class FourierSeries<T> : Dictionary<SpectrumUnit, T>
     {
     }
 }

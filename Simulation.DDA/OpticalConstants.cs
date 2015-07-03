@@ -1,17 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 
-namespace Simulation.Models
+using Simulation.Medium.Models;
+using Simulation.Models.Enums;
+using Simulation.Models.Spectrum;
+
+namespace Simulation.DDA
 {
     /// <summary>
     /// The OpticalConstants class.
     /// </summary>
-    public class OpticalConstants
+    public class OpticalConstants : BaseMedium
     {
+        /// <summary>
+        /// Gets the wave length list.
+        /// </summary>
+        /// <value>
+        /// The wave length list.
+        /// </value>
         public List<double> WaveLengthList { get; private set; }
 
+        /// <summary>
+        /// Gets the permittivity list.
+        /// </summary>
+        /// <value>
+        /// The permittivity list.
+        /// </value>
         public List<Complex> PermittivityList { get; private set; }
 
         /// <summary>
@@ -31,14 +46,27 @@ namespace Simulation.Models
             this.PermittivityList = permittivityList;
         }
 
-        /// <summary>
-        /// Selects the optical constant.
-        /// </summary>
-        /// <param name="waveLength">Length of the wave.</param>
-        /// <returns>The complex epsilon.</returns>
-        public Complex SelectOpticalConst(SpectrumParameter parameter)
+        private Tuple<int, int> getNearestIndexes(double waveLength)
         {
-            var waveLength = parameter.ToType(SpectrumParameterType.WaveLength);
+            int i;
+            for (i = 0; i < this.WaveLengthList.Count - 1; i++)
+            {
+                if (waveLength >= this.WaveLengthList[i] && waveLength < this.WaveLengthList[i + 1])
+                {
+                    return new Tuple<int, int>(i, i + 1);
+                }
+            }
+            return new Tuple<int, int>(this.WaveLengthList.Count - 1, this.WaveLengthList.Count - 1);
+        }
+
+        /// <summary>
+        /// Gets the permittivity.
+        /// </summary>
+        /// <param name="parameter">The parameter.</param>
+        /// <returns>The complex permittivity.</returns>
+        public override Complex GetPermittivity(SpectrumUnit parameter)
+        {
+            var waveLength = parameter.ToType(SpectrumUnitType.WaveLength)*1e9;
             var tuple = this.getNearestIndexes(waveLength);
             var lower = tuple.Item1;
             var upper = tuple.Item2;
@@ -57,20 +85,6 @@ namespace Simulation.Models
 
             ////eps_re = 3.9943 - (13.29e+15*13.29e+15)/((4.0*Pi*Pi*3.0e8*3e8/WaveLength/WaveLength*1e18)+(0.1128e+15*0.1128e+15));
             ////eps_im = (13.29e+15*13.29e+15*0.1128e+15)/((4.0*Pi*Pi*3e8*3e8/WaveLength/WaveLength*1e18)+(0.1128e+15*0.1128e+15))/(2.0*Pi*3e8/WaveLength*1e9);
-
-        }
-
-        private Tuple<int, int> getNearestIndexes(double waveLength)
-        {
-            int i;
-            for (i = 0; i < this.WaveLengthList.Count - 1; i++)
-            {
-                if (waveLength >= this.WaveLengthList[i] && waveLength < this.WaveLengthList[i + 1])
-                {
-                    return new Tuple<int, int>(i, i + 1);
-                }
-            }
-            return new Tuple<int, int>(this.WaveLengthList.Count - 1, this.WaveLengthList.Count - 1);
         }
     }
 }

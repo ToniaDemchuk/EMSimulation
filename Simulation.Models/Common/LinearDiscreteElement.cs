@@ -1,33 +1,35 @@
 ﻿using System.Xml.Serialization;
-using Simulation.Models;
 
-namespace Simulation.DDA.Console
+namespace Simulation.Models.Common
 {
+    /// <summary>
+    /// The LinearDiscreteElement class.
+    /// </summary>
     public class LinearDiscreteElement
     {
         /// <summary>
-        /// Gets the unit.
+        /// Gets or sets the lower boundary.
         /// </summary>
         /// <value>
-        /// The unit.
+        /// The lower boundary.
         /// </value>
         [XmlAttribute("lower")]
         public double Lower { get; set; }
 
         /// <summary>
-        /// Gets the polar angle.
+        /// Gets or sets the upper boundary.
         /// </summary>
         /// <value>
-        /// The polar angle.
+        /// The upper boundary.
         /// </value>
         [XmlAttribute("upper")]
         public double Upper { get; set; }
 
         /// <summary>
-        /// Gets the theta.
+        /// Gets or sets the count.
         /// </summary>
         /// <value>
-        /// The theta.
+        /// The count.
         /// </value>
         [XmlAttribute("count")]
         public int Count { get; set; }

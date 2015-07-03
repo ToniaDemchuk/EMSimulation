@@ -40,13 +40,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DispersionParameter.cs" />
-    <Compile Include="MediumManager.cs" />
+    <Compile Include="Models\DispersionParameter.cs" />
+    <Compile Include="MediumSolver\DielectricSolver.cs" />
+    <Compile Include="Medium\Drude.cs" />
+    <Compile Include="MediumSolver\DrudeLorentzSolver.cs" />
+    <Compile Include="MediumSolver\DrudeSolver.cs" />
+    <Compile Include="MediumSolver\LossyDielectricSolver.cs" />
+    <Compile Include="MediumSolver\VacuumSolver.cs" />
     <Compile Include="Models\BaseMedium.cs" />
     <Compile Include="Models\BaseMediumSolver.cs" />
     <Compile Include="Models\IMediumSolver.cs" />
-    <Compile Include="Models\Medium.cs" />
-    <Compile Include="Models\OpticalConstants.cs" />
+    <Compile Include="Medium\Dielectric.cs" />
+    <Compile Include="Medium\DrudeLorentz.cs" />
+    <Compile Include="Medium\LossyDielectric.cs" />
+    <Compile Include="Models\ResonanceTerm.cs" />
+    <Compile Include="Medium\Vacuum.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

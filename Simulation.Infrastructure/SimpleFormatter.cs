@@ -3,24 +3,26 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
-using Simulation.Models;
 
 namespace Simulation.Infrastructure
 {
+    /// <summary>
+    /// The SimpleFormatter class.
+    /// </summary>
     public static class SimpleFormatter
     {
-        public static void Write(string filename, Dictionary<double, double> cext)
+        /// <summary>
+        /// Writes the specified dictionary to the file.
+        /// </summary>
+        /// <param name="filename">The filename.</param>
+        /// <param name="dictionary">The dictionary of values.</param>
+        public static void Write(string filename, Dictionary<double, double> dictionary)
         {
-            var fileDir = new FileInfo(filename).Directory;
-            if (fileDir != null && !fileDir.Exists)
-            {
-                fileDir.Create();
-            }
+            CreateDirectory(filename);
 
             using (var sw = new StreamWriter(filename))
             {
-                foreach (var pair in cext)
+                foreach (var pair in dictionary)
                 {
                     sw.WriteLine(
                         string.Format(
@@ -32,6 +34,43 @@ namespace Simulation.Infrastructure
             }
         }
 
+        /// <summary>
+        /// Creates the directory if does not exist.
+        /// </summary>
+        /// <param name="filename">The filename.</param>
+        public static void CreateDirectory(string filename)
+        {
+            var fileDir = new FileInfo(filename).Directory;
+            if (fileDir != null && !fileDir.Exists)
+            {
+                fileDir.Create();
+            }
+        }
+
+        /// <summary>
+        /// Writes the dictionary to the file.
+        /// </summary>
+        /// <param name="filename">The filename.</param>
+        /// <param name="spectrum">The spectrum.</param>
+        /// <param name="distances">The distances.</param>
+        public static void WriteDictionary(string filename, Dictionary<decimal, List<double>> spectrum, List<double> distances)
+        {
+            CreateDirectory(filename);
+            using (var sw = new StreamWriter(filename, true))
+            {
+                sw.WriteLine("distances {0}", string.Join(" ", distances));
+                foreach (var spec in spectrum)
+                {
+                    sw.WriteLine("{0} {1}", spec.Key, string.Join(" ", spec.Value));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Reads dictionary from the specified file.
+        /// </summary>
+        /// <param name="filename">The filename.</param>
+        /// <returns>The dictionary of doubles.</returns>
         public static Dictionary<double, double> Read(string filename)
         {
             var dict = new Dictionary<double, double>();

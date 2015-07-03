@@ -1,16 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Numerics;
 
-using Simulation.Models;
+using Simulation.Models.Spectrum;
 
 namespace Simulation.Medium.Models
 {
+    /// <summary>
+    /// The BaseMedium class.
+    /// </summary>
     public abstract class BaseMedium
     {
-        public abstract Complex GetPermittivity(SpectrumParameter frequency);
+        /// <summary>
+        /// Gets the permittivity at specific frequency.
+        /// </summary>
+        /// <param name="frequency">The frequency.</param>
+        /// <returns>The complex permittivity.</returns>
+        public abstract Complex GetPermittivity(SpectrumUnit frequency);
     }
 }

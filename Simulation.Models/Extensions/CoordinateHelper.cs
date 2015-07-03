@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Numerics;
 
+using Simulation.Models.Coordinates;
+
 namespace Simulation.Models.Extensions
 {
     /// <summary>
@@ -8,11 +10,18 @@ namespace Simulation.Models.Extensions
     /// </summary>
     public static class CoordinateHelper
     {
+        /// <summary>
+        /// The complex multiplier.
+        /// </summary>
         public const int ComplexMultiplier = 6;
 
+        /// <summary>
+        /// Converts to plain array.
+        /// </summary>
+        /// <param name="coordinate">The coordinate.</param>
+        /// <returns>The double type array.</returns>
         public static double[] ConvertToPlainArray(ComplexCoordinate[] coordinate)
         {
-
             double[] array = new double[coordinate.Length * ComplexMultiplier];
             for (int i = 0; i < coordinate.Length; i++)
             {
@@ -27,11 +36,16 @@ namespace Simulation.Models.Extensions
             return array;
         }
 
+        /// <summary>
+        /// Converts to plain array.
+        /// </summary>
+        /// <param name="coordinate">The coordinate.</param>
+        /// <returns>The double type array.</returns>
         public static double[] ConvertToPlainArray(DyadCoordinate<Complex>[,] coordinate)
         {
             var size = coordinate.GetLength(0);
-            var dyadSize = CoordinateEntensions.DyadLength;
-            
+            var dyadSize = DyadCoordinate<Complex>.DyadLength;
+
             double[] array = new double[size * size * ComplexMultiplier * dyadSize];
             for (int i = 0; i < size; i++)
             {
@@ -43,8 +57,10 @@ namespace Simulation.Models.Extensions
                         for (int jj = 0; jj < dyadSize; jj++)
                         {
                             Complex dyadCoord = dyadic[ii, jj];
-                            array[ComplexMultiplier * size * (dyadSize * i + ii) + ComplexMultiplier * j + 2 * jj + 0] = dyadCoord.Real;
-                            array[ComplexMultiplier * size * (dyadSize * i + ii) + ComplexMultiplier * j + 2 * jj + 1] = dyadCoord.Imaginary;
+                            array[ComplexMultiplier * size * (dyadSize * i + ii) + ComplexMultiplier * j + 2 * jj + 0] =
+                                dyadCoord.Real;
+                            array[ComplexMultiplier * size * (dyadSize * i + ii) + ComplexMultiplier * j + 2 * jj + 1] =
+                                dyadCoord.Imaginary;
                         }
                     }
                 }
@@ -52,6 +68,11 @@ namespace Simulation.Models.Extensions
             return array;
         }
 
+        /// <summary>
+        /// Converts from plain array.
+        /// </summary>
+        /// <param name="array">The array.</param>
+        /// <returns>The complex coordinate array.</returns>
         public static ComplexCoordinate[] ConvertFromPlainArray(double[] array)
         {
             if (array.Length % ComplexMultiplier != 0)
@@ -69,10 +90,8 @@ namespace Simulation.Models.Extensions
                 var zPoint = new Complex(array[ComplexMultiplier * i + 4], array[ComplexMultiplier * i + 5]);
 
                 complex[i] = new ComplexCoordinate(xPoint, yPoint, zPoint);
-
             }
             return complex;
         }
-
     }
 }

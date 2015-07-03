@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Runtime.Remoting.Messaging;
+﻿using Simulation.Models.Coordinates;
 
 namespace Simulation.Models.Extensions
 {
@@ -10,39 +8,49 @@ namespace Simulation.Models.Extensions
     public static class CoordinateEntensions
     {
         /// <summary>
-        /// The dyad length
+        /// Calculates the dyad product.
         /// </summary>
-        public const int DyadLength = 3;
-
-        /// <summary>
-        /// Dyads the product.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="a">a.</param>
-        /// <param name="b">The b.</param>
-        /// <returns></returns>
-        public static DyadCoordinate<T> DyadProduct<T>(this BaseCoordinate<T> a, BaseCoordinate<T> b)
+        /// <typeparam name="T">The type of coordinate values.</typeparam>
+        /// <param name="point1">The point1.</param>
+        /// <param name="point2">The point2.</param>
+        /// <returns>The result of dyad product operation.</returns>
+        public static DyadCoordinate<T> DyadProduct<T>(this BaseCoordinate<T> point1, BaseCoordinate<T> point2)
         {
             return new DyadCoordinate<T>(
-                (dynamic)a.X * b.X,
-                (dynamic)a.X * b.Y,
-                (dynamic)a.X * b.Z,
-                (dynamic)a.Y * b.X,
-                (dynamic)a.Y * b.Y,
-                (dynamic)a.Y * b.Z,
-                (dynamic)a.Z * b.X,
-                (dynamic)a.Z * b.Y,
-                (dynamic)a.Z * b.Z);
+                (dynamic)point1.X * point2.X,
+                (dynamic)point1.X * point2.Y,
+                (dynamic)point1.X * point2.Z,
+                (dynamic)point1.Y * point2.X,
+                (dynamic)point1.Y * point2.Y,
+                (dynamic)point1.Y * point2.Z,
+                (dynamic)point1.Z * point2.X,
+                (dynamic)point1.Z * point2.Y,
+                (dynamic)point1.Z * point2.Z);
         }
 
-        public static CartesianCoordinate VectorProduct(this CartesianCoordinate a, CartesianCoordinate b)
+        /// <summary>
+        /// Calculates the vector product.
+        /// </summary>
+        /// <param name="point1">The point1.</param>
+        /// <param name="point2">The point2.</param>
+        /// <returns>The result of vector product operation.</returns>
+        public static CartesianCoordinate VectorProduct(this CartesianCoordinate point1, CartesianCoordinate point2)
         {
             return new CartesianCoordinate(
-                a.Y * b.Z - a.Z * b.Y,
-                a.Z * b.X - a.X * b.Z,
-                a.X * b.Y - a.Y * b.X);
+                point1.Y * point2.Z - point1.Z * point2.Y,
+                point1.Z * point2.X - point1.X * point2.Z,
+                point1.X * point2.Y - point1.Y * point2.X);
         }
 
+        /// <summary>
+        /// Calculates the curl of the specified field.
+        /// </summary>
+        /// <param name="field">The field.</param>
+        /// <param name="i">The i index.</param>
+        /// <param name="j">The j index.</param>
+        /// <param name="k">The k index.</param>
+        /// <param name="shift">The curl shift.</param>
+        /// <returns>The result of curl operation.</returns>
         public static CartesianCoordinate Curl(this CartesianCoordinate[,,] field, int i, int j, int k, int shift)
         {
             CartesianCoordinate current = field[i, j, k];
@@ -50,19 +58,25 @@ namespace Simulation.Models.Extensions
             CartesianCoordinate shiftedJ = field[i, j + shift, k];
             CartesianCoordinate shiftedK = field[i, j, k + shift];
 
-            var x = current.Z - shiftedJ.Z + shiftedK.Y - current.Y;
-            var y = current.X - shiftedK.X + shiftedI.Z - current.Z;
-            var z = current.Y - shiftedI.Y + shiftedJ.X - current.X;
+            double x = current.Z - shiftedJ.Z + shiftedK.Y - current.Y;
+            double y = current.X - shiftedK.X + shiftedI.Z - current.Z;
+            double z = current.Y - shiftedI.Y + shiftedJ.X - current.X;
 
             return new CartesianCoordinate(x, y, z);
         }
 
-        public static CartesianCoordinate ComponentProduct(this CartesianCoordinate a, CartesianCoordinate b)
+        /// <summary>
+        /// Calculate the component-wise product.
+        /// </summary>
+        /// <param name="point1">The point1.</param>
+        /// <param name="point2">The point2.</param>
+        /// <returns>The result of component-wise multiplication.</returns>
+        public static CartesianCoordinate ComponentProduct(this CartesianCoordinate point1, CartesianCoordinate point2)
         {
             return new CartesianCoordinate(
-                a.X * b.X,
-                a.Y * b.Y,
-                a.Z * b.Z);
+                point1.X * point2.X,
+                point1.Y * point2.Y,
+                point1.Z * point2.Z);
         }
     }
 }
