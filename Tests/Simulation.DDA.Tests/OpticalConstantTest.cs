@@ -1,23 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+
 using AwokeKnowing.GnuplotCSharp;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Simulation.Infrastructure;
-using Simulation.Models;
+
+using ScilabEngine.Helpers;
+
+using Simulation.Medium.Medium;
+using Simulation.Models.Constants;
+using Simulation.Models.Enums;
 using Simulation.Models.Extensions;
+using Simulation.Models.Spectrum;
 
 namespace Simulation.DDA.Tests
 {
+    /// <summary>
+    /// The OpticalConstantTest class.
+    /// </summary>
     [TestClass]
     public class OpticalConstantTest
     {
         [TestMethod]
+        [Ignore]
         public void CalculateOpticalConstants_ScilabEngine()
         {
             // Arrange
@@ -31,7 +38,7 @@ namespace Simulation.DDA.Tests
             var dict = new Dictionary<double, Complex>();
             foreach (var waveLength in optConst.WaveLengthList)
             {
-                var omeg = SpectrumParameterConverter.Convert(waveLength * 1e-9, SpectrumParameterType.WaveLength, SpectrumParameterType.CycleFrequency);
+                var omeg = SpectrumUnitConverter.Convert(waveLength * 1e-9, SpectrumUnitType.WaveLength, SpectrumUnitType.CycleFrequency);
                 var compl = EpsInfinity -
                             OmegaP * OmegaP /
                             (omeg * omeg -
@@ -61,28 +68,19 @@ namespace Simulation.DDA.Tests
         }
 
         [TestMethod]
-        public void CalculateOpticalConstants_Gnuplot()
+        public void CalculateOpticalConstants_DrudeLorentz_Gnuplot()
         {
             // Arrange
             var optConst = ParameterHelper.ReadOpticalConstants("opt_const.txt");
-
-            var EpsInfinity = 1; // 3.9943;
-            var OmegaP = 1.369e+16;
-            var DEps0 = 8.45e-1;
-            var Gamma0 = 7.292e+13 / (2 * Math.PI);
-
+            var drudeLorentz = new DrudeLorentz();
             var dict = new Dictionary<double, Complex>();
             foreach (var waveLength in optConst.WaveLengthList)
             {
-                var omeg = 2 * Math.PI * Fundamentals.LightVelocity / (waveLength * 1e-9);
-                var compl = EpsInfinity -
-                            OmegaP * OmegaP /
-                            (omeg * omeg -
-                             Complex.ImaginaryOne * Gamma0 * omeg);
-                dict.Add(waveLength, compl);
+                var freq = new SpectrumUnit(waveLength*1e-9, SpectrumUnitType.WaveLength);
+                dict.Add(waveLength, drudeLorentz.GetPermittivity(freq));
             }
 
-            ParameterHelper.WriteOpticalConstants("opt_const_new.txt", dict);
+            ParameterHelper.WriteOpticalConstants("opt_const_drudeLorentz.txt", dict);
 
             using (var gp = new GnuPlot())
             {

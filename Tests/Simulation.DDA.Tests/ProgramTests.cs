@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using Simulation.DDA.Console;
+using Simulation.DDA.Console.Simulation;
 using Simulation.Infrastructure;
-using Simulation.Models;
+using Simulation.Models.Enums;
 
 namespace Simulation.DDA.Tests
 {
+    /// <summary>
+    /// The ProgramTests class.
+    /// </summary>
     [TestClass]
     public class ProgramTests
     {
@@ -27,7 +24,7 @@ namespace Simulation.DDA.Tests
             var dict = SimpleFormatter.Read(filename);
 
             // Act
-            var result = DDAProgram.Calculate().ToDictionary(x => x.ToType(SpectrumParameterType.WaveLength), x => x.CrossSectionExtinction);
+            var result = DDAProgram.Calculate().ToDictionary(x => x.ToType(SpectrumUnitType.WaveLength), x => x.CrossSectionExtinction);
 
             // Assert
             AssertHelper.DictionaryAreClose(dict, result, 0.01);
