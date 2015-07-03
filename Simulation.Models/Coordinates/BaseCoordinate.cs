@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 
 namespace Simulation.Models.Coordinates
 {
@@ -6,7 +7,7 @@ namespace Simulation.Models.Coordinates
     /// The CartesianCoordinate class.
     /// </summary>
     /// <typeparam name="T">The type of underlying value.</typeparam>
-    public abstract class BaseCoordinate<T>
+    public abstract class BaseCoordinate<T> where T : struct
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CartesianCoordinate" /> class.

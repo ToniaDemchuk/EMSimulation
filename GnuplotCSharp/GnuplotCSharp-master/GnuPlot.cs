@@ -31,7 +31,7 @@ namespace AwokeKnowing.GnuplotCSharp
                 FileName = getExePath(),
                 UseShellExecute = false,
                 RedirectStandardInput = true,
-                RedirectStandardOutput = true
+                RedirectStandardOutput = true,
             };
 
             ExtPro = Process.Start(processStartInfo);
@@ -56,6 +56,10 @@ namespace AwokeKnowing.GnuplotCSharp
 
         private void extProOutputDataReceived(object sender, DataReceivedEventArgs e)
         {
+            if (e == null || e.Data == null)
+            {
+                return;
+            }
             var split = e.Data.Split(' ');
             double mx;
             double.TryParse(split[0], NumberStyles.Float, CultureInfo.InvariantCulture, out mx);
@@ -109,7 +113,8 @@ namespace AwokeKnowing.GnuplotCSharp
 
         public void Wait()
         {
-            this.ExtPro.WaitForExit();
+            this.ExtPro.WaitForExit(600000);
+
         }
 
         private static string getExePath()
@@ -860,6 +865,7 @@ namespace AwokeKnowing.GnuplotCSharp
         /// </summary>
         public void Dispose()
         {
+
         }
     }
 }

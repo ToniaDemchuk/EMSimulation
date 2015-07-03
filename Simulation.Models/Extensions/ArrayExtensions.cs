@@ -1,4 +1,5 @@
 ﻿using System;
+
 using Simulation.Models.Coordinates;
 
 namespace Simulation.Models.Extensions
@@ -135,7 +136,38 @@ namespace Simulation.Models.Extensions
         public static T[,,] CreateArray<T>(this IndexStore indices)
         {
             var array = new T[indices.ILength, indices.JLength, indices.KLength];
-            array.Initialize();
+            return array;
+        }
+
+        /// <summary>
+        /// Creates the array with dimensions set in index store and initialize with defaults.
+        /// </summary>
+        /// <typeparam name="T">The type of underlying values.</typeparam>
+        /// <param name="indices">The indices.</param>
+        /// <param name="initializer">The initializer.</param>
+        /// <returns>
+        /// The new three dimensional array.
+        /// </returns>
+        public static T[,,] CreateArray<T>(this IndexStore indices, Func<int, int, int, T> initializer)
+        {
+            var array = indices.CreateArray<T>();
+            array.For(initializer);
+            return array;
+        }
+
+        /// <summary>
+        /// Creates the array with dimensions set in index store and initialize with defaults.
+        /// </summary>
+        /// <typeparam name="T">The type of underlying values.</typeparam>
+        /// <param name="indices">The indices.</param>
+        /// <param name="initializer">The initializer.</param>
+        /// <returns>
+        /// The new three dimensional array.
+        /// </returns>
+        public static T[,,] CreateArray<T>(this IndexStore indices, Func<T> initializer)
+        {
+            var array = indices.CreateArray<T>();
+            array.For((i, j, k) => initializer());
             return array;
         }
     }

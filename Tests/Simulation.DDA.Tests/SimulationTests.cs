@@ -6,6 +6,8 @@ using System.Linq;
 
 using AwokeKnowing.GnuplotCSharp;
 
+using GnuplotCSharp;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Simulation.DDA.Console.Simulation;
@@ -70,8 +72,8 @@ namespace Simulation.DDA.Tests
                         this.getFileFormat(dirAzimuthSum, distance, radius));
                     gp.HoldOn();
 
-                    gp.Plot(azim45.Keys.ToArray(), azim45.Values.ToArray());
-                    gp.Plot(azimSum.Keys.ToArray(), azimSum.Values.ToArray());
+                    gp.Plot(azim45);
+                    gp.Plot(azimSum);
                     gp.HoldOff();
                     AssertHelper.DictionaryAreClose(azim45, azimSum, 0.5);
                 }
@@ -127,10 +129,7 @@ namespace Simulation.DDA.Tests
             {
                 Dictionary<double, double> azim45 = SimpleFormatter.Read(
                     this.getFileFormat(dirAzimuth45, distance, radius));
-                gp.Plot(
-                    azim45.Select(x => x.Key).ToArray(),
-                    azim45.Select(x => x.Value).ToArray(),
-                    string.Format(@"title ""{0}""", distance));
+                gp.Plot(azim45, string.Format(@"title ""{0}""", distance));
             }
 
             spectrum = this.zipToDictionary(distances, dirAzimuth0, radius);
@@ -177,8 +176,8 @@ namespace Simulation.DDA.Tests
                 }
                 // gp.HoldOn();
                 // gp.Set(string.Format("terminal win {0}", radius));
-                gp.Plot(peaks0.Select(x => x.Key).ToArray(), peaks0.Select(x => x.Value).ToArray());
-                gp.Plot(peaks90.Select(x => x.Key).ToArray(), peaks90.Select(x => x.Value).ToArray());
+                gp.Plot(peaks0);
+                gp.Plot(peaks90);
                 // gp.HoldOff();
 
                 string basepath = Path.Combine(BasePath, this.TestContext.TestName);
@@ -239,14 +238,8 @@ namespace Simulation.DDA.Tests
                 Dictionary<double, double> drudeLorentz = SimpleFormatter.Read(
                     this.getFileFormat(dirDrudeLorentz, distance, radius));
 
-                gp.Plot(
-                    optical.Select(x => x.Key).ToArray(),
-                    optical.Select(x => x.Value).ToArray(),
-                    @"title ""optical""");
-                gp.Plot(
-                    drudeLorentz.Select(x => x.Key).ToArray(),
-                    drudeLorentz.Select(x => x.Value).ToArray(),
-                    @"title ""drude-lorentz""");
+                gp.Plot(optical, @"title ""optical""");
+                gp.Plot(drudeLorentz, @"title ""drude-lorentz""");
 
                 //AssertHelper.DictionaryAreClose(optical, drudeLorentz, 0.1);
             }
@@ -274,14 +267,8 @@ namespace Simulation.DDA.Tests
                 Dictionary<double, double> drudeLorentz = SimpleFormatter.Read(
                     this.getFileFormat(dirDrudeLorentz, distance, radius));
 
-                gp.Plot(
-                    optical.Select(x => x.Key).ToArray(),
-                    optical.Select(x => x.Value).ToArray(),
-                    @"title ""optical""");
-                gp.Plot(
-                    drudeLorentz.Select(x => x.Key).ToArray(),
-                    drudeLorentz.Select(x => x.Value).ToArray(),
-                    @"title ""drude-lorentz""");
+                gp.Plot(optical,@"title ""optical""");
+                gp.Plot(drudeLorentz,@"title ""drude-lorentz""");
 
                 //AssertHelper.DictionaryAreClose(optical, drudeLorentz, 0.1);
             }

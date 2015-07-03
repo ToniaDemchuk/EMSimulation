@@ -72,12 +72,13 @@ namespace Simulation.FDTD.Models
         {
             this.indices = indices;
             this.spectrum = spectrum;
-            this.FourierField = indices.CreateArray<FourierSeries<ComplexCoordinate>>();
-            this.D = indices.CreateArray<CartesianCoordinate>();
-            this.E = indices.CreateArray<CartesianCoordinate>();
-            this.H = indices.CreateArray<CartesianCoordinate>();
-            this.IntegralD = indices.CreateArray<CartesianCoordinate>();
-            this.IntegralH = indices.CreateArray<CartesianCoordinate>();
+
+            this.FourierField = indices.CreateArray(() => new FourierSeries<ComplexCoordinate>());
+            this.D = indices.CreateArray(() => CartesianCoordinate.Zero);
+            this.E = indices.CreateArray(() => CartesianCoordinate.Zero);
+            this.H = indices.CreateArray(() => CartesianCoordinate.Zero);
+            this.IntegralD = indices.CreateArray(() => CartesianCoordinate.Zero);
+            this.IntegralH = indices.CreateArray(() => CartesianCoordinate.Zero);
         }
 
         /// <summary>

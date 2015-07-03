@@ -25,7 +25,7 @@ namespace Simulation.Medium.MediumSolver
         /// <value>
         /// The displacement factor.
         /// </value>
-        public double DisplacementFactor { get; set; }
+        public double DisplacementFactor { get; protected set; }
 
         /// <summary>
         /// Solves the electric field using specified displacement field.
