@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Linq;
+using System.Numerics;
 
 using Simulation.FDTD.Models;
 using Simulation.Models.Constants;
@@ -29,8 +30,7 @@ namespace Simulation.FDTD
         {
             this.initParams(parameters);
 
-            int numsteps = 50;
-            for (int time = 0; time < numsteps; time++)
+            foreach (var time in Enumerable.Range(0, parameters.NumSteps))
             {
                 this.calcFields(time, parameters);
             }
@@ -51,9 +51,13 @@ namespace Simulation.FDTD
         private void initParams(SimulationParameters parameters)
         {
             this.fields = new FDTDField(parameters.Indices, parameters.Spectrum);
-            this.pulse = new FDTDPulse(parameters.WaveFunc, 10, parameters.Spectrum, parameters.CourantNumber);
-            int pmlLength = 7;
-            this.pml = new PmlBoundary(pmlLength, parameters.Indices);
+            this.pulse = new FDTDPulse(
+                parameters.WaveFunc,
+                parameters.Indices.JLength,
+                parameters.Spectrum,
+                parameters.CourantNumber);
+
+            this.pml = new PmlBoundary(parameters.PmlLength, parameters.Indices);
         }
 
         private void calcFields(int time, SimulationParameters parameters)
@@ -99,8 +103,8 @@ namespace Simulation.FDTD
             pulseIndex.ForExceptJ(
                 (i, k) =>
                 {
-                    var cartesianCoordinate =
-                        new CartesianCoordinate(param.CourantNumber * this.pulse.E[pulseIndex.Lower], 0, 0);
+                    var cartesianCoordinate = CartesianCoordinate.XOrt *
+                                              (param.CourantNumber * this.pulse.E[pulseIndex.Lower]);
                     this.fields.H[i, pulseIndex.Lower - 1, k] += cartesianCoordinate;
                     this.fields.H[i, pulseIndex.Lower, k] -= cartesianCoordinate;
                 });
@@ -109,7 +113,7 @@ namespace Simulation.FDTD
             pulseIndex.ForExceptI(
                 (j, k) =>
                 {
-                    var cartesianCoordinate = new CartesianCoordinate(0, param.CourantNumber * this.pulse.E[j], 0);
+                    var cartesianCoordinate = CartesianCoordinate.YOrt * (param.CourantNumber * this.pulse.E[j]);
                     this.fields.H[pulseIndex.Lower - 1, j, k] -= cartesianCoordinate;
                     this.fields.H[pulseIndex.Lower, j, k] -= cartesianCoordinate;
                 });
@@ -137,7 +141,8 @@ namespace Simulation.FDTD
             pulseIndex.ForExceptK(
                 (i, j) =>
                 {
-                    var cartesianCoordinate = new CartesianCoordinate(0, param.CourantNumber * this.pulse.H[j], 0);
+                    var cartesianCoordinate = CartesianCoordinate.YOrt * 
+                        (param.CourantNumber * this.pulse.H[j]);
                     this.fields.D[i, j, pulseIndex.Lower] -= cartesianCoordinate;
                     this.fields.D[i, j, pulseIndex.Lower + 1] -= cartesianCoordinate;
                 });
@@ -146,10 +151,10 @@ namespace Simulation.FDTD
             pulseIndex.ForExceptJ(
                 (i, k) =>
                 {
-                    this.fields.D[i, pulseIndex.Lower, k] += new CartesianCoordinate(
-                        0,
-                        0,
-                        param.CourantNumber * (this.pulse.H[pulseIndex.Lower - 1] - this.pulse.H[pulseIndex.JLength]));
+                    this.fields.D[i, pulseIndex.Lower, k] +=
+                        CartesianCoordinate.ZOrt * (param.CourantNumber * 
+                        (this.pulse.H[pulseIndex.Lower - 1] -
+                        this.pulse.H[pulseIndex.JLength]));
                 });
         }
 
@@ -169,7 +174,7 @@ namespace Simulation.FDTD
                         Complex eps = parameters.Medium[i, j, k].Permittivity.GetPermittivity(freq);
 
                         double pulseMultiplier = 1 / this.pulse.FourierPulse[j][freq].Magnitude;
-                        double complexPart1 = -eps.Imaginary *
+                        double complexPart1 = eps.Imaginary *
                                               pulseMultiplier * this.fields.FourierField[i, j, k][freq].Norm;
 
                         extinction += complexPart1;

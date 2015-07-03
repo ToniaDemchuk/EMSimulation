@@ -2,6 +2,7 @@
 using System.Numerics;
 
 using Simulation.Models.Enums;
+using Simulation.Models.Extensions;
 using Simulation.Models.Spectrum;
 
 namespace Simulation.FDTD.Models
@@ -47,7 +48,8 @@ namespace Simulation.FDTD.Models
             this.pulseFunc = waveFunc;
             this.spectrum = spectrum;
 
-            this.initFourier();
+            this.FourierPulse = new FourierSeries<Complex>[this.medLength];
+            this.FourierPulse.For(i => new FourierSeries<Complex>());
         }
 
         /// <summary>
@@ -145,10 +147,5 @@ namespace Simulation.FDTD.Models
             }
         }
 
-        private void initFourier()
-        {
-            this.FourierPulse = new FourierSeries<Complex>[this.medLength];
-            this.FourierPulse.Initialize();
-        }
     }
 }

@@ -25,6 +25,10 @@ namespace Simulation.Medium.MediumSolver
             double epsvc = -collisionFreq * timeStep;
             double exp = Math.Exp(epsvc);
 
+            this.SampledTimeDomain = CartesianCoordinate.Zero;
+            this.SampledTimeDomain1 = CartesianCoordinate.Zero;
+            this.SampledTimeDomain2 = CartesianCoordinate.Zero;
+
             this.SampledTimeFactor1 = 1.0 + exp;
             this.SampledTimeFactor2 = exp;
             this.ElectricFactor = ((plasmaFreq * plasmaFreq * plasmaFreq) * timeStep / collisionFreq) * (1.0 - exp);
@@ -37,7 +41,7 @@ namespace Simulation.Medium.MediumSolver
         /// <value>
         ///     The sampled time factor1.
         /// </value>
-        public double SampledTimeFactor1 { get; set; }
+        public double SampledTimeFactor1 { get; protected set; }
 
         /// <summary>
         ///     Gets or sets the sampled time factor2.
@@ -45,7 +49,7 @@ namespace Simulation.Medium.MediumSolver
         /// <value>
         ///     The sampled time factor2.
         /// </value>
-        public double SampledTimeFactor2 { get; set; }
+        public double SampledTimeFactor2 { get; protected set; }
 
         /// <summary>
         ///     Gets or sets the electric factor.
@@ -53,7 +57,7 @@ namespace Simulation.Medium.MediumSolver
         /// <value>
         ///     The electric factor.
         /// </value>
-        public double ElectricFactor { get; set; }
+        public double ElectricFactor { get; protected set; }
 
         /// <summary>
         ///     Gets or sets the epsilon infinity.
@@ -61,7 +65,7 @@ namespace Simulation.Medium.MediumSolver
         /// <value>
         ///     The epsilon infinity.
         /// </value>
-        public double EpsilonInfinity { get; set; }
+        public double EpsilonInfinity { get; protected set; }
 
         /// <summary>
         ///     Gets or sets the sampled time domain.
@@ -69,7 +73,7 @@ namespace Simulation.Medium.MediumSolver
         /// <value>
         ///     The sampled time domain.
         /// </value>
-        public CartesianCoordinate SampledTimeDomain { get; set; }
+        public CartesianCoordinate SampledTimeDomain { get; protected set; }
 
         /// <summary>
         ///     Gets or sets the sampled time domain1.
@@ -77,7 +81,7 @@ namespace Simulation.Medium.MediumSolver
         /// <value>
         ///     The sampled time domain1.
         /// </value>
-        public CartesianCoordinate SampledTimeDomain1 { get; set; }
+        public CartesianCoordinate SampledTimeDomain1 { get; protected set; }
 
         /// <summary>
         ///     Gets or sets the sampled time domain2.
@@ -85,7 +89,7 @@ namespace Simulation.Medium.MediumSolver
         /// <value>
         ///     The sampled time domain2.
         /// </value>
-        public CartesianCoordinate SampledTimeDomain2 { get; set; }
+        public CartesianCoordinate SampledTimeDomain2 { get; protected set; }
 
         /// <summary>
         ///     Solves the electric field using specified displacement field.
@@ -99,7 +103,7 @@ namespace Simulation.Medium.MediumSolver
             CartesianCoordinate efield = (displacementField - this.SampledTimeDomain) / this.EpsilonInfinity;
 
             this.SampledTimeDomain = this.SampledTimeFactor1 * this.SampledTimeDomain1 -
-                                     this.SampledTimeFactor2 * this.SampledTimeDomain2 + 
+                                     this.SampledTimeFactor2 * this.SampledTimeDomain2 +
                                      this.ElectricFactor * efield;
 
             this.SampledTimeDomain2 = this.SampledTimeDomain1;

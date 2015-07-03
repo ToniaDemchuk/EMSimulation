@@ -21,6 +21,8 @@ namespace Simulation.Medium.MediumSolver
                 (medium.Epsilon + (medium.Conductivity * timeStep / Fundamentals.ElectricConst));
 
             this.ElectricFactor = medium.Conductivity * timeStep / Fundamentals.ElectricConst;
+
+            this.IntegralField = CartesianCoordinate.Zero;
         }
 
         /// <summary>
@@ -29,7 +31,7 @@ namespace Simulation.Medium.MediumSolver
         /// <value>
         ///     The integral field.
         /// </value>
-        public CartesianCoordinate IntegralField { get; set; }
+        public CartesianCoordinate IntegralField { get; protected set; }
 
         /// <summary>
         ///     Gets or sets the integral factor.
@@ -37,7 +39,7 @@ namespace Simulation.Medium.MediumSolver
         /// <value>
         ///     The integral factor.
         /// </value>
-        public double ElectricFactor { get; set; }
+        public double ElectricFactor { get; protected set; }
 
         /// <summary>
         ///     Solves the electric field using specified displacement field.

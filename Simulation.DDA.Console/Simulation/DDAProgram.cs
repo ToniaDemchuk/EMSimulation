@@ -2,7 +2,6 @@
 
 using Simulation.DDA.Models;
 using Simulation.Infrastructure;
-using Simulation.Medium.Medium;
 using Simulation.Medium.Models;
 using Simulation.Models.Enums;
 using Simulation.Models.Extensions;

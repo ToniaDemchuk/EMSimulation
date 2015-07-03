@@ -7,6 +7,12 @@ namespace Simulation.Models.Coordinates
     /// </summary>
     public class CartesianCoordinate : BaseCoordinate<double>
     {
+        public static readonly CartesianCoordinate One = new CartesianCoordinate(1, 1, 1);
+        public static readonly CartesianCoordinate Zero = new CartesianCoordinate(0, 0, 0);
+        public static readonly CartesianCoordinate XOrt = new CartesianCoordinate(1, 0, 0);
+        public static readonly CartesianCoordinate YOrt = new CartesianCoordinate(0, 1, 0);
+        public static readonly CartesianCoordinate ZOrt = new CartesianCoordinate(0, 0, 1);
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CartesianCoordinate" /> class.
         /// </summary>

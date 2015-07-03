@@ -22,7 +22,7 @@ namespace Simulation.Medium.Medium
                 CollisionFrequency = new SpectrumUnit(7.292e+13, SpectrumUnitType.CycleFrequency),
                 StrengthFactor = 8.45e-1
             };
-            this.EpsilonInfinity = 1;//3.9943;
+            this.EpsilonInfinity = 1; //3.9943;
 
             //this.PlasmaTerm = new ResonanceTerm
             //{
@@ -58,11 +58,12 @@ namespace Simulation.Medium.Medium
         public override Complex GetPermittivity(SpectrumUnit frequency)
         {
             double w = frequency.ToType(SpectrumUnitType.CycleFrequency);
-            double plasmaFrequency = this.PlasmaTerm.ResonanceFrequency.ToType(SpectrumUnitType.CycleFrequency);
-            double collision = this.PlasmaTerm.CollisionFrequency.ToType(SpectrumUnitType.CycleFrequency);
+            double plasmaFreq = this.PlasmaTerm.ResonanceFrequency.ToType(SpectrumUnitType.CycleFrequency);
+            double collisionFreq = this.PlasmaTerm.CollisionFrequency.ToType(SpectrumUnitType.CycleFrequency);
 
-            Complex compl = this.EpsilonInfinity - this.PlasmaTerm.StrengthFactor*plasmaFrequency * plasmaFrequency /
-                            (w * w + Complex.ImaginaryOne * collision * w);
+            Complex compl = this.EpsilonInfinity -
+                            this.PlasmaTerm.StrengthFactor * plasmaFreq * plasmaFreq /
+                            (w * w + Complex.ImaginaryOne * collisionFreq * w);
             return compl;
         }
     }

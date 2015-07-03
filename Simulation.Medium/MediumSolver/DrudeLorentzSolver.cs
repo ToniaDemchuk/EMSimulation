@@ -23,6 +23,9 @@ namespace Simulation.Medium.MediumSolver
             this.SampledLorentzFactor1 = new double[medium.OscillatorTerms.Count];
             this.SampledLorentzFactor2 = new double[medium.OscillatorTerms.Count];
             this.ElectricLorentzFactor = new double[medium.OscillatorTerms.Count];
+            this.SampledLorentzDomain = new CartesianCoordinate[medium.OscillatorTerms.Count];
+            this.SampledLorentzDomain1 = new CartesianCoordinate[medium.OscillatorTerms.Count];
+            this.SampledLorentzDomain2 = new CartesianCoordinate[medium.OscillatorTerms.Count];
 
             double plasmaFreq = medium.PlasmaTerm.ResonanceFrequency.ToType(SpectrumUnitType.CycleFrequency);
 
@@ -42,6 +45,10 @@ namespace Simulation.Medium.MediumSolver
                 this.SampledLorentzFactor1[l] = 2.0 * exp * Math.Cos(betadt);
                 this.SampledLorentzFactor2[l] = Math.Exp(-2.0 * alfadt);
                 this.ElectricLorentzFactor[l] = exp * Math.Sin(betadt) * gammadt;
+
+                this.SampledLorentzDomain[l] = CartesianCoordinate.Zero;
+                this.SampledLorentzDomain1[l] = CartesianCoordinate.Zero;
+                this.SampledLorentzDomain2[l] = CartesianCoordinate.Zero;
             }
         }
 
@@ -51,7 +58,7 @@ namespace Simulation.Medium.MediumSolver
         /// <value>
         ///     The sampled lorentz factor1.
         /// </value>
-        public double[] SampledLorentzFactor1 { get; set; }
+        public double[] SampledLorentzFactor1 { get; protected set; }
 
         /// <summary>
         ///     Gets or sets the sampled lorentz factor2.
@@ -59,7 +66,7 @@ namespace Simulation.Medium.MediumSolver
         /// <value>
         ///     The sampled lorentz factor2.
         /// </value>
-        public double[] SampledLorentzFactor2 { get; set; }
+        public double[] SampledLorentzFactor2 { get; protected set; }
 
         /// <summary>
         ///     Gets or sets the electric lorentz factor.
@@ -67,7 +74,7 @@ namespace Simulation.Medium.MediumSolver
         /// <value>
         ///     The electric lorentz factor.
         /// </value>
-        public double[] ElectricLorentzFactor { get; set; }
+        public double[] ElectricLorentzFactor { get; protected set; }
 
         /// <summary>
         ///     Gets or sets the sampled lorentz domain.
@@ -75,7 +82,7 @@ namespace Simulation.Medium.MediumSolver
         /// <value>
         ///     The sampled lorentz domain.
         /// </value>
-        public CartesianCoordinate[] SampledLorentzDomain { get; set; }
+        public CartesianCoordinate[] SampledLorentzDomain { get; protected set; }
 
         /// <summary>
         ///     Gets or sets the sampled lorentz domain1.
@@ -83,7 +90,7 @@ namespace Simulation.Medium.MediumSolver
         /// <value>
         ///     The sampled lorentz domain1.
         /// </value>
-        public CartesianCoordinate[] SampledLorentzDomain1 { get; set; }
+        public CartesianCoordinate[] SampledLorentzDomain1 { get; protected set; }
 
         /// <summary>
         ///     Gets or sets the sampled lorentz domain2.
@@ -91,7 +98,7 @@ namespace Simulation.Medium.MediumSolver
         /// <value>
         ///     The sampled lorentz domain2.
         /// </value>
-        public CartesianCoordinate[] SampledLorentzDomain2 { get; set; }
+        public CartesianCoordinate[] SampledLorentzDomain2 { get; protected set; }
 
         /// <summary>
         ///     Solves the electric field using specified displacement field.

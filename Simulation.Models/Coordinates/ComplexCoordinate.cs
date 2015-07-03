@@ -8,6 +8,12 @@ namespace Simulation.Models.Coordinates
     /// </summary>
     public class ComplexCoordinate : BaseCoordinate<Complex>
     {
+        public static readonly ComplexCoordinate One = new ComplexCoordinate(Complex.One, Complex.One, Complex.One);
+        public static readonly ComplexCoordinate Zero = new ComplexCoordinate(Complex.Zero, Complex.Zero, Complex.Zero);
+        public static readonly ComplexCoordinate XOrt = new ComplexCoordinate(Complex.One, Complex.Zero, Complex.Zero);
+        public static readonly ComplexCoordinate YOrt = new ComplexCoordinate(Complex.Zero, Complex.One, Complex.Zero);
+        public static readonly ComplexCoordinate ZOrt = new ComplexCoordinate(Complex.Zero, Complex.Zero, Complex.One);
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CartesianCoordinate"/> class.
         /// </summary>

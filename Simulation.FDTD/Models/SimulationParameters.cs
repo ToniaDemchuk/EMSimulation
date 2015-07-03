@@ -41,7 +41,9 @@ namespace Simulation.FDTD.Models
         /// <value>
         /// The size of the cell.
         /// </value>
-        public int CellSize { get; set; }
+        public double CellSize { get; set; }
+
+        public int NumSteps { get; set; }
 
         /// <summary>
         /// Gets or sets the length of the PML.

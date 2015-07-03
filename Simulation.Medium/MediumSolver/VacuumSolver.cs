@@ -1,3 +1,4 @@
+using Simulation.Medium.Medium;
 using Simulation.Medium.Models;
 using Simulation.Models.Coordinates;
 
@@ -9,11 +10,10 @@ namespace Simulation.Medium.MediumSolver
     public class VacuumSolver : BaseMediumSolver
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="VacuumSolver"/> class.
+        /// Initializes a new instance of the <see cref="VacuumSolver" /> class.
         /// </summary>
-        /// <param name="permittivity">The permittivity.</param>
-        public VacuumSolver(BaseMedium permittivity)
-            : base(permittivity)
+        public VacuumSolver()
+            : base(new Vacuum())
         {
         }
 

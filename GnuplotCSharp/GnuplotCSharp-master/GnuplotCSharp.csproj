@@ -62,7 +62,6 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>bin\Release\</OutputPath>
@@ -76,6 +75,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -85,6 +85,7 @@
   <ItemGroup>
     <Compile Include="Demo.cs" />
     <Compile Include="GnuPlot.cs" />
+    <Compile Include="GnuPlotExtensions.cs" />
     <Compile Include="PlotTypes.cs" />
     <Compile Include="PointStyles.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

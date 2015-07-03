@@ -1,6 +1,7 @@
 using System;
 
 using Simulation.Models.Coordinates;
+using Simulation.Models.Extensions;
 
 using PmlCoef = System.Tuple<double, double, double>;
 using PmlCoordCoef = System.Tuple<Simulation.Models.Coordinates.CartesianCoordinate,
@@ -107,6 +108,8 @@ namespace Simulation.FDTD.Models
             const double DefaultItem2 = 1.0;
             const double DefaultItem3 = 1.0;
 
+            g = new PmlCoef[fullLength];
+            f = new PmlCoef[fullLength];
             for (int i = 0; i < fullLength; i++)
             {
                 g[i] = new PmlCoef(DefaultItem1, DefaultItem2, DefaultItem3);

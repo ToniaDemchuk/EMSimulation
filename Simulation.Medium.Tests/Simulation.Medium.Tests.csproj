@@ -34,7 +34,28 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GnuplotCSharp">
+      <HintPath>..\Libs\GnuplotCSharp.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Numerics" />
   </ItemGroup>
@@ -51,12 +72,17 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Medium\DrudeTests.cs" />
     <Compile Include="Medium\DielectricTests.cs" />
     <Compile Include="Medium\LossyDielectricTests.cs" />
     <Compile Include="Medium\VacuumTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Simulation.Infrastructure\Simulation.Infrastructure.csproj">
+      <Project>{E43FABF6-E2F6-43B1-A0E0-C906BEB6FDB2}</Project>
+      <Name>Simulation.Infrastructure</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Simulation.Medium\Simulation.Medium.csproj">
       <Project>{38F1FA9E-F687-4F27-9147-88222766FE3A}</Project>
       <Name>Simulation.Medium</Name>
