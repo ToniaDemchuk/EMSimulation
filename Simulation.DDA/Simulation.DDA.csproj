@@ -63,9 +63,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExtinctionManager.cs" />
+    <Compile Include="MediumManager.cs" />
     <Compile Include="Models\DDAParameters.cs" />
     <Compile Include="Models\SimulationParameters.cs" />
     <Compile Include="Models\SystemConfig.cs" />
+    <Compile Include="ModernKDDAEntryPoint.cs" />
+    <Compile Include="OpticalConstants.cs" />
     <Compile Include="ParameterHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

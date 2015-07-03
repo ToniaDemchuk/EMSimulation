@@ -63,7 +63,7 @@
     <Compile Include="Extensions\LinearDiscreteExtensions.cs" />
     <Compile Include="Extensions\SimulationResultExtensions.cs" />
     <Compile Include="Coordinates\CartesianCoordinate.cs" />
-    <Compile Include="Enums\SpectrumParameterType.cs" />
+    <Compile Include="Enums\SpectrumUnitType.cs" />
     <Compile Include="Spectrum\FourierSeries.cs" />
     <Compile Include="Constants\Fundamentals.cs" />
     <Compile Include="Spectrum\OpticalSpectrum.cs" />
@@ -76,12 +76,12 @@
     <Compile Include="Coordinates\SphericalCoordinate.cs" />
     <Compile Include="Extensions\SphericalCoordinateExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Extensions\SpectrumParameterConverter.cs" />
+    <Compile Include="Extensions\SpectrumUnitConverter.cs" />
     <Compile Include="Spectrum\SimulationResultDictionary.cs" />
     <Compile Include="Enums\UnitOfMeasurement.cs" />
     <Compile Include="Common\LinearDiscreteCollection.cs" />
     <Compile Include="Common\LinearDiscreteElement.cs" />
-    <Compile Include="Spectrum\SpectrumParameter.cs" />
+    <Compile Include="Spectrum\SpectrumUnit.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

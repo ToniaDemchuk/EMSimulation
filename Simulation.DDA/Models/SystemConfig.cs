@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace Simulation.Models
+using Simulation.Models.Coordinates;
+
+namespace Simulation.DDA.Models
 {
     /// <summary>
     /// The SystemConfig class.
@@ -9,10 +12,10 @@ namespace Simulation.Models
     public class SystemConfig
     {
         /// <summary>
-        /// Gets or sets the size.
+        /// Gets or sets the size of system.
         /// </summary>
         /// <value>
-        /// The size.
+        /// The size of system.
         /// </value>
         public int Size { get; protected set; }
 
@@ -45,8 +48,9 @@ namespace Simulation.Models
             }
 
             this.Size = radius.Count;
-            this.Radius = radius.AsReadOnly();
-            this.Points = points.AsReadOnly();
+            const double NanoMeters = 1e-9; //position is set in relative units, need to convert in nm.
+            this.Radius = radius.Select(r => r * NanoMeters).ToList().AsReadOnly();
+            this.Points = points.Select(p => p * NanoMeters).ToList().AsReadOnly();
         }
     }
 }

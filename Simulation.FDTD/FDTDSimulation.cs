@@ -1,16 +1,30 @@
-﻿using Simulation.FDTD.Models;
-using Simulation.Models;
-using Simulation.Models.ConfigurationParameters;
+﻿using System.Numerics;
+
+using Simulation.FDTD.Models;
+using Simulation.Models.Constants;
 using Simulation.Models.Coordinates;
+using Simulation.Models.Enums;
 using Simulation.Models.Extensions;
+using Simulation.Models.Spectrum;
 
 namespace Simulation.FDTD
 {
+    /// <summary>
+    ///     The FDTDSimulation class.
+    /// </summary>
     public class FDTDSimulation
     {
         private FDTDField fields;
+
+        private PmlBoundary pml;
+
         private FDTDPulse pulse;
 
+        /// <summary>
+        ///     Calculates using the specified parameters.
+        /// </summary>
+        /// <param name="parameters">The parameters.</param>
+        /// <returns>The simulation result.</returns>
         public SimulationResultDictionary Calculate(SimulationParameters parameters)
         {
             this.initParams(parameters);
@@ -18,65 +32,65 @@ namespace Simulation.FDTD
             int numsteps = 50;
             for (int time = 0; time < numsteps; time++)
             {
-                _calcFields(time, parameters);
+                this.calcFields(time, parameters);
             }
 
-            return CalcExtinction(parameters);
+            return this.CalcExtinction(parameters);
+        }
+
+        /// <summary>
+        /// Calculates the extinction.
+        /// </summary>
+        /// <param name="parameters">The parameters.</param>
+        /// <returns>The simulation results.</returns>
+        public SimulationResultDictionary CalcExtinction(SimulationParameters parameters)
+        {
+            return parameters.Spectrum.ToSimulationResult(x => this.calculateExtinction(x, parameters));
         }
 
         private void initParams(SimulationParameters parameters)
         {
             this.fields = new FDTDField(parameters.Indices, parameters.Spectrum);
-            this.pulse = new FDTDPulse(parameters.waveFunc, 10, parameters.Spectrum);
+            this.pulse = new FDTDPulse(parameters.WaveFunc, 10, parameters.Spectrum, parameters.CourantNumber);
+            int pmlLength = 7;
+            this.pml = new PmlBoundary(pmlLength, parameters.Indices);
         }
 
-        private void _calcFields(int time, SimulationParameters parameters)
+        private void calcFields(int time, SimulationParameters parameters)
         {
-            var pmlLength = 7;
-
             // границі розсіяного поля.
-            var pulseIndex = parameters.Indices.ShiftLower(pmlLength + 1).ShiftUpper(pmlLength + 1);
+            IndexStore pulseIndex = parameters.Indices.ShiftLower(this.pml.Length + 1).ShiftUpper(this.pml.Length + 1);
 
-            this.calculateDField(parameters.Indices, pulseIndex, time);
+            this.calculateDField(parameters, pulseIndex, time);
 
             // Calculate the E from D field
             parameters.Indices.ShiftLower(1).ShiftUpper(1)
-                      .For((i, j, k) => { fields.E[i, j, k] = parameters.Medium[i, j, k].Solve(fields.D[i, j, k]); });
+                      .For(
+                          (i, j, k) =>
+                          {
+                              this.fields.E[i, j, k] = parameters.Medium[i, j, k].Solve(this.fields.D[i, j, k]);
+                          });
 
-            double timeStep = parameters.cellSize * Fundamentals.CourantConst / Fundamentals.LightVelocity;
+            double timeStep = parameters.CellSize * parameters.CourantNumber / Fundamentals.SpeedOfLight;
             this.fields.DoFourierField(time * timeStep, parameters.Medium);
             this.pulse.DoFourierPulse(time * timeStep);
 
-            this.calculateHField(parameters.Indices, pulseIndex);
+            this.calculateHField(parameters, pulseIndex);
         }
 
-        private void calculateHField(IndexStore indices, IndexStore pulseIndex)
+        private void calculateHField(SimulationParameters param, IndexStore pulseIndex)
         {
-            // Calculate the Hx field
-            indices.ShiftUpper(1).For(
+            param.Indices.ShiftUpper(1).For(
                 (i, j, k) =>
                 {
-                    var rot_e = this.fields.E.Curl(i, j, k, +1);
-                    this.fields.IH[i, j, k] = this.fields.IH[i, j, k] + rot_e;
+                    CartesianCoordinate curlE = this.fields.E.Curl(i, j, k, +1);
+                    this.fields.IntegralH[i, j, k] = this.fields.IntegralH[i, j, k] + curlE;
 
-                    var f3 = new CartesianCoordinate(
-                        this.fields.Fj3[j] * this.fields.Fk3[k],
-                        this.fields.Fi3[i] * this.fields.Fk3[k],
-                        this.fields.Fi3[i] * this.fields.Fj3[j]);
-
-                    var f2 = new CartesianCoordinate(
-                        this.fields.Fj2[j] * this.fields.Fk2[k],
-                        this.fields.Fi2[i] * this.fields.Fk2[k],
-                        this.fields.Fi2[i] * this.fields.Fj2[j]);
-
-                    var f1 = new CartesianCoordinate(
-                        this.fields.Fi1[i],
-                        this.fields.Fj1[j],
-                        this.fields.Fk1[k]);
-
-                    this.fields.H[i, j, k] = this.fields.H[i, j, k].ComponentProduct(f3)
-                                             + Fundamentals.CourantConst *
-                                             (rot_e + this.fields.IH[i, j, k].ComponentProduct(f1)).ComponentProduct(f2);
+                    var coefs = this.pml.Magnetic(i, j, k);
+                    this.fields.H[i, j, k] = this.fields.H[i, j, k].ComponentProduct(coefs.Item3)
+                                             + param.CourantNumber *
+                                             (curlE + this.fields.IntegralH[i, j, k].ComponentProduct(coefs.Item2))
+                                                 .ComponentProduct(coefs.Item1);
                 });
 
             this.pulse.MagneticFieldStepCalc();
@@ -85,46 +99,36 @@ namespace Simulation.FDTD
             pulseIndex.ForExceptJ(
                 (i, k) =>
                 {
-                    this.fields.H[i, pulseIndex.Lower - 1, k] += new CartesianCoordinate(Fundamentals.CourantConst * this.pulse.E[pulseIndex.Lower], 0, 0);
-                    this.fields.H[i, pulseIndex.Lower, k] -= new CartesianCoordinate(Fundamentals.CourantConst * this.pulse.E[pulseIndex.Lower], 0, 0);
+                    var cartesianCoordinate =
+                        new CartesianCoordinate(param.CourantNumber * this.pulse.E[pulseIndex.Lower], 0, 0);
+                    this.fields.H[i, pulseIndex.Lower - 1, k] += cartesianCoordinate;
+                    this.fields.H[i, pulseIndex.Lower, k] -= cartesianCoordinate;
                 });
 
             // Incident Hy
             pulseIndex.ForExceptI(
                 (j, k) =>
                 {
-                    this.fields.H[pulseIndex.Lower - 1, j, k] -= new CartesianCoordinate(0, Fundamentals.CourantConst * this.pulse.E[j], 0);
-                    this.fields.H[pulseIndex.Lower, j, k] -= new CartesianCoordinate(0, Fundamentals.CourantConst * this.pulse.E[j], 0);
+                    var cartesianCoordinate = new CartesianCoordinate(0, param.CourantNumber * this.pulse.E[j], 0);
+                    this.fields.H[pulseIndex.Lower - 1, j, k] -= cartesianCoordinate;
+                    this.fields.H[pulseIndex.Lower, j, k] -= cartesianCoordinate;
                 });
         }
 
-        private void calculateDField(IndexStore indices, IndexStore pulseIndex, int time)
+        private void calculateDField(SimulationParameters param, IndexStore pulseIndex, int time)
         {
-            // Calculate the Dx field
-            indices.ShiftLower(1).For(
+            param.Indices.ShiftLower(1).For(
                 (i, j, k) =>
                 {
-                    var rot_h = this.fields.H.Curl(i, j, k, -1);
-                    this.fields.ID[i, j, k] += rot_h;
+                    CartesianCoordinate curlH = this.fields.H.Curl(i, j, k, -1);
+                    this.fields.IntegralD[i, j, k] += curlH;
 
-                    var g3 = new CartesianCoordinate(
-                        this.fields.Gj3[j] * this.fields.Gk3[k],
-                        this.fields.Gi3[i] * this.fields.Gk3[k],
-                        this.fields.Gi3[i] * this.fields.Gj3[j]);
-
-                    var g2 = new CartesianCoordinate(
-                        this.fields.Gj2[j] * this.fields.Gk2[k],
-                        this.fields.Gi2[i] * this.fields.Gk2[k],
-                        this.fields.Gi2[i] * this.fields.Gj2[j]);
-
-                    var g1 = new CartesianCoordinate(
-                        this.fields.Gi1[i],
-                        this.fields.Gj1[j],
-                        this.fields.Gk1[k]);
-
-                    this.fields.D[i, j, k] = this.fields.D[i, j, k].ComponentProduct(g3) +
-                                             Fundamentals.CourantConst * (rot_h + g1.ComponentProduct(this.fields.ID[i, j, k]))
-                                                                             .ComponentProduct(g2);
+                    var pmlCoefs = this.pml.Electric(i, j, k);
+                    this.fields.D[i, j, k] =
+                        this.fields.D[i, j, k].ComponentProduct(pmlCoefs.Item3) +
+                        param.CourantNumber *
+                        (curlH + pmlCoefs.Item2.ComponentProduct(this.fields.IntegralD[i, j, k]))
+                            .ComponentProduct(pmlCoefs.Item1);
                 });
 
             this.pulse.ElectricFieldStepCalc(time);
@@ -133,28 +137,27 @@ namespace Simulation.FDTD
             pulseIndex.ForExceptK(
                 (i, j) =>
                 {
-                    this.fields.D[i, j, pulseIndex.Lower] -= new CartesianCoordinate(0, Fundamentals.CourantConst * this.pulse.H[j], 0);
-                    this.fields.D[i, j, pulseIndex.Lower + 1] -= new CartesianCoordinate(0, Fundamentals.CourantConst * this.pulse.H[j], 0);
+                    var cartesianCoordinate = new CartesianCoordinate(0, param.CourantNumber * this.pulse.H[j], 0);
+                    this.fields.D[i, j, pulseIndex.Lower] -= cartesianCoordinate;
+                    this.fields.D[i, j, pulseIndex.Lower + 1] -= cartesianCoordinate;
                 });
 
             // Incident Dz
             pulseIndex.ForExceptJ(
                 (i, k) =>
                 {
-                    this.fields.D[i, pulseIndex.Lower, k] += new CartesianCoordinate(0, 0, Fundamentals.CourantConst * (this.pulse.H[pulseIndex.Lower - 1] - this.pulse.H[pulseIndex.JLength]));
+                    this.fields.D[i, pulseIndex.Lower, k] += new CartesianCoordinate(
+                        0,
+                        0,
+                        param.CourantNumber * (this.pulse.H[pulseIndex.Lower - 1] - this.pulse.H[pulseIndex.JLength]));
                 });
         }
 
-        private SimulationResultDictionary CalcExtinction(SimulationParameters parameters)
-        {
-            return parameters.Spectrum.ToSimulationResult(x => this.calculateExtinction(x, parameters));
-        }
-
-        private SimulationResult calculateExtinction(SpectrumParameter freq, SimulationParameters parameters)
+        private SimulationResult calculateExtinction(SpectrumUnit freq, SimulationParameters parameters)
         {
             double extinction = 0.0;
 
-            double K = freq.ToType(SpectrumParameterType.WaveNumber);
+            double waveNumber = freq.ToType(SpectrumUnitType.WaveNumber);
 
             double area = 0.0;
 
@@ -163,22 +166,23 @@ namespace Simulation.FDTD
                 {
                     if (parameters.Medium[i, j, k].IsBody)
                     {
-                        var eps = parameters.Medium[i, j, k].GetEpsilon(freq);
+                        Complex eps = parameters.Medium[i, j, k].Permittivity.GetPermittivity(freq);
 
-                        var pulseMultiplier = 1 / this.pulse.FourierPulse[j][freq].Magnitude;
+                        double pulseMultiplier = 1 / this.pulse.FourierPulse[j][freq].Magnitude;
                         double complexPart1 = -eps.Imaginary *
                                               pulseMultiplier * this.fields.FourierField[i, j, k][freq].Norm;
 
                         extinction += complexPart1;
                     }
                 });
-            parameters.Indices.ForExceptJ((i, k) => { area += parameters.Medium[i, parameters.Indices.JLength / 2, k].IsBody ? 1 : 0; });
+            parameters.Indices.ForExceptJ(
+                (i, k) => { area += parameters.Medium[i, parameters.Indices.JLength / 2, k].IsBody ? 1 : 0; });
 
             var resu = new SimulationResult();
 
-            extinction *= K * parameters.cellSize * parameters.cellSize * parameters.cellSize;
+            extinction *= waveNumber * parameters.CellSize * parameters.CellSize * parameters.CellSize;
             resu.CrossSectionAbsorption = extinction;
-            extinction /= area * parameters.cellSize * parameters.cellSize;
+            extinction /= area * parameters.CellSize * parameters.CellSize;
             resu.EffectiveCrossSectionAbsorption = extinction;
 
             return resu;

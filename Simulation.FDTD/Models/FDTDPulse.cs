@@ -1,110 +1,154 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Simulation.Models
+using Simulation.Models.Enums;
+using Simulation.Models.Spectrum;
+
+namespace Simulation.FDTD.Models
 {
+    /// <summary>
+    /// The FDTDPulse class.
+    /// </summary>
     public class FDTDPulse
     {
-        public double[] E { get; set; }
-        public double[] H { get; set; }
+        private readonly double courantNumber;
 
         private readonly int medLength; // length of 1D medium
 
+        private readonly Func<int, double> pulseFunc;
+
         private readonly OpticalSpectrum spectrum;
-        private readonly Func<double, double> pulseFunc;
 
-        private double eMH1;
-        private double eMH2;
-        private double eML1;
-        private double eML2;
+        private double eMh1;
 
-        public FourierSeries<Complex>[] FourierPulse;
+        private double eMh2;
 
-        public FDTDPulse(Func<double, double> waveFunc, int length, OpticalSpectrum spectrum)
+        private double eMl1;
+
+        private double eMl2;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FDTDPulse"/> class.
+        /// </summary>
+        /// <param name="waveFunc">The wave function.</param>
+        /// <param name="length">The length.</param>
+        /// <param name="spectrum">The spectrum.</param>
+        /// <param name="courantNumber">The courant number.</param>
+        public FDTDPulse(Func<int, double> waveFunc, int length, OpticalSpectrum spectrum, double courantNumber)
         {
-            medLength = 2 * length;
-            E = new double[medLength]; // electric field
-            H = new double[medLength]; // magnetic field
+            this.courantNumber = courantNumber;
+            this.medLength = 2 * length;
+            this.E = new double[this.medLength]; // electric field
+            this.H = new double[this.medLength]; // magnetic field
 
-            eMH2 = eMH1 = 0.0;
-            eML2 = eML1 = 0.0;
+            this.eMh2 = this.eMh1 = 0.0;
+            this.eMl2 = this.eMl1 = 0.0;
 
-
-            pulseFunc = waveFunc;
+            this.pulseFunc = waveFunc;
             this.spectrum = spectrum;
 
-            InitFourier();
+            this.initFourier();
         }
 
-        public void ElectricFieldStepCalc(int t)
+        /// <summary>
+        /// Gets or sets the electric component of pulse.
+        /// </summary>
+        /// <value>
+        /// The electric component of pulse.
+        /// </value>
+        public double[] E { get; set; }
+
+        /// <summary>
+        /// Gets or sets the magnetized component of pulse.
+        /// </summary>
+        /// <value>
+        /// The magnetized component of pulse.
+        /// </value>
+        public double[] H { get; set; }
+
+        /// <summary>
+        /// Gets or sets the fourier series of pulse.
+        /// </summary>
+        /// <value>
+        /// The fourier series of pulse.
+        /// </value>
+        public FourierSeries<Complex>[] FourierPulse { get; set; }
+
+        /// <summary>
+        /// Calculate the electric field step.
+        /// </summary>
+        /// <param name="time">The time value.</param>
+        public void ElectricFieldStepCalc(int time)
         {
             // E-field calculation
-            for (int i = 1; i < medLength; i++)
+            for (int i = 1; i < this.medLength; i++)
             {
-                E[i] += Fundamentals.CourantConst * (H[i - 1] - H[i]);
+                this.E[i] += this.courantNumber * (this.H[i - 1] - this.H[i]);
             }
 
+            double pulse = this.pulseFunc(time);
 
-            double pulse = pulseFunc(t);
-
-            E[2] = pulse;
+            this.E[2] = pulse;
 
             /*граничні умови*/
-            E[medLength - 1] = eMH2;
-            eMH2 = eMH1;
-            eMH1 = E[medLength - 2];
+            this.E[this.medLength - 1] = this.eMh2;
+            this.eMh2 = this.eMh1;
+            this.eMh1 = this.E[this.medLength - 2];
 
-            E[0] = eML2;
-            eML2 = eML1;
-            eML1 = E[1];
+            this.E[0] = this.eMl2;
+            this.eMl2 = this.eMl1;
+            this.eMl1 = this.E[1];
 
             // Подавлення випадкового шуму при обрахунку експоненти після проходження більшої
             // частини сигналу через досліджуванну область
-            if (t >= 300)
+            if (time >= 300)
             {
-                eMH2 = 0.0;
-                eMH1 = 0.0;
-                eML2 = 0.0;
-                eML1 = 0.0;
+                this.eMh2 = 0.0;
+                this.eMh1 = 0.0;
+                this.eMl2 = 0.0;
+                this.eMl1 = 0.0;
 
-                for (int i = medLength / 2; i < medLength; i++)
+                for (int i = this.medLength / 2; i < this.medLength; i++)
                 {
-                    E[i] = 0.0;
-                    H[i] = 0.0;
+                    this.E[i] = 0.0;
+                    this.H[i] = 0.0;
                 }
             }
         }
 
+        /// <summary>
+        /// Magnetics the field step calculate.
+        /// </summary>
         public void MagneticFieldStepCalc()
         {
             // H-field calculation
-            for (int i = 0; i < medLength - 1; i++)
+            for (int i = 0; i < this.medLength - 1; i++)
             {
-                H[i] += Fundamentals.CourantConst * (E[i] - E[i + 1]);
+                this.H[i] += this.courantNumber * (this.E[i] - this.E[i + 1]);
             }
         }
 
-        private void InitFourier()
-        {
-            FourierPulse = new FourierSeries<Complex>[medLength];
-            FourierPulse.Initialize();
-        }
-
+        /// <summary>
+        /// Does the fourier pulse.
+        /// </summary>
+        /// <param name="time">The time step.</param>
         public void DoFourierPulse(double time)
         {
             // Fourier transform
-            foreach (var cycleFreq in this.spectrum)
+            foreach (SpectrumUnit cycleFreq in this.spectrum)
             {
-                var angle = cycleFreq.ToType(SpectrumParameterType.CycleFrequency) * time;
-                for (int m = 0; m < medLength; m++)
+                double angle = cycleFreq.ToType(SpectrumUnitType.CycleFrequency) * time;
+                for (int m = 0; m < this.medLength; m++)
                 {
-                    FourierPulse[m].Add(cycleFreq, Complex.FromPolarCoordinates(E[m], angle));
+                    this.FourierPulse[m].Add(cycleFreq, Complex.FromPolarCoordinates(this.E[m], angle));
                 }
             }
+        }
+
+        private void initFourier()
+        {
+            this.FourierPulse = new FourierSeries<Complex>[this.medLength];
+            this.FourierPulse.Initialize();
         }
     }
 }

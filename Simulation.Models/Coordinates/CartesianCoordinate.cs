@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Simulation.Models
+namespace Simulation.Models.Coordinates
 {
     /// <summary>
     /// The CartesianCoordinate class.
@@ -31,9 +31,9 @@ namespace Simulation.Models
         /// </returns>
         public static CartesianCoordinate operator +(CartesianCoordinate point1, CartesianCoordinate point2)
         {
-            dynamic x = point1.X + point2.X;
-            dynamic y = point1.Y + point2.Y;
-            dynamic z = point1.Z + point2.Z;
+            double x = point1.X + point2.X;
+            double y = point1.Y + point2.Y;
+            double z = point1.Z + point2.Z;
 
             return new CartesianCoordinate(x, y, z);
         }
@@ -48,9 +48,9 @@ namespace Simulation.Models
         /// </returns>
         public static CartesianCoordinate operator +(CartesianCoordinate point1, double num)
         {
-            var x = point1.X + num;
-            var y = point1.Y + num;
-            var z = point1.Z + num;
+            double x = point1.X + num;
+            double y = point1.Y + num;
+            double z = point1.Z + num;
 
             return new CartesianCoordinate(x, y, z);
         }
@@ -78,9 +78,9 @@ namespace Simulation.Models
         /// </returns>
         public static CartesianCoordinate operator -(CartesianCoordinate point1, CartesianCoordinate point2)
         {
-            var x = point1.X - point2.X;
-            var y = point1.Y - point2.Y;
-            var z = point1.Z - point2.Z;
+            double x = point1.X - point2.X;
+            double y = point1.Y - point2.Y;
+            double z = point1.Z - point2.Z;
 
             return new CartesianCoordinate(x, y, z);
         }
@@ -95,9 +95,9 @@ namespace Simulation.Models
         /// </returns>
         public static CartesianCoordinate operator -(CartesianCoordinate point1, double num)
         {
-            var x = point1.X - num;
-            var y = point1.Y - num;
-            var z = point1.Z - num;
+            double x = point1.X - num;
+            double y = point1.Y - num;
+            double z = point1.Z - num;
 
             return new CartesianCoordinate(x, y, z);
         }
@@ -111,9 +111,9 @@ namespace Simulation.Models
         /// </returns>
         public static CartesianCoordinate operator -(CartesianCoordinate point1)
         {
-            var x = -point1.X;
-            var y = -point1.Y;
-            var z = -point1.Z;
+            double x = -point1.X;
+            double y = -point1.Y;
+            double z = -point1.Z;
 
             return new CartesianCoordinate(x, y, z);
         }
@@ -141,9 +141,9 @@ namespace Simulation.Models
         /// </returns>
         public static CartesianCoordinate operator *(CartesianCoordinate point1, double num)
         {
-            var x = point1.X * num;
-            var y = point1.Y * num;
-            var z = point1.Z * num;
+            double x = point1.X * num;
+            double y = point1.Y * num;
+            double z = point1.Z * num;
 
             return new CartesianCoordinate(x, y, z);
         }
@@ -151,8 +151,8 @@ namespace Simulation.Models
         /// <summary>
         /// Implements the operator * (Multiply coordinates on number).
         /// </summary>
-        /// <param name="point1">The point1.</param>
         /// <param name="num">The number.</param>
+        /// <param name="point1">The point1.</param>
         /// <returns>
         /// The result of the operator.
         /// </returns>
@@ -161,11 +161,19 @@ namespace Simulation.Models
             return point1 * num;
         }
 
+        /// <summary>
+        /// Implements the operator / (Divide point to the number).
+        /// </summary>
+        /// <param name="point1">The point1.</param>
+        /// <param name="num">The number.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
         public static CartesianCoordinate operator /(CartesianCoordinate point1, double num)
         {
-            var x = point1.X / num;
-            var y = point1.Y / num;
-            var z = point1.Z / num;
+            double x = point1.X / num;
+            double y = point1.Y / num;
+            double z = point1.Z / num;
 
             return new CartesianCoordinate(x, y, z);
         }

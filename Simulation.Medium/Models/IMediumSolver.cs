@@ -1,18 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Simulation.Models.Coordinates;
 
-namespace Simulation.Models
+namespace Simulation.Medium.Models
 {
+    /// <summary>
+    /// The IMediumSolver interface.
+    /// </summary>
     public interface IMediumSolver
     {
+        /// <summary>
+        /// Gets or sets a value indicating whether this medium is included in extinction.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is included; otherwise, <c>false</c>.
+        /// </value>
         bool IsBody { get; set; }
 
+        /// <summary>
+        /// Solves the electric field using specified displacement field.
+        /// </summary>
+        /// <param name="displacementField">The displacement field.</param>
+        /// <returns>The electric field.</returns>
         CartesianCoordinate Solve(CartesianCoordinate displacementField);
 
-        Complex GetEpsilon(SpectrumParameter frequency);
+        /// <summary>
+        /// Gets the permittivity of medium.
+        /// </summary>
+        /// <value>
+        /// The permittivity of medium.
+        /// </value>
+        BaseMedium Permittivity { get; }
     }
 }

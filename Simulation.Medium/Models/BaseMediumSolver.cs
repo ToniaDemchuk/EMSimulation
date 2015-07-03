@@ -1,30 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-
-using Simulation.Models;
+﻿using Simulation.Models.Coordinates;
 
 namespace Simulation.Medium.Models
 {
+    /// <summary>
+    /// The BaseMediumSolver class.
+    /// </summary>
     public abstract class BaseMediumSolver : IMediumSolver
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BaseMediumSolver"/> class.
+        /// </summary>
+        /// <param name="permittivity">The permittivity.</param>
         protected BaseMediumSolver(BaseMedium permittivity)
         {
             this.Permittivity = permittivity;
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this medium is included in extinction.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this instance is included; otherwise, <c>false</c>.
+        /// </value>
         public bool IsBody { get; set; }
 
-        protected BaseMedium Permittivity { get; private set; }
+        /// <summary>
+        /// Gets the permittivity of medium.
+        /// </summary>
+        /// <value>
+        /// The permittivity of medium.
+        /// </value>
+        public BaseMedium Permittivity { get; private set; }
 
+        /// <summary>
+        /// Solves the electric field using specified displacement field.
+        /// </summary>
+        /// <param name="displacementField">The displacement field.</param>
+        /// <returns>
+        /// The electric field.
+        /// </returns>
         public abstract CartesianCoordinate Solve(CartesianCoordinate displacementField);
-
-        public Complex GetEpsilon(SpectrumParameter frequency)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

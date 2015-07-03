@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Numerics;
 
-namespace Simulation.Models
+namespace Simulation.Models.Coordinates
 {
     /// <summary>
     /// The CartesianCoordinate class.
@@ -46,6 +45,12 @@ namespace Simulation.Models
         /// </value>
         public T Z { get; protected set; }
 
+        /// <summary>
+        /// Gets or sets the lazy norm.
+        /// </summary>
+        /// <value>
+        /// The lazy norm.
+        /// </value>
         protected Lazy<double> LazyNorm { get; set; }
 
         /// <summary>

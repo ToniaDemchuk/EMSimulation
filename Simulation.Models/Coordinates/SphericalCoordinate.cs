@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Xml.Serialization;
 
-namespace Simulation.Models
+using Simulation.Models.Enums;
+
+namespace Simulation.Models.Coordinates
 {
     /// <summary>
     /// The EulerAngles class.
@@ -9,6 +11,9 @@ namespace Simulation.Models
     [Serializable]
     public class SphericalCoordinate
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SphericalCoordinate"/> class.
+        /// </summary>
         public SphericalCoordinate()
         {
             this.Radius = 1;

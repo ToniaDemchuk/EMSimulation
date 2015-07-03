@@ -1,8 +1,14 @@
 using System;
 using System.ComponentModel;
 
+using Simulation.Models.Coordinates;
+using Simulation.Models.Enums;
+
 namespace Simulation.Models.Extensions
 {
+    /// <summary>
+    /// The SphericalCoordinateExtensions class.
+    /// </summary>
     public static class SphericalCoordinateExtensions
     {
         /// <summary>
@@ -32,7 +38,10 @@ namespace Simulation.Models.Extensions
         /// <summary>
         /// Converts angles to radians.
         /// </summary>
-        /// <returns>New angles in radians.</returns>
+        /// <param name="coordinate">The coordinate.</param>
+        /// <returns>
+        /// New angles in radians.
+        /// </returns>
         /// <exception cref="System.ComponentModel.InvalidEnumArgumentException">Throws if unit do not support conversion.</exception>
         public static SphericalCoordinate ToRadians(this SphericalCoordinate coordinate)
         {
@@ -53,7 +62,10 @@ namespace Simulation.Models.Extensions
         /// <summary>
         /// Converts to degrees.
         /// </summary>
-        /// <returns>New angles in radians.</returns>
+        /// <param name="coordinate">The coordinate.</param>
+        /// <returns>
+        /// New angles in radians.
+        /// </returns>
         /// <exception cref="System.ComponentModel.InvalidEnumArgumentException">Throws if unit do not support conversion.</exception>
         public static SphericalCoordinate ToDegrees(this SphericalCoordinate coordinate)
         {

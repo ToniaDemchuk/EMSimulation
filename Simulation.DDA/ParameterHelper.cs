@@ -5,14 +5,25 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 
-using Simulation.DDA.Console;
-using Simulation.Models;
+using Simulation.DDA.Models;
+using Simulation.Infrastructure;
+using Simulation.Models.Coordinates;
+using Simulation.Models.Enums;
 using Simulation.Models.Extensions;
+using Simulation.Models.Spectrum;
 
-namespace Simulation.Infrastructure
+namespace Simulation.DDA
 {
+    /// <summary>
+    /// The ParameterHelper class.
+    /// </summary>
     public static class ParameterHelper
     {
+        /// <summary>
+        /// Reads the system configuration.
+        /// </summary>
+        /// <param name="fileName">Name of the file.</param>
+        /// <returns>The dipole locations.</returns>
         public static SystemConfig ReadSystemConfig(string fileName)
         {
             var radiusList = new List<double>();
@@ -40,6 +51,11 @@ namespace Simulation.Infrastructure
             }
         }
 
+        /// <summary>
+        /// Reads the optical constants.
+        /// </summary>
+        /// <param name="fileName">Name of the file.</param>
+        /// <returns>The optical constant.</returns>
         public static OpticalConstants ReadOpticalConstants(string fileName)
         {
             var waveLengthList = new List<double>();
@@ -61,6 +77,11 @@ namespace Simulation.Infrastructure
             return new OpticalConstants(waveLengthList, permittivityList);
         }
 
+        /// <summary>
+        /// Writes the optical constants to file.
+        /// </summary>
+        /// <param name="fileName">Name of the file.</param>
+        /// <param name="dict">The dictionary.</param>
         public static void WriteOpticalConstants(string fileName, Dictionary<double, Complex> dict)
         {
             using (var sw = new StreamWriter(fileName))
@@ -72,25 +93,45 @@ namespace Simulation.Infrastructure
             }
         }
 
-        public static OpticalSpectrum ReadWavelengthFromConfigration(string fileName)
+        /// <summary>
+        /// Reads the wavelength from configuration.
+        /// </summary>
+        /// <param name="fileName">Name of the file.</param>
+        /// <returns>The optical spectrum.</returns>
+        public static OpticalSpectrum ReadWavelengthFromConfiguration(string fileName)
         {
             var config = XmlSerializerHelper.DeserializeObject<DDAParameters>(fileName);
 
-            return ReadWavelengthFromConfigration(config);
+            return ReadWavelengthFromConfiguration(config);
         }
 
-        public static OpticalSpectrum ReadWavelengthFromConfigration(DDAParameters config)
+        /// <summary>
+        /// Reads the wavelength from configuration.
+        /// </summary>
+        /// <param name="config">The configuration.</param>
+        /// <returns>The optical spectrum.</returns>
+        public static OpticalSpectrum ReadWavelengthFromConfiguration(DDAParameters config)
         {
             var waveLength = config.WaveLengthConfig;
 
-            return new OpticalSpectrum(waveLength.ToLinearCollection(), SpectrumParameterType.WaveLength);
+            return new OpticalSpectrum(waveLength.ToLinearCollection(), SpectrumUnitType.WaveLength);
         }
 
+        /// <summary>
+        /// Reads the wave propagation from configuration.
+        /// </summary>
+        /// <param name="fileName">Name of the file.</param>
+        /// <returns>The wave propagation direction.</returns>
         public static SphericalCoordinate ReadWavePropagationFromConfiguration(string fileName)
         {
             return XmlSerializerHelper.DeserializeObject<DDAParameters>(fileName).WavePropagation;
         }
 
+        /// <summary>
+        /// Reads the incident magnitude from configuration.
+        /// </summary>
+        /// <param name="fileName">Name of the file.</param>
+        /// <returns>The incident wave magnitude direction.</returns>
         public static CartesianCoordinate ReadIncidentMagnitudeFromConfiguration(string fileName)
         {
             var aaa = XmlSerializerHelper.DeserializeObject<DDAParameters>(fileName);

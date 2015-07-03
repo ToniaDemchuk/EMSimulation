@@ -1,4 +1,4 @@
-﻿namespace Simulation.Models
+﻿namespace Simulation.Models.Enums
 {
     /// <summary>
     /// The enumeration representing units of measurement

@@ -1,23 +1,45 @@
 ﻿using System;
 
-namespace Simulation.Models
+namespace Simulation.Models.Constants
 {
+    /// <summary>
+    /// The Fundamental constants.
+    /// </summary>
     public class Fundamentals
     {
-        public const double LightVelocity = 2.99792458e8; // light velocity
+        /// <summary>
+        /// The speed of light in free space.
+        /// </summary>
+        public const double SpeedOfLight = 2.99792458e8;
 
-        public const double Mu0 = 4.0 * Math.PI * 1.0e-7;
+        /// <summary>
+        /// The vacuum permeability.
+        /// </summary>
+        public const double MagneticConst = 4.0 * Math.PI * 1.0e-7;
 
-        public const double Eps0 = 1.0 / (LightVelocity * LightVelocity * Mu0);
+        /// <summary>
+        /// The vacuum permittivity.
+        /// </summary>
+        public const double ElectricConst = 1.0 / (SpeedOfLight * SpeedOfLight * MagneticConst);
 
+        /// <summary>
+        /// The planck constant
+        /// </summary>
         public const double PlanckConst = 6.626e-34;
 
+        /// <summary>
+        /// The reduced planck constant
+        /// </summary>
         public const double ReducedPlanckConst = PlanckConst / (2.0 * Math.PI);
 
-        public const double QElektron = 1.602e-19;
+        /// <summary>
+        /// The elementary electron charge.
+        /// </summary>
+        public const double ElementaryCharge = 1.602e-19;
 
-        public const double CourantConst = 0.5; // = 1.0/sqrt(MU_0*EPS_0) * dt/dx //(defines stability of simulations)
-
-        public readonly double Eta0 = Math.Sqrt(Mu0 / Eps0);
+        /// <summary>
+        /// The the vacuum impedance.
+        /// </summary>
+        public readonly double VacuumImpedance = Math.Sqrt(MagneticConst / ElectricConst);
     }
 }

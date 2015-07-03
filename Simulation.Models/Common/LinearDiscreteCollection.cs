@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace Simulation.Models
+namespace Simulation.Models.Common
 {
     /// <summary>
     /// The LinearDiscreteCollection class.
@@ -50,7 +50,7 @@ namespace Simulation.Models
         /// Gets or sets the step of discretization
         /// </summary>
         /// <value>
-        /// The step.
+        /// The step of discretization.
         /// </value>
         public double Step { get; protected set; }
 
@@ -64,13 +64,13 @@ namespace Simulation.Models
         }
 
         /// <summary>
-        /// Gets the <see cref="System.Double"/> at the specified index.
+        /// Gets the <see cref="System.Double" /> at the specified index.
         /// </summary>
         /// <value>
-        /// The <see cref="System.Double"/>.
+        /// The <see cref="System.Double" />.
         /// </value>
         /// <param name="index">The index.</param>
-        /// <returns></returns>
+        /// <returns>The value at index.</returns>
         public double this[int index]
         {
             get
@@ -83,7 +83,7 @@ namespace Simulation.Models
         /// Gets the value.
         /// </summary>
         /// <param name="index">The index.</param>
-        /// <returns></returns>
+        /// <returns>The value at specified index.</returns>
         protected double GetValue(int index)
         {
             return this.Lower + this.Step * index;

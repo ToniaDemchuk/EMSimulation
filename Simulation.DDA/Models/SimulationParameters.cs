@@ -1,4 +1,5 @@
-﻿using Simulation.Models;
+﻿using Simulation.Models.Coordinates;
+using Simulation.Models.Spectrum;
 
 namespace Simulation.DDA.Models
 {

@@ -18,7 +18,7 @@ namespace Simulation.Infrastructure
         /// </returns>
         public static T DeserializeObject<T>(string filePath) where T : class
         {
-            object item = null;
+            object item;
             var serializer = new XmlSerializer(typeof(T));
             using (var reader = new StreamReader(filePath))
             {
