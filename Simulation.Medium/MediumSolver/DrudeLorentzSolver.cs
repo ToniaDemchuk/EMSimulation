@@ -41,9 +41,9 @@ namespace Simulation.Medium.MediumSolver
                 double betadt = sqrtl * timeStep;
 
                 double gammadt = Math.Pow(plasmaFreq, 2.0) / sqrtl * medium.OscillatorTerms[l].StrengthFactor * timeStep;
-                double exp = Math.Exp(-alfadt);
+                double exp = Math.Exp(alfadt);
                 this.SampledLorentzFactor1[l] = 2.0 * exp * Math.Cos(betadt);
-                this.SampledLorentzFactor2[l] = Math.Exp(-2.0 * alfadt);
+                this.SampledLorentzFactor2[l] = Math.Exp(2.0 * alfadt);
                 this.ElectricLorentzFactor[l] = exp * Math.Sin(betadt) * gammadt;
 
                 this.SampledLorentzDomain[l] = CartesianCoordinate.Zero;

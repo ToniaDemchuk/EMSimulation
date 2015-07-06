@@ -107,5 +107,14 @@ namespace Simulation.Models.Coordinates
             }
             return new IndexStore(this.ILength - shift, this.JLength - shift, this.KLength - shift, this.Lower);
         }
+
+        /// <summary>
+        /// Gets the center.
+        /// </summary>
+        /// <returns></returns>
+        public IndexStore GetCenter()
+        {
+            return new IndexStore(this.ILength / 2, this.JLength / 2, this.KLength / 2, this.Lower);
+        }
     }
 }

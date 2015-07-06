@@ -33,33 +33,34 @@ namespace Simulation.Models.Spectrum
             return SpectrumUnitConverter.Convert(this.value, this.type, toType);
         }
 
-        ///// <summary>
-        ///// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
-        ///// </summary>
-        ///// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
-        ///// <returns>
-        /////   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
-        ///// </returns>
-        //public override bool Equals(object obj)
-        //{
-        //    SpectrumUnit p = obj as SpectrumUnit;
-        //    if (p == null)
-        //    {
-        //        return false;
-        //    }
+        protected bool Equals(SpectrumUnit other)
+        {
+            return this.type == other.type && this.value.Equals(other.value);
+        }
 
-        //    return (this.type == p.type) && (this.value == p.value);
-        //}
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+            if (obj.GetType() != typeof (SpectrumUnit))
+            {
+                return false;
+            }
+            return Equals((SpectrumUnit) obj);
+        }
 
-        ///// <summary>
-        ///// Returns a hash code for this instance.
-        ///// </summary>
-        ///// <returns>
-        ///// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-        ///// </returns>
-        //public override int GetHashCode()
-        //{
-        //    return base.GetHashCode();
-        //}
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return ((int) this.type * 397) ^ this.value.GetHashCode();
+            }
+        }
     }
 }

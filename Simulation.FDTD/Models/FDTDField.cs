@@ -64,16 +64,17 @@ namespace Simulation.FDTD.Models
         private readonly OpticalSpectrum spectrum;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FDTDField"/> class.
+        /// Initializes a new instance of the <see cref="FDTDField" /> class.
         /// </summary>
-        /// <param name="indices">The indices.</param>
-        /// <param name="spectrum">The spectrum.</param>
-        public FDTDField(IndexStore indices, OpticalSpectrum spectrum)
+        /// <param name="parameters">The parameters.</param>
+        public FDTDField(SimulationParameters parameters)
         {
-            this.indices = indices;
-            this.spectrum = spectrum;
+            this.indices = parameters.Indices;
+            this.spectrum = parameters.Spectrum;
 
-            this.FourierField = indices.CreateArray(() => new FourierSeries<ComplexCoordinate>());
+            this.FourierField = indices.CreateArray(
+                (i, j, k) => parameters.Medium[i, j, k].IsBody ? new FourierSeries<ComplexCoordinate>() : null);
+
             this.D = indices.CreateArray(() => CartesianCoordinate.Zero);
             this.E = indices.CreateArray(() => CartesianCoordinate.Zero);
             this.H = indices.CreateArray(() => CartesianCoordinate.Zero);
@@ -85,8 +86,7 @@ namespace Simulation.FDTD.Models
         /// Calculates the fourier series of the field.
         /// </summary>
         /// <param name="time">The time value.</param>
-        /// <param name="medium">The medium matrix.</param>
-        public void DoFourierField(double time, IMediumSolver[,,] medium)
+        public void DoFourierField(double time)
         {
             foreach (var freq in this.spectrum)
             {
@@ -94,12 +94,14 @@ namespace Simulation.FDTD.Models
                 this.indices.For(
                     (i, j, k) =>
                     {
-                        if (medium[i, j, k].IsBody)
+                        var fourierSeries = this.FourierField[i, j, k];
+                        if (fourierSeries != null)
                         {
-                            this.FourierField[i, j, k].Add(freq, new ComplexCoordinate(this.E[i, j, k], angle));
+                            fourierSeries.Aggregate(freq, ComplexCoordinate.FromPolarCoordinates(this.E[i, j, k], angle));
                         }
                     });
             }
         }
+
     }
 }

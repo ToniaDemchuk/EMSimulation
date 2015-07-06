@@ -24,7 +24,7 @@ namespace Simulation.FDTD.Console
                 "rezult_ext.txt",
                 result.ToDictionary(
                     x => x.Key.ToType(SpectrumUnitType.WaveLength),
-                    x => x.Value.CrossSectionExtinction));
+                    x => x.Value.EffectiveCrossSectionAbsorption));
         }
 
         public static SimulationResultDictionary Calculate()
@@ -39,7 +39,7 @@ namespace Simulation.FDTD.Console
                     new OpticalSpectrum(new LinearDiscreteCollection(300e-9, 700e-9, 100), SpectrumUnitType.WaveLength),
                 CourantNumber = 0.5,
                 PmlLength = 7,
-                NumSteps = 50,
+                NumSteps = 100,
                 WaveFunc = time => Math.Exp(-0.5 * Math.Pow((30 - time) / 5.0, 2.0)),
             };
 
@@ -55,19 +55,17 @@ namespace Simulation.FDTD.Console
             var silver = new DrudeLorentz();
             double radius = 10;
 
-            var center = new CartesianCoordinate(
-                parameters.Indices.ILength / 2.0,
-                parameters.Indices.JLength / 2.0,
-                parameters.Indices.KLength / 2.0);
+            var centerIndices = parameters.Indices.GetCenter();
+            var center = new CartesianCoordinate(centerIndices.ILength, centerIndices.JLength, centerIndices.KLength);
 
             parameters.Medium = parameters.Indices.CreateArray<IMediumSolver>(
                 (i, j, k) =>
                 {
-                    var point = new CartesianCoordinate(i, j, k) - center;
-                    if (point.Norm <= radius)
-                    {
-                        return new DrudeLorentzSolver(silver, timeStep) { IsBody = true };
-                    }
+                    //var point = new CartesianCoordinate(i, j, k) - center;
+                    //if (point.Norm <= radius)
+                    //{
+                    //    return new DrudeLorentzSolver(silver, timeStep) { IsBody = true };
+                    //}
                     return vacuum;
                 });
         }

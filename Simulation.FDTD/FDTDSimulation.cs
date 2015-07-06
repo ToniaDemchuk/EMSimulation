@@ -1,5 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Numerics;
+
+using AwokeKnowing.GnuplotCSharp;
+
+using GnuplotCSharp;
 
 using Simulation.FDTD.Models;
 using Simulation.Models.Constants;
@@ -29,13 +34,28 @@ namespace Simulation.FDTD
         public SimulationResultDictionary Calculate(SimulationParameters parameters)
         {
             this.initParams(parameters);
-
-            foreach (var time in Enumerable.Range(0, parameters.NumSteps))
+            //var gp = new GnuPlot();
+            foreach (var time in Enumerable.Range(1, parameters.NumSteps))
             {
                 this.calcFields(time, parameters);
+
+                //var surf = new double[parameters.Indices.ILength, parameters.Indices.JLength];
+
+                //parameters.Indices.ForExceptK(
+                //    (i, j) =>
+                //    {
+                //        surf[i, j] = this.fields.E[i, j, parameters.Indices.GetCenter().KLength].Z;
+                //    });
+                //gp.SPlot(surf);
+
+                //gp.Plot(pulse.E);
+
             }
 
-            return this.CalcExtinction(parameters);
+            var result = this.CalcExtinction(parameters);
+            //gp.Plot(result.Select(x=>x.Value.EffectiveCrossSectionAbsorption));
+            //gp.Wait();
+            return result;
         }
 
         /// <summary>
@@ -50,12 +70,8 @@ namespace Simulation.FDTD
 
         private void initParams(SimulationParameters parameters)
         {
-            this.fields = new FDTDField(parameters.Indices, parameters.Spectrum);
-            this.pulse = new FDTDPulse(
-                parameters.WaveFunc,
-                parameters.Indices.JLength,
-                parameters.Spectrum,
-                parameters.CourantNumber);
+            this.fields = new FDTDField(parameters);
+            this.pulse = new FDTDPulse(parameters);
 
             this.pml = new PmlBoundary(parameters.PmlLength, parameters.Indices);
         }
@@ -68,15 +84,14 @@ namespace Simulation.FDTD
             this.calculateDField(parameters, pulseIndex, time);
 
             // Calculate the E from D field
-            parameters.Indices.ShiftLower(1).ShiftUpper(1)
-                      .For(
-                          (i, j, k) =>
-                          {
-                              this.fields.E[i, j, k] = parameters.Medium[i, j, k].Solve(this.fields.D[i, j, k]);
-                          });
+            parameters.Indices.ShiftLower(1).ShiftUpper(1).For(
+                (i, j, k) =>
+                {
+                    this.fields.E[i, j, k] = parameters.Medium[i, j, k].Solve(this.fields.D[i, j, k]);
+                });
 
             double timeStep = parameters.CellSize * parameters.CourantNumber / Fundamentals.SpeedOfLight;
-            this.fields.DoFourierField(time * timeStep, parameters.Medium);
+            this.fields.DoFourierField(time * timeStep);
             this.pulse.DoFourierPulse(time * timeStep);
 
             this.calculateHField(parameters, pulseIndex);
@@ -91,10 +106,10 @@ namespace Simulation.FDTD
                     this.fields.IntegralH[i, j, k] = this.fields.IntegralH[i, j, k] + curlE;
 
                     var coefs = this.pml.Magnetic(i, j, k);
-                    this.fields.H[i, j, k] = this.fields.H[i, j, k].ComponentProduct(coefs.Item3)
-                                             + param.CourantNumber *
-                                             (curlE + this.fields.IntegralH[i, j, k].ComponentProduct(coefs.Item2))
-                                                 .ComponentProduct(coefs.Item1);
+                    this.fields.H[i, j, k] =
+                        this.fields.H[i, j, k].ComponentProduct(coefs.Item3)
+                        + param.CourantNumber * coefs.Item2.ComponentProduct(
+                            curlE + this.fields.IntegralH[i, j, k].ComponentProduct(coefs.Item1));
                 });
 
             this.pulse.MagneticFieldStepCalc();
@@ -130,9 +145,8 @@ namespace Simulation.FDTD
                     var pmlCoefs = this.pml.Electric(i, j, k);
                     this.fields.D[i, j, k] =
                         this.fields.D[i, j, k].ComponentProduct(pmlCoefs.Item3) +
-                        param.CourantNumber *
-                        (curlH + pmlCoefs.Item2.ComponentProduct(this.fields.IntegralD[i, j, k]))
-                            .ComponentProduct(pmlCoefs.Item1);
+                        param.CourantNumber * pmlCoefs.Item2.ComponentProduct(
+                        curlH + pmlCoefs.Item1.ComponentProduct(this.fields.IntegralD[i, j, k]));
                 });
 
             this.pulse.ElectricFieldStepCalc(time);
@@ -181,7 +195,7 @@ namespace Simulation.FDTD
                     }
                 });
             parameters.Indices.ForExceptJ(
-                (i, k) => { area += parameters.Medium[i, parameters.Indices.JLength / 2, k].IsBody ? 1 : 0; });
+                (i, k) => area += parameters.Medium[i, parameters.Indices.GetCenter().JLength, k].IsBody ? 1 : 0);
 
             var resu = new SimulationResult();
 

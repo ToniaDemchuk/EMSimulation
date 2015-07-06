@@ -115,7 +115,7 @@ namespace Simulation.DDA
             {
                 CartesianCoordinate point = system.Points[j];
                 double kr = dispersion.WaveVector * point;
-                e[j] = new ComplexCoordinate(exyz * medRef, kr);
+                e[j] = ComplexCoordinate.FromPolarCoordinates(exyz * medRef, kr);
             }
 
             return e;
