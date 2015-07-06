@@ -22,7 +22,7 @@ namespace Simulation.Medium.MediumSolver
         {
             double collisionFreq = medium.PlasmaTerm.CollisionFrequency.ToType(SpectrumUnitType.Frequency);
             double plasmaFreq = medium.PlasmaTerm.ResonanceFrequency.ToType(SpectrumUnitType.CycleFrequency);
-            double epsvc = -collisionFreq * timeStep;
+            double epsvc = collisionFreq * timeStep;
             double exp = Math.Exp(epsvc);
 
             this.SampledTimeDomain = CartesianCoordinate.Zero;
@@ -31,7 +31,7 @@ namespace Simulation.Medium.MediumSolver
 
             this.SampledTimeFactor1 = 1.0 + exp;
             this.SampledTimeFactor2 = exp;
-            this.ElectricFactor = ((plasmaFreq * plasmaFreq * plasmaFreq) * timeStep / collisionFreq) * (1.0 - exp);
+            this.ElectricFactor = ((plasmaFreq * plasmaFreq * medium.PlasmaTerm.StrengthFactor) * timeStep / collisionFreq) * (1.0 - exp);
             this.EpsilonInfinity = medium.EpsilonInfinity;
         }
 
@@ -103,7 +103,7 @@ namespace Simulation.Medium.MediumSolver
             CartesianCoordinate efield = (displacementField - this.SampledTimeDomain) / this.EpsilonInfinity;
 
             this.SampledTimeDomain = this.SampledTimeFactor1 * this.SampledTimeDomain1 -
-                                     this.SampledTimeFactor2 * this.SampledTimeDomain2 +
+                                     this.SampledTimeFactor2 * this.SampledTimeDomain2 -
                                      this.ElectricFactor * efield;
 
             this.SampledTimeDomain2 = this.SampledTimeDomain1;

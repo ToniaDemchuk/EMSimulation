@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Numerics;
 
+using Simulation.Models.Coordinates;
 using Simulation.Models.Enums;
 using Simulation.Models.Extensions;
 using Simulation.Models.Spectrum;
@@ -29,24 +30,21 @@ namespace Simulation.FDTD.Models
         private double eMl2;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FDTDPulse"/> class.
+        /// Initializes a new instance of the <see cref="FDTDPulse" /> class.
         /// </summary>
-        /// <param name="waveFunc">The wave function.</param>
-        /// <param name="length">The length.</param>
-        /// <param name="spectrum">The spectrum.</param>
-        /// <param name="courantNumber">The courant number.</param>
-        public FDTDPulse(Func<int, double> waveFunc, int length, OpticalSpectrum spectrum, double courantNumber)
+        /// <param name="parameters">The parameters.</param>
+        public FDTDPulse(SimulationParameters parameters)
         {
-            this.courantNumber = courantNumber;
-            this.medLength = 2 * length;
+            this.courantNumber = parameters.CourantNumber;
+            this.medLength = 2 * parameters.Indices.JLength;
             this.E = new double[this.medLength]; // electric field
             this.H = new double[this.medLength]; // magnetic field
 
             this.eMh2 = this.eMh1 = 0.0;
             this.eMl2 = this.eMl1 = 0.0;
 
-            this.pulseFunc = waveFunc;
-            this.spectrum = spectrum;
+            this.pulseFunc = parameters.WaveFunc;
+            this.spectrum = parameters.Spectrum;
 
             this.FourierPulse = new FourierSeries<Complex>[this.medLength];
             this.FourierPulse.For(i => new FourierSeries<Complex>());
@@ -101,21 +99,21 @@ namespace Simulation.FDTD.Models
             this.eMl2 = this.eMl1;
             this.eMl1 = this.E[1];
 
-            // Подавлення випадкового шуму при обрахунку експоненти після проходження більшої
-            // частини сигналу через досліджуванну область
-            if (time >= 300)
-            {
-                this.eMh2 = 0.0;
-                this.eMh1 = 0.0;
-                this.eMl2 = 0.0;
-                this.eMl1 = 0.0;
+            //// Подавлення випадкового шуму при обрахунку експоненти після проходження більшої
+            //// частини сигналу через досліджуванну область
+            //if (time >= 300)
+            //{
+            //    this.eMh2 = 0.0;
+            //    this.eMh1 = 0.0;
+            //    this.eMl2 = 0.0;
+            //    this.eMl1 = 0.0;
 
-                for (int i = this.medLength / 2; i < this.medLength; i++)
-                {
-                    this.E[i] = 0.0;
-                    this.H[i] = 0.0;
-                }
-            }
+            //    for (int i = this.medLength / 2; i < this.medLength; i++)
+            //    {
+            //        this.E[i] = 0.0;
+            //        this.H[i] = 0.0;
+            //    }
+            //}
         }
 
         /// <summary>
@@ -142,7 +140,8 @@ namespace Simulation.FDTD.Models
                 double angle = cycleFreq.ToType(SpectrumUnitType.CycleFrequency) * time;
                 for (int m = 0; m < this.medLength; m++)
                 {
-                    this.FourierPulse[m].Add(cycleFreq, Complex.FromPolarCoordinates(this.E[m], angle));
+                    this.FourierPulse[m].Aggregate(cycleFreq, Complex.FromPolarCoordinates(this.E[m], angle));
+                   
                 }
             }
         }

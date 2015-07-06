@@ -116,6 +116,11 @@ namespace Simulation.FDTD.Models
                 f[i] = new PmlCoef(DefaultItem1, DefaultItem2, DefaultItem3);
             }
 
+            this.setBoundary(fullLength, ref g, ref f);
+        }
+
+        private void setBoundary(int fullLength, ref PmlCoef[] g, ref PmlCoef[] f)
+        {
             for (int i = 0; i < this.Length; i++)
             {
                 double xxn = (this.Length - i) / (double) this.Length;
@@ -124,12 +129,15 @@ namespace Simulation.FDTD.Models
                 double xns = 0.333333 * Math.Pow(xxns, 3.0);
 
                 f[i] = new PmlCoef(xn, 1.0 / (1.0 + xns), (1.0 - xns) / (1.0 + xns));
-                f[fullLength - i - 1] = new PmlCoef(xn, DefaultItem2, DefaultItem3);
-                f[fullLength - i - 2] = new PmlCoef(DefaultItem1, 1.0 / (1.0 + xns), (1.0 - xns) / (1.0 + xns));
+                f[fullLength - i - 1] = f[i];
+                //f[fullLength - i - 1] = new PmlCoef(xn, f[fullLength - i - 1].Item2, f[fullLength - i - 1].Item3);
+                //f[fullLength - i - 2] = new PmlCoef(f[fullLength - i - 2].Item1, 1.0 / (1.0 + xns), (1.0 - xns) / (1.0 + xns));
 
                 g[i] = new PmlCoef(xns, 1.0 / (1.0 + xn), (1.0 - xn) / (1.0 + xn));
-                g[fullLength - i - 1] = new PmlCoef(DefaultItem1, 1.0 / (1.0 + xn), (1.0 - xn) / (1.0 + xn));
-                g[fullLength - i - 2] = new PmlCoef(xns, DefaultItem2, DefaultItem3);
+                g[fullLength - i - 1] = g[i];
+
+                //g[fullLength - i - 1] = new PmlCoef(g[fullLength - i - 1].Item1, 1.0 / (1.0 + xn), (1.0 - xn) / (1.0 + xn));
+                //g[fullLength - i - 2] = new PmlCoef(xns, g[fullLength - i - 2].Item2, g[fullLength - i - 2].Item3);
             }
         }
     }

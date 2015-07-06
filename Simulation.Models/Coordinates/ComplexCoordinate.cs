@@ -9,9 +9,13 @@ namespace Simulation.Models.Coordinates
     public class ComplexCoordinate : BaseCoordinate<Complex>
     {
         public static readonly ComplexCoordinate One = new ComplexCoordinate(Complex.One, Complex.One, Complex.One);
+
         public static readonly ComplexCoordinate Zero = new ComplexCoordinate(Complex.Zero, Complex.Zero, Complex.Zero);
+
         public static readonly ComplexCoordinate XOrt = new ComplexCoordinate(Complex.One, Complex.Zero, Complex.Zero);
+
         public static readonly ComplexCoordinate YOrt = new ComplexCoordinate(Complex.Zero, Complex.One, Complex.Zero);
+
         public static readonly ComplexCoordinate ZOrt = new ComplexCoordinate(Complex.Zero, Complex.Zero, Complex.One);
 
         /// <summary>
@@ -29,8 +33,9 @@ namespace Simulation.Models.Coordinates
                     double xmagn = this.X.Magnitude;
                     double ymagn = this.Y.Magnitude;
                     double zmagn = this.Z.Magnitude;
-                    return Math.Sqrt(xmagn * xmagn + ymagn * ymagn +
-                                     zmagn * zmagn);
+                    return Math.Sqrt(
+                        xmagn * xmagn + ymagn * ymagn +
+                        zmagn * zmagn);
                 });
         }
 
@@ -39,9 +44,12 @@ namespace Simulation.Models.Coordinates
         /// </summary>
         /// <param name="point">The cartesian point.</param>
         /// <param name="angle">The angle.</param>
-        public ComplexCoordinate(CartesianCoordinate point, double angle)
-            : this(Complex.FromPolarCoordinates(point.X, angle), Complex.FromPolarCoordinates(point.Y, angle), Complex.FromPolarCoordinates(point.Z, angle))
+        public static ComplexCoordinate FromPolarCoordinates(CartesianCoordinate point, double angle)
         {
+            return new ComplexCoordinate(
+                Complex.FromPolarCoordinates(point.X, angle),
+                Complex.FromPolarCoordinates(point.Y, angle),
+                Complex.FromPolarCoordinates(point.Z, angle));
         }
 
         #region Operators overload
@@ -213,7 +221,8 @@ namespace Simulation.Models.Coordinates
         /// </returns>
         public static Complex operator *(ComplexCoordinate point1, ComplexCoordinate point2)
         {
-            return point1.X * Complex.Conjugate(point2.X) + point1.Y * Complex.Conjugate(point2.Y) + point1.Z * Complex.Conjugate(point2.Z);
+            return point1.X * Complex.Conjugate(point2.X) + point1.Y * Complex.Conjugate(point2.Y) +
+                   point1.Z * Complex.Conjugate(point2.Z);
         }
 
         #endregion
