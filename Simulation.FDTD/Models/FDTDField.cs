@@ -88,20 +88,22 @@ namespace Simulation.FDTD.Models
         /// <param name="time">The time value.</param>
         public void DoFourierField(double time)
         {
-            foreach (var freq in this.spectrum)
-            {
-                var angle = freq.ToType(SpectrumUnitType.CycleFrequency) * time;
-                this.indices.For(
-                    (i, j, k) =>
+            this.indices.For(
+                (i, j, k) =>
+                {
+                    var fourierSeries = this.FourierField[i, j, k];
+                    if (fourierSeries != null)
                     {
-                        var fourierSeries = this.FourierField[i, j, k];
-                        if (fourierSeries != null)
-                        {
-                            fourierSeries.Aggregate(freq, ComplexCoordinate.FromPolarCoordinates(this.E[i, j, k], angle));
-                        }
-                    });
-            }
-        }
+                        var electricField = this.E[i, j, k];
 
+                        fourierSeries.Aggregate(
+                            this.spectrum,
+                            freq =>
+                            ComplexCoordinate.FromPolarCoordinates(
+                                electricField,
+                                freq.ToType(SpectrumUnitType.CycleFrequency) * time));
+                    }
+                });
+        }
     }
 }

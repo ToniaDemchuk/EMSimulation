@@ -34,7 +34,7 @@ namespace Simulation.FDTD
         public SimulationResultDictionary Calculate(SimulationParameters parameters)
         {
             this.initParams(parameters);
-            //var gp = new GnuPlot();
+            var gp = new GnuPlot();
             foreach (var time in Enumerable.Range(1, parameters.NumSteps))
             {
                 this.calcFields(time, parameters);

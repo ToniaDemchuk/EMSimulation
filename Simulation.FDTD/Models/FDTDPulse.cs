@@ -134,17 +134,16 @@ namespace Simulation.FDTD.Models
         /// <param name="time">The time step.</param>
         public void DoFourierPulse(double time)
         {
-            // Fourier transform
-            foreach (SpectrumUnit cycleFreq in this.spectrum)
+            for (int m = 0; m < this.medLength; m++)
             {
-                double angle = cycleFreq.ToType(SpectrumUnitType.CycleFrequency) * time;
-                for (int m = 0; m < this.medLength; m++)
-                {
-                    this.FourierPulse[m].Aggregate(cycleFreq, Complex.FromPolarCoordinates(this.E[m], angle));
-                   
-                }
+                var fourierSeries = this.FourierPulse[m];
+                double electricPulse = this.E[m];
+
+                fourierSeries.Aggregate(
+                    this.spectrum,
+                    freq =>
+                    Complex.FromPolarCoordinates(electricPulse, freq.ToType(SpectrumUnitType.CycleFrequency) * time));
             }
         }
-
     }
 }

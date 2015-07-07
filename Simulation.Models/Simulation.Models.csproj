@@ -87,7 +87,7 @@
     <Compile Include="Spectrum\OpticalSpectrum.cs" />
     <Compile Include="Spectrum\SimulationResult.cs" />
     <Compile Include="Extensions\CoordinateHelper.cs" />
-    <Compile Include="Coordinates\BaseCoordinate.cs" />
+    <Compile Include="Coordinates\ICoordinate.cs" />
     <Compile Include="Coordinates\ComplexCoordinate.cs" />
     <Compile Include="Extensions\CoordinateEntensions.cs" />
     <Compile Include="Coordinates\DyadCoordinate.cs" />
