@@ -28,7 +28,7 @@ namespace Simulation.Models.Spectrum
         /// <param name="type">The type of values.</param>
         public OpticalSpectrum(IEnumerable<double> list, SpectrumUnitType type)
         {
-            this.list = list.Select(x => new SpectrumUnit(x, type));
+            this.list = list.Select(x => new SpectrumUnit(x, type)).ToList();
         }
 
         /// <summary>
@@ -52,5 +52,6 @@ namespace Simulation.Models.Spectrum
         {
             return this.GetEnumerator();
         }
+
     }
 }

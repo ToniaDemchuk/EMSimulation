@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Simulation.Models.Spectrum
 {
@@ -6,17 +9,21 @@ namespace Simulation.Models.Spectrum
     /// The FourierSeries class.
     /// </summary>
     /// <typeparam name="T">The type of sequence values.</typeparam>
-    public class FourierSeries<T> : Dictionary<SpectrumUnit, T>
+    public class FourierSeries<T> : Dictionary<SpectrumUnit, T> where T : struct
     {
-        public void Aggregate(SpectrumUnit freq, T coordinate)
+        public void Aggregate(IEnumerable<SpectrumUnit> spectrum, Func<SpectrumUnit, T> valueSelector)
         {
-            if (!this.ContainsKey(freq))
+            foreach (var freq in spectrum)
             {
-                this.Add(freq, coordinate);
-            }
-            else
-            {
-                this[freq] += (dynamic)coordinate;
+                T value;
+                if (this.TryGetValue(freq, out value))
+                {
+                    this[freq] = value + (dynamic) valueSelector(freq);
+                }
+                else
+                {
+                    this.Add(freq, valueSelector(freq));
+                }
             }
         }
     }

@@ -61,11 +61,11 @@ namespace Simulation.FDTD.Console
             parameters.Medium = parameters.Indices.CreateArray<IMediumSolver>(
                 (i, j, k) =>
                 {
-                    //var point = new CartesianCoordinate(i, j, k) - center;
-                    //if (point.Norm <= radius)
-                    //{
-                    //    return new DrudeLorentzSolver(silver, timeStep) { IsBody = true };
-                    //}
+                    var point = new CartesianCoordinate(i, j, k) - center;
+                    if (point.Norm <= radius)
+                    {
+                        return new DrudeLorentzSolver(silver, timeStep) { IsBody = true };
+                    }
                     return vacuum;
                 });
         }

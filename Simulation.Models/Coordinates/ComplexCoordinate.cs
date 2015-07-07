@@ -6,7 +6,7 @@ namespace Simulation.Models.Coordinates
     /// <summary>
     /// The CartesianCoordinate class.
     /// </summary>
-    public class ComplexCoordinate : BaseCoordinate<Complex>
+    public struct ComplexCoordinate : ICoordinate<Complex>
     {
         public static readonly ComplexCoordinate One = new ComplexCoordinate(Complex.One, Complex.One, Complex.One);
 
@@ -24,32 +24,27 @@ namespace Simulation.Models.Coordinates
         /// <param name="x">The x coordinate.</param>
         /// <param name="y">The y coordinate.</param>
         /// <param name="z">The z coordinate.</param>
-        public ComplexCoordinate(Complex x, Complex y, Complex z)
-            : base(x, y, z)
+        public ComplexCoordinate(Complex x, Complex y, Complex z) : this()
         {
-            this.LazyNorm = new Lazy<double>(
-                () =>
-                {
-                    double xmagn = this.X.Magnitude;
-                    double ymagn = this.Y.Magnitude;
-                    double zmagn = this.Z.Magnitude;
-                    return Math.Sqrt(
-                        xmagn * xmagn + ymagn * ymagn +
-                        zmagn * zmagn);
-                });
+            this.X = x;
+            this.Y = y;
+            this.Z = z;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ComplexCoordinate"/> class.
+        /// Initializes a new instance of the <see cref="ComplexCoordinate" /> class.
         /// </summary>
         /// <param name="point">The cartesian point.</param>
-        /// <param name="angle">The angle.</param>
-        public static ComplexCoordinate FromPolarCoordinates(CartesianCoordinate point, double angle)
+        /// <param name="phase">The phase.</param>
+        /// <returns>New instance of ComplexCoordinate.</returns>
+        public static ComplexCoordinate FromPolarCoordinates(CartesianCoordinate point, double phase)
         {
+            var cos = Math.Cos(phase);
+            var sin = Math.Sin(phase);
             return new ComplexCoordinate(
-                Complex.FromPolarCoordinates(point.X, angle),
-                Complex.FromPolarCoordinates(point.Y, angle),
-                Complex.FromPolarCoordinates(point.Z, angle));
+                new Complex(point.X * cos, point.X * sin),
+                new Complex(point.Y * cos, point.Y * sin),
+                new Complex(point.Z * cos, point.Z * sin));
         }
 
         #region Operators overload
@@ -226,5 +221,46 @@ namespace Simulation.Models.Coordinates
         }
 
         #endregion
+
+        private double getNorm()
+        {
+            double xmagn = this.X.Magnitude;
+            double ymagn = this.Y.Magnitude;
+            double zmagn = this.Z.Magnitude;
+            return Math.Sqrt(
+                xmagn * xmagn + ymagn * ymagn + zmagn * zmagn);
+        }
+
+        public Complex X { get; private set; }
+
+        public Complex Y { get; private set; }
+
+        public Complex Z { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the lazy norm.
+        /// </summary>
+        /// <value>
+        /// The lazy norm.
+        /// </value>
+        double? norm;
+
+        /// <summary>
+        /// Gets the norm of the coordinate.
+        /// </summary>
+        /// <value>
+        /// The norm of the coordinate.
+        /// </value>
+        public double Norm
+        {
+            get
+            {
+                if (!this.norm.HasValue)
+                {
+                    this.norm = this.getNorm();
+                }
+                return this.norm.Value;
+            }
+        }
     }
 }

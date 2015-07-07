@@ -6,7 +6,7 @@ namespace Simulation.Models.Common
     /// <summary>
     /// The LinearDiscreteCollection class.
     /// </summary>
-    public class LinearDiscreteCollection : IEnumerable<double>
+    public class LinearDiscreteCollection : IReadOnlyList<double>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LinearDiscreteCollection"/> class.

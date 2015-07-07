@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace Simulation.Models.Coordinates
 {
     /// <summary>
     /// The CartesianCoordinate class.
     /// </summary>
-    public class CartesianCoordinate : BaseCoordinate<double>
+    public struct CartesianCoordinate : ICoordinate<double>
     {
         public static readonly CartesianCoordinate One = new CartesianCoordinate(1, 1, 1);
         public static readonly CartesianCoordinate Zero = new CartesianCoordinate(0, 0, 0);
@@ -19,10 +20,11 @@ namespace Simulation.Models.Coordinates
         /// <param name="x">The x coordinate.</param>
         /// <param name="y">The y coordinate.</param>
         /// <param name="z">The z coordinate.</param>
-        public CartesianCoordinate(double x, double y, double z)
-            : base(x, y, z)
+        public CartesianCoordinate(double x, double y, double z) : this()
         {
-            this.LazyNorm = new Lazy<double>(() => Math.Sqrt(this.X * this.X + this.Y * this.Y + this.Z * this.Z));
+            this.X = x;
+            this.Y = y;
+            this.Z = z;
         }
 
         #region Operators overload
@@ -199,5 +201,41 @@ namespace Simulation.Models.Coordinates
 
         #endregion
 
+        private double getNorm()
+        {
+            return Math.Sqrt(this.X * this.X + this.Y * this.Y + this.Z * this.Z);
+        }
+
+        public double X { get; set; }
+
+        public double Y { get; set; }
+
+        public double Z { get; set; }
+
+        /// <summary>
+        /// Gets or sets the lazy norm.
+        /// </summary>
+        /// <value>
+        /// The lazy norm.
+        /// </value>
+        double? norm;
+
+       /// <summary>
+        /// Gets the norm of the coordinate.
+        /// </summary>
+        /// <value>
+        /// The norm of the coordinate.
+        /// </value>
+        public double Norm
+        {
+            get
+            {
+                if (!this.norm.HasValue)
+                {
+                    this.norm = this.getNorm();
+                }
+                return this.norm.Value;
+            }
+        }
     }
 }

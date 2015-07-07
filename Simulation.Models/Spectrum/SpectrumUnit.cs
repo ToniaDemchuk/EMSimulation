@@ -1,4 +1,6 @@
-﻿using Simulation.Models.Enums;
+﻿using System.Collections.Generic;
+
+using Simulation.Models.Enums;
 using Simulation.Models.Extensions;
 
 namespace Simulation.Models.Spectrum
@@ -8,6 +10,7 @@ namespace Simulation.Models.Spectrum
     /// </summary>
     public class SpectrumUnit
     {
+        private Dictionary<SpectrumUnitType, double> cacheDictionary = new Dictionary<SpectrumUnitType, double>(); 
         /// <summary>
         /// Initializes a new instance of the <see cref="SpectrumUnit"/> class.
         /// </summary>
@@ -30,7 +33,14 @@ namespace Simulation.Models.Spectrum
         /// <returns>The value of spectrum parameter type.</returns>
         public double ToType(SpectrumUnitType toType)
         {
-            return SpectrumUnitConverter.Convert(this.value, this.type, toType);
+            double newValue;
+            if (cacheDictionary.TryGetValue(toType, out newValue))
+            {
+                return newValue;
+            }
+            newValue = SpectrumUnitConverter.Convert(this.value, this.type, toType);
+            cacheDictionary.Add(toType, newValue);
+            return newValue;
         }
 
         protected bool Equals(SpectrumUnit other)
