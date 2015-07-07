@@ -84,7 +84,7 @@ namespace Simulation.FDTD
             this.calculateDField(parameters, pulseIndex, time);
 
             // Calculate the E from D field
-            parameters.Indices.ShiftLower(1).ShiftUpper(1).For(
+            parameters.Indices.ShiftLower(1).ShiftUpper(1).ParallelFor(
                 (i, j, k) =>
                 {
                     this.fields.E[i, j, k] = parameters.Medium[i, j, k].Solve(this.fields.D[i, j, k]);
@@ -99,7 +99,7 @@ namespace Simulation.FDTD
 
         private void calculateHField(SimulationParameters param, IndexStore pulseIndex)
         {
-            param.Indices.ShiftUpper(1).For(
+            param.Indices.ShiftUpper(1).ParallelFor(
                 (i, j, k) =>
                 {
                     CartesianCoordinate curlE = this.fields.E.Curl(i, j, k, +1);
@@ -136,7 +136,7 @@ namespace Simulation.FDTD
 
         private void calculateDField(SimulationParameters param, IndexStore pulseIndex, int time)
         {
-            param.Indices.ShiftLower(1).For(
+            param.Indices.ShiftLower(1).ParallelFor(
                 (i, j, k) =>
                 {
                     CartesianCoordinate curlH = this.fields.H.Curl(i, j, k, -1);
