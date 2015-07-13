@@ -6,6 +6,9 @@ using Simulation.Medium.Models;
 using Simulation.Models.Enums;
 using Simulation.Models.Extensions;
 using Simulation.Models.Spectrum;
+using AwokeKnowing.GnuplotCSharp;
+using GnuplotCSharp;
+using System.Collections.Generic;
 
 namespace Simulation.DDA.Console.Simulation
 {
@@ -20,6 +23,9 @@ namespace Simulation.DDA.Console.Simulation
         /// <param name="args">The arguments.</param>
         public static void Main(string[] args)
         {
+            var gp = new GnuPlot();
+            gp.Set("style data lines");
+            gp.HoldOn();
             var result = Calculate();
 
             SimpleFormatter.Write(
@@ -27,6 +33,9 @@ namespace Simulation.DDA.Console.Simulation
                 result.ToDictionary(
                     x => x.Key.ToType(SpectrumUnitType.WaveLength),
                     x => x.Value.CrossSectionExtinction));
+            Dictionary<double, double> azim45 = SimpleFormatter.Read("rezult_ext.txt");
+            gp.Plot(azim45);
+            gp.Wait();
         }
 
         /// <summary>

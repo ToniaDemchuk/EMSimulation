@@ -73,6 +73,9 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GnuplotCSharp">
+      <HintPath>..\Libs\GnuplotCSharp.dll</HintPath>
+    </Reference>
     <Reference Include="ModernKDDA, Version=0.0.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Libs\ModernKDDA.dll</HintPath>
