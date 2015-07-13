@@ -1,5 +1,4 @@
-﻿using System.Collections.Concurrent;
-using System.Numerics;
+﻿using System.Numerics;
 
 using Simulation.Models.Coordinates;
 using Simulation.Models.Spectrum;

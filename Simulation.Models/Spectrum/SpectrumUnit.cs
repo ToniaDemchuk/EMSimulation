@@ -1,7 +1,4 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
-
-using Simulation.Models.Enums;
+﻿using Simulation.Models.Enums;
 using Simulation.Models.Extensions;
 
 namespace Simulation.Models.Spectrum
@@ -11,8 +8,6 @@ namespace Simulation.Models.Spectrum
     /// </summary>
     public class SpectrumUnit
     {
-        private ConcurrentDictionary<SpectrumUnitType, double> cacheDictionary = new ConcurrentDictionary<SpectrumUnitType, double>();
-
         /// <summary>
         /// Initializes a new instance of the <see cref="SpectrumUnit"/> class.
         /// </summary>
@@ -35,7 +30,7 @@ namespace Simulation.Models.Spectrum
         /// <returns>The value of spectrum parameter type.</returns>
         public double ToType(SpectrumUnitType toType)
         {
-            return cacheDictionary.GetOrAdd(toType, val => SpectrumUnitConverter.Convert(this.value, this.type, val));
+            return SpectrumUnitConverter.Convert(this.value, this.type, toType);
         }
 
         protected bool Equals(SpectrumUnit other)
@@ -57,7 +52,7 @@ namespace Simulation.Models.Spectrum
             {
                 return false;
             }
-            return Equals((SpectrumUnit) obj);
+            return this.Equals((SpectrumUnit) obj);
         }
 
         public override int GetHashCode()

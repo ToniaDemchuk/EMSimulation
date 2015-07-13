@@ -29,6 +29,10 @@ namespace Simulation.DDA.Console.Simulation
                     x => x.Value.CrossSectionExtinction));
         }
 
+        /// <summary>
+        /// Calculate extinction using DDA method.
+        /// </summary>
+        /// <returns>The simulation result.</returns>
         public static SimulationResultDictionary Calculate()
         {
             return Calculate(
@@ -37,6 +41,13 @@ namespace Simulation.DDA.Console.Simulation
                 ParameterHelper.ReadSystemConfig("dipols.txt"));
         }
 
+        /// <summary>
+        /// Calculates extinction using DDA method.
+        /// </summary>
+        /// <param name="ddaConfigFilename">The DDA configuration filename.</param>
+        /// <param name="optConstTxt">The optical constants filename.</param>
+        /// <param name="systemConfig">The dipole system configuration.</param>
+        /// <returns>The simulation result.</returns>
         public static SimulationResultDictionary Calculate(string ddaConfigFilename, string optConstTxt, SystemConfig systemConfig)
         {
             var ddaConfig =
@@ -45,9 +56,16 @@ namespace Simulation.DDA.Console.Simulation
             return Calculate(ddaConfig, systemConfig, ParameterHelper.ReadOpticalConstants(optConstTxt));
         }
 
-        public static SimulationResultDictionary Calculate(DDAParameters ddaConfig, SystemConfig systemConfig, BaseMedium readOpticalConstants)
+        /// <summary>
+        /// Calculates extinction using DDA method.
+        /// </summary>
+        /// <param name="ddaConfig">The DDA configuration.</param>
+        /// <param name="systemConfig">The dipole system configuration.</param>
+        /// <param name="medium">The medium of the dipoles.</param>
+        /// <returns>The simulation result.</returns>
+        public static SimulationResultDictionary Calculate(DDAParameters ddaConfig, SystemConfig systemConfig, BaseMedium medium)
         {
-            var manager = new MediumManager(readOpticalConstants, ddaConfig.IsSolidMaterial);
+            var manager = new MediumManager(medium, ddaConfig.IsSolidMaterial);
             var ext = new ExtinctionManager(manager);
 
             SimulationParameters parameters = new SimulationParameters

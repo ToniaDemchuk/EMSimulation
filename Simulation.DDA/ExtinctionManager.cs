@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Numerics;
-using System.Runtime.InteropServices;
 
 using Simulation.DDA.Models;
 using Simulation.Medium.Models;

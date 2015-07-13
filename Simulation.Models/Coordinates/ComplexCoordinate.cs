@@ -8,15 +8,30 @@ namespace Simulation.Models.Coordinates
     /// </summary>
     public struct ComplexCoordinate : ICoordinate<Complex>
     {
+        /// <summary>
+        /// The one direction coordinates
+        /// </summary>
         public static readonly ComplexCoordinate One = new ComplexCoordinate(Complex.One, Complex.One, Complex.One);
 
+        /// <summary>
+        /// The zero direction coordinates
+        /// </summary>
         public static readonly ComplexCoordinate Zero = new ComplexCoordinate(Complex.Zero, Complex.Zero, Complex.Zero);
 
-        public static readonly ComplexCoordinate XOrt = new ComplexCoordinate(Complex.One, Complex.Zero, Complex.Zero);
+        /// <summary>
+        /// The unit vector in x direction
+        /// </summary>
+        public static readonly ComplexCoordinate XOrth = new ComplexCoordinate(Complex.One, Complex.Zero, Complex.Zero);
 
-        public static readonly ComplexCoordinate YOrt = new ComplexCoordinate(Complex.Zero, Complex.One, Complex.Zero);
+        /// <summary>
+        /// The unit vector in y direction
+        /// </summary>
+        public static readonly ComplexCoordinate YOrth = new ComplexCoordinate(Complex.Zero, Complex.One, Complex.Zero);
 
-        public static readonly ComplexCoordinate ZOrt = new ComplexCoordinate(Complex.Zero, Complex.Zero, Complex.One);
+        /// <summary>
+        /// The unit vector in z direction
+        /// </summary>
+        public static readonly ComplexCoordinate ZOrth = new ComplexCoordinate(Complex.Zero, Complex.Zero, Complex.One);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CartesianCoordinate"/> class.
@@ -222,19 +237,28 @@ namespace Simulation.Models.Coordinates
 
         #endregion
 
-        private double getNorm()
-        {
-            double xmagn = this.X.Magnitude;
-            double ymagn = this.Y.Magnitude;
-            double zmagn = this.Z.Magnitude;
-            return Math.Sqrt(
-                xmagn * xmagn + ymagn * ymagn + zmagn * zmagn);
-        }
-
+        /// <summary>
+        /// Gets the x coordinate.
+        /// </summary>
+        /// <value>
+        /// The x coordinate.
+        /// </value>
         public Complex X { get; private set; }
 
+        /// <summary>
+        /// Gets the y coordinate.
+        /// </summary>
+        /// <value>
+        /// The y coordinate.
+        /// </value>
         public Complex Y { get; private set; }
 
+        /// <summary>
+        /// Gets the z coordinate.
+        /// </summary>
+        /// <value>
+        /// The z coordinate.
+        /// </value>
         public Complex Z { get; private set; }
 
         /// <summary>
@@ -243,7 +267,7 @@ namespace Simulation.Models.Coordinates
         /// <value>
         /// The lazy norm.
         /// </value>
-        double? norm;
+        private double? norm;
 
         /// <summary>
         /// Gets the norm of the coordinate.
@@ -261,6 +285,15 @@ namespace Simulation.Models.Coordinates
                 }
                 return this.norm.Value;
             }
+        }
+
+        private double getNorm()
+        {
+            double xmagn = this.X.Magnitude;
+            double ymagn = this.Y.Magnitude;
+            double zmagn = this.Z.Magnitude;
+            return Math.Sqrt(
+                xmagn * xmagn + ymagn * ymagn + zmagn * zmagn);
         }
     }
 }

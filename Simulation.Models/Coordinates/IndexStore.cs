@@ -109,9 +109,9 @@ namespace Simulation.Models.Coordinates
         }
 
         /// <summary>
-        /// Gets the center.
+        /// Gets the center of indices.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The index store.</returns>
         public IndexStore GetCenter()
         {
             return new IndexStore(this.ILength / 2, this.JLength / 2, this.KLength / 2, this.Lower);

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 
 namespace Simulation.Models.Coordinates
 {
@@ -8,11 +7,30 @@ namespace Simulation.Models.Coordinates
     /// </summary>
     public struct CartesianCoordinate : ICoordinate<double>
     {
+        /// <summary>
+        /// The one direction coordinates
+        /// </summary>
         public static readonly CartesianCoordinate One = new CartesianCoordinate(1, 1, 1);
+
+        /// <summary>
+        /// The zero direction coordinates
+        /// </summary>
         public static readonly CartesianCoordinate Zero = new CartesianCoordinate(0, 0, 0);
-        public static readonly CartesianCoordinate XOrt = new CartesianCoordinate(1, 0, 0);
-        public static readonly CartesianCoordinate YOrt = new CartesianCoordinate(0, 1, 0);
-        public static readonly CartesianCoordinate ZOrt = new CartesianCoordinate(0, 0, 1);
+
+        /// <summary>
+        /// The unit vector in x direction
+        /// </summary>
+        public static readonly CartesianCoordinate XOrth = new CartesianCoordinate(1, 0, 0);
+
+        /// <summary>
+        /// The unit vector in y direction
+        /// </summary>
+        public static readonly CartesianCoordinate YOrth = new CartesianCoordinate(0, 1, 0);
+
+        /// <summary>
+        /// The unit vector in z direction
+        /// </summary>
+        public static readonly CartesianCoordinate ZOrth = new CartesianCoordinate(0, 0, 1);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CartesianCoordinate" /> class.
@@ -201,16 +219,29 @@ namespace Simulation.Models.Coordinates
 
         #endregion
 
-        private double getNorm()
-        {
-            return Math.Sqrt(this.X * this.X + this.Y * this.Y + this.Z * this.Z);
-        }
+        /// <summary>
+        /// Gets the x coordinate.
+        /// </summary>
+        /// <value>
+        /// The x coordinate.
+        /// </value>
+        public double X { get; private set; }
 
-        public double X { get; set; }
+        /// <summary>
+        /// Gets the y coordinate.
+        /// </summary>
+        /// <value>
+        /// The y coordinate.
+        /// </value>
+        public double Y { get; private set; }
 
-        public double Y { get; set; }
-
-        public double Z { get; set; }
+        /// <summary>
+        /// Gets the z coordinate.
+        /// </summary>
+        /// <value>
+        /// The z coordinate.
+        /// </value>
+        public double Z { get; private set; }
 
         /// <summary>
         /// Gets or sets the lazy norm.
@@ -218,9 +249,9 @@ namespace Simulation.Models.Coordinates
         /// <value>
         /// The lazy norm.
         /// </value>
-        double? norm;
+        private double? norm;
 
-       /// <summary>
+        /// <summary>
         /// Gets the norm of the coordinate.
         /// </summary>
         /// <value>
@@ -236,6 +267,11 @@ namespace Simulation.Models.Coordinates
                 }
                 return this.norm.Value;
             }
+        }
+
+        private double getNorm()
+        {
+            return Math.Sqrt(this.X * this.X + this.Y * this.Y + this.Z * this.Z);
         }
     }
 }

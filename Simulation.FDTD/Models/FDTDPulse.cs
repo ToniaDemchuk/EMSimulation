@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Numerics;
 
-using Simulation.Models.Coordinates;
-using Simulation.Models.Enums;
 using Simulation.Models.Extensions;
 using Simulation.Models.Spectrum;
 
@@ -18,8 +15,6 @@ namespace Simulation.FDTD.Models
         private readonly int medLength; // length of 1D medium
 
         private readonly Func<int, double> pulseFunc;
-
-        private readonly OpticalSpectrum spectrum;
 
         private double eMh1;
 
@@ -44,10 +39,9 @@ namespace Simulation.FDTD.Models
             this.eMl2 = this.eMl1 = 0.0;
 
             this.pulseFunc = parameters.WaveFunc;
-            this.spectrum = parameters.Spectrum;
 
-            this.FourierPulse = new FourierSeries<Complex>[this.medLength];
-            this.FourierPulse.For(i => new FourierSeries<Complex>());
+            this.FourierPulse = new FourierSeries[this.medLength];
+            this.FourierPulse.For(i => new FourierSeries());
         }
 
         /// <summary>
@@ -72,7 +66,7 @@ namespace Simulation.FDTD.Models
         /// <value>
         /// The fourier series of pulse.
         /// </value>
-        public FourierSeries<Complex>[] FourierPulse { get; set; }
+        public FourierSeries[] FourierPulse { get; set; }
 
         /// <summary>
         /// Calculate the electric field step.
@@ -132,17 +126,11 @@ namespace Simulation.FDTD.Models
         /// Does the fourier pulse.
         /// </summary>
         /// <param name="time">The time step.</param>
-        public void DoFourierPulse(double time)
+        public void DoFourierPulse(int time)
         {
             for (int m = 0; m < this.medLength; m++)
             {
-                var fourierSeries = this.FourierPulse[m];
-                double electricPulse = this.E[m];
-
-                fourierSeries.Aggregate(
-                    this.spectrum,
-                    freq =>
-                    Complex.FromPolarCoordinates(electricPulse, freq.ToType(SpectrumUnitType.CycleFrequency) * time));
+                this.FourierPulse[m].Add(time, this.E[m]);
             }
         }
     }
