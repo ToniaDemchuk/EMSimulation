@@ -4,9 +4,6 @@ using Simulation.Models.Coordinates;
 using Simulation.Models.Extensions;
 
 using PmlCoef = System.Tuple<double, double, double>;
-using PmlCoordCoef = System.Tuple<Simulation.Models.Coordinates.CartesianCoordinate,
-    Simulation.Models.Coordinates.CartesianCoordinate,
-    Simulation.Models.Coordinates.CartesianCoordinate>;
 
 namespace Simulation.FDTD.Models
 {
@@ -15,18 +12,6 @@ namespace Simulation.FDTD.Models
     /// </summary>
     public class PmlBoundary
     {
-        private PmlCoef[] fi;
-
-        private PmlCoef[] fj;
-
-        private PmlCoef[] fk;
-
-        private PmlCoef[] gi;
-
-        private PmlCoef[] gj;
-
-        private PmlCoef[] gk;
-
         /// <summary>
         ///     Initializes a new instance of the <see cref="PmlBoundary" /> class.
         /// </summary>
@@ -39,70 +24,72 @@ namespace Simulation.FDTD.Models
         }
 
         /// <summary>
-        /// Gets or sets the length.
+        /// Gets the electric.
         /// </summary>
         /// <value>
-        /// The length.
+        /// The electric.
+        /// </value>
+        public PmlCoefficient[,,] Electric { get; private set; }
+
+        /// <summary>
+        /// Gets the magnetic.
+        /// </summary>
+        /// <value>
+        /// The magnetic.
+        /// </value>
+        public PmlCoefficient[,,] Magnetic { get; private set; }
+
+        /// <summary>
+        ///     Gets or sets the length.
+        /// </summary>
+        /// <value>
+        ///     The length.
         /// </value>
         public int Length { get; set; }
 
-        /// <summary>
-        /// Get magnetics coefficients.
-        /// </summary>
-        /// <param name="i">The i index.</param>
-        /// <param name="j">The j index.</param>
-        /// <param name="k">The k index.</param>
-        /// <returns>The pml coefficients for specific point.</returns>
-        public PmlCoordCoef Magnetic(int i, int j, int k)
+        private void boundaryConditionsCalc(IndexStore indices)
         {
-            return getCoeficient(this.fi[i], this.fj[j], this.fk[k]);
+            PmlCoef[] ei;
+            PmlCoef[] mi;
+
+            this.oneDirectionBoundary(indices.ILength, out ei, out mi);
+
+            PmlCoef[] ej;
+            PmlCoef[] mj;
+            this.oneDirectionBoundary(indices.JLength, out ej, out mj);
+
+            PmlCoef[] ek;
+            PmlCoef[] mk;
+            this.oneDirectionBoundary(indices.KLength, out ek, out mk);
+
+            this.Electric = indices.CreateArray((i, j, k) => getCoeficient(ei[i], ej[j], ek[k]));
+            this.Magnetic = indices.CreateArray((i, j, k) => getCoeficient(mi[i], mj[j], mk[k]));
         }
 
-        /// <summary>
-        /// Get electric coefficients.
-        /// </summary>
-        /// <param name="i">The i index.</param>
-        /// <param name="j">The j index.</param>
-        /// <param name="k">The k index.</param>
-        /// <returns>The pml coefficients for specific point.</returns>
-        public PmlCoordCoef Electric(int i, int j, int k)
+        private static PmlCoefficient getCoeficient(PmlCoef iCoef, PmlCoef jCoef, PmlCoef kCoef)
         {
-            return getCoeficient(this.gi[i], this.gj[j], this.gk[k]);
-        }
-
-        private static PmlCoordCoef getCoeficient(PmlCoef iCoef, PmlCoef jCoef, PmlCoef kCoef)
-        {
-            var item1 = new CartesianCoordinate(
+            var integralFactor = new CartesianCoordinate(
                 iCoef.Item1,
                 jCoef.Item1,
                 kCoef.Item1);
-            var item2 = new CartesianCoordinate(
+            var curlFactor = new CartesianCoordinate(
                 jCoef.Item2 * kCoef.Item2,
                 iCoef.Item2 * kCoef.Item2,
                 iCoef.Item2 * jCoef.Item2);
-            var item3 = new CartesianCoordinate(
+            var fieldFactor = new CartesianCoordinate(
                 jCoef.Item3 * kCoef.Item3,
                 iCoef.Item3 * kCoef.Item3,
                 iCoef.Item3 * jCoef.Item3);
-            return new PmlCoordCoef(
-                item1,
-                item2,
-                item3);
-        }
-
-        private void boundaryConditionsCalc(IndexStore indices)
-        {
-            this.oneDirectionBoundary(indices.ILength, ref this.gi, ref this.fi);
-
-            this.oneDirectionBoundary(indices.JLength, ref this.gj, ref this.fj);
-
-            this.oneDirectionBoundary(indices.KLength, ref this.gk, ref this.fk);
+            return new PmlCoefficient(
+                fieldFactor,
+                curlFactor,
+                integralFactor);
         }
 
         private void oneDirectionBoundary(
             int fullLength,
-            ref PmlCoef[] g,
-            ref PmlCoef[] f)
+            out PmlCoef[] g,
+            out PmlCoef[] f)
         {
             const double DefaultItem1 = 0.0;
             const double DefaultItem2 = 1.0;

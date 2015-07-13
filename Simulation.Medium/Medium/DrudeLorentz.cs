@@ -116,7 +116,6 @@ namespace Simulation.Medium.Medium
                 drudeEps,
                 (eps, oscillator) =>
                 {
-
                     var resonanceFrequency = oscillator.ResonanceFrequency.ToType(SpectrumUnitType.CycleFrequency);
                     var collisionFrequency = oscillator.CollisionFrequency.ToType(SpectrumUnitType.CycleFrequency); 
                     var lorentzEps = oscillator.StrengthFactor * plasmafreq * plasmafreq /

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Simulation.Models.Coordinates;
@@ -10,6 +11,11 @@ namespace Simulation.Models.Extensions
     /// </summary>
     public static class ArrayExtensions
     {
+        /// <summary>
+        /// The maximum degree of parallelism for parallel methods.
+        /// </summary>
+        public static int MaxDegreeOfParallelism = 8;
+
         /// <summary>
         /// Iterates through the specified array.
         /// </summary>
@@ -61,13 +67,82 @@ namespace Simulation.Models.Extensions
             }
         }
 
+        static IEnumerable<Tuple<int,int,int>> RangeIterator(this IndexStore indices)
+        {
+            for (int i = indices.Lower; i < indices.ILength; i++)
+            {
+                for (int j = indices.Lower; j < indices.JLength; j++)
+                {
+                    for (int k = indices.Lower; k < indices.KLength; k++)
+                    {
+                        yield return new Tuple<int,int,int>(i, j, k);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Parallels the linq for.
+        /// </summary>
+        /// <param name="indices">The indices.</param>
+        /// <param name="action">The action.</param>
+        public static void ParallelLinqFor(this IndexStore indices, Action<int, int, int> action)
+        {
+            Parallel.For(
+                indices.Lower,
+                indices.ILength,
+                new ParallelOptions{MaxDegreeOfParallelism = MaxDegreeOfParallelism},
+                i =>
+                {
+
+                    for (int j = indices.Lower; j < indices.JLength; j++)
+                    {
+                        for (int k = indices.Lower; k < indices.KLength; k++)
+                        {
+                            action(i, j, k);
+                        }
+                    }
+
+                });
+        }
+
+        public static double ParallelForSum(this IndexStore indices, Func<int, int, int, double> action)
+        {
+            double sum = 0.0d;
+            object lockObject = new object();
+            Parallel.For(
+                indices.Lower,
+                indices.ILength,
+                new ParallelOptions { MaxDegreeOfParallelism = MaxDegreeOfParallelism },
+                ()=>0d,
+                (i, state, local) =>
+                {
+                    var sumloc = 0d;
+                    for (int j = indices.Lower; j < indices.JLength; j++)
+                    {
+                        for (int k = indices.Lower; k < indices.KLength; k++)
+                        {
+                            sumloc += action(i, j, k);
+                        }
+                    }
+                    return local + sumloc;
+                },
+                localPartialSum =>
+                {
+                    lock (lockObject)
+                    {
+                        sum += localPartialSum;
+                    }
+                });
+            return sum;
+        }
 
         public static void ParallelFor(this IndexStore indices, Action<int, int, int> action)
         {
             Parallel.Invoke(
                 () =>
                 {
-                    for (int i = indices.Lower; i < indices.ILength; i++)
+                    for (int i = indices.Lower; i < indices.ILength / 2; i++)
                     {
                         for (int j = indices.Lower; j < indices.JLength / 2; j++)
                         {
@@ -80,7 +155,7 @@ namespace Simulation.Models.Extensions
                 },
                 () =>
                 {
-                    for (int i = indices.Lower; i < indices.ILength; i++)
+                    for (int i = indices.Lower; i < indices.ILength / 2; i++)
                     {
                         for (int j = indices.JLength / 2; j < indices.JLength; j++)
                         {
@@ -93,7 +168,7 @@ namespace Simulation.Models.Extensions
                 },
                 () =>
                 {
-                    for (int i = indices.Lower; i < indices.ILength; i++)
+                    for (int i = indices.Lower; i < indices.ILength / 2; i++)
                     {
                         for (int j = indices.Lower; j < indices.JLength / 2; j++)
                         {
@@ -106,7 +181,7 @@ namespace Simulation.Models.Extensions
                 },
                 () =>
                 {
-                    for (int i = indices.Lower; i < indices.ILength; i++)
+                    for (int i = indices.Lower; i < indices.ILength / 2; i++)
                     {
                         for (int j = indices.JLength / 2; j < indices.JLength; j++)
                         {
@@ -116,12 +191,59 @@ namespace Simulation.Models.Extensions
                             }
                         }
                     }
-                }
-                );
-            
-
-
-
+                },
+                () =>
+                {
+                    for (int i = indices.ILength / 2; i < indices.ILength; i++)
+                    {
+                        for (int j = indices.Lower; j < indices.JLength / 2; j++)
+                        {
+                            for (int k = indices.Lower; k < indices.KLength / 2; k++)
+                            {
+                                action(i, j, k);
+                            }
+                        }
+                    }
+                },
+                () =>
+                {
+                    for (int i = indices.ILength / 2; i < indices.ILength; i++)
+                    {
+                        for (int j = indices.JLength / 2; j < indices.JLength; j++)
+                        {
+                            for (int k = indices.Lower; k < indices.KLength / 2; k++)
+                            {
+                                action(i, j, k);
+                            }
+                        }
+                    }
+                },
+                () =>
+                {
+                    for (int i = indices.ILength / 2; i < indices.ILength; i++)
+                    {
+                        for (int j = indices.Lower; j < indices.JLength / 2; j++)
+                        {
+                            for (int k = indices.KLength / 2; k < indices.KLength; k++)
+                            {
+                                action(i, j, k);
+                            }
+                        }
+                    }
+                },
+                () =>
+                {
+                    for (int i = indices.ILength / 2; i < indices.ILength; i++)
+                    {
+                        for (int j = indices.JLength / 2; j < indices.JLength; j++)
+                        {
+                            for (int k = indices.KLength / 2; k < indices.KLength; k++)
+                            {
+                                action(i, j, k);
+                            }
+                        }
+                    }
+                });
         }
 
         /// <summary>

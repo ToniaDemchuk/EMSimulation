@@ -15,7 +15,7 @@ using Simulation.Models.Spectrum;
 
 namespace Simulation.FDTD.Console
 {
-    internal class FDTDProgram
+    public class FDTDProgram
     {
         private static void Main(string[] args)
         {

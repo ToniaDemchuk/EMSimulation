@@ -14,6 +14,11 @@ namespace Simulation.DDA
     public class OpticalConstants : BaseMedium
     {
         /// <summary>
+        /// The wave length multiplier
+        /// </summary>
+        public const double WaveLengthMultiplier = 1e9;
+
+        /// <summary>
         /// Gets the wave length list.
         /// </summary>
         /// <value>
@@ -66,7 +71,7 @@ namespace Simulation.DDA
         /// <returns>The complex permittivity.</returns>
         public override Complex GetPermittivity(SpectrumUnit parameter)
         {
-            var waveLength = parameter.ToType(SpectrumUnitType.WaveLength)*1e9;
+            var waveLength = parameter.ToType(SpectrumUnitType.WaveLength) * WaveLengthMultiplier;
             var tuple = this.getNearestIndexes(waveLength);
             var lower = tuple.Item1;
             var upper = tuple.Item2;
@@ -76,10 +81,10 @@ namespace Simulation.DDA
             var coefWaveLength = deltaWaveLength / stepWaveLength;
 
             double epsRe = this.PermittivityList[lower].Real + coefWaveLength *
-                (this.PermittivityList[upper].Real - this.PermittivityList[lower].Real);
+                           (this.PermittivityList[upper].Real - this.PermittivityList[lower].Real);
 
             double epsIm = this.PermittivityList[lower].Imaginary + coefWaveLength *
-                (this.PermittivityList[upper].Imaginary - this.PermittivityList[lower].Imaginary);
+                           (this.PermittivityList[upper].Imaginary - this.PermittivityList[lower].Imaginary);
 
             return new Complex(epsRe, epsIm);
 

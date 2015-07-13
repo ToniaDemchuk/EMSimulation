@@ -1,33 +1,44 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
 using Simulation.Models.Coordinates;
+using Simulation.Models.Enums;
 
 namespace Simulation.Models.Spectrum
 {
     /// <summary>
     /// The FourierSeries class.
     /// </summary>
-    /// <typeparam name="T">The type of sequence values.</typeparam>
-    public class FourierSeries<T> : Dictionary<SpectrumUnit, T> where T : struct
+    public class FourierSeries : Dictionary<int, double>
     {
-        public void Aggregate(IEnumerable<SpectrumUnit> spectrum, Func<SpectrumUnit, T> valueSelector)
+        /// <summary>
+        /// Get the Fourier transform for the specified.
+        /// </summary>
+        /// <param name="spec">The spec.</param>
+        /// <param name="timeStep">The time step.</param>
+        /// <returns></returns>
+        public Complex Transform(SpectrumUnit spec, double timeStep)
         {
-            foreach (var freq in spectrum)
-            {
-                T value;
-                if (this.TryGetValue(freq, out value))
-                {
-                    this[freq] = value + (dynamic) valueSelector(freq);
-                }
-                else
-                {
-                    this.Add(freq, valueSelector(freq));
-                }
-            }
+            var freq = spec.ToType(SpectrumUnitType.CycleFrequency);
+
+            return this.Aggregate(
+                Complex.Zero,
+                (sum, x) => sum + Complex.FromPolarCoordinates(x.Value, freq * timeStep * x.Key));
+        }
+    }
+
+    /// <summary>
+    /// The FourierSeriesCoordinate class.
+    /// </summary>
+    public class FourierSeriesCoordinate : Dictionary<int, CartesianCoordinate>
+    {
+        public ComplexCoordinate Transform(SpectrumUnit spec, double timeStep)
+        {
+            var freq = spec.ToType(SpectrumUnitType.CycleFrequency);
+            return this.Aggregate(
+                ComplexCoordinate.Zero,
+                (sum, x) => sum + ComplexCoordinate.FromPolarCoordinates(x.Value, freq * timeStep * x.Key));
         }
     }
 }

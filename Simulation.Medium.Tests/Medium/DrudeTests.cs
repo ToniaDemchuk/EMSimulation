@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Numerics;
+﻿using System.Linq;
 
 using AwokeKnowing.GnuplotCSharp;
 
@@ -8,7 +6,6 @@ using GnuplotCSharp;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using Simulation.Infrastructure;
 using Simulation.Medium.Medium;
 using Simulation.Models.Common;
 using Simulation.Models.Enums;

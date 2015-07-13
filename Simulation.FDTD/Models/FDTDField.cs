@@ -1,6 +1,4 @@
-﻿using Simulation.Medium.Models;
-using Simulation.Models.Coordinates;
-using Simulation.Models.Enums;
+﻿using Simulation.Models.Coordinates;
 using Simulation.Models.Extensions;
 using Simulation.Models.Spectrum;
 
@@ -55,13 +53,11 @@ namespace Simulation.FDTD.Models
         /// Gets or sets the fourier series of the field.
         /// </summary>
         /// <value>
-        /// The fourier series of the field..
+        /// The fourier series of the field.
         /// </value>
-        public FourierSeries<ComplexCoordinate>[,,] FourierField { get; set; }
+        public FourierSeriesCoordinate[,,] FourierField { get; set; }
 
         private readonly IndexStore indices;
-
-        private readonly OpticalSpectrum spectrum;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FDTDField" /> class.
@@ -70,38 +66,30 @@ namespace Simulation.FDTD.Models
         public FDTDField(SimulationParameters parameters)
         {
             this.indices = parameters.Indices;
-            this.spectrum = parameters.Spectrum;
 
-            this.FourierField = indices.CreateArray(
-                (i, j, k) => parameters.Medium[i, j, k].IsBody ? new FourierSeries<ComplexCoordinate>() : null);
-            
-            this.D = indices.CreateArray(() => CartesianCoordinate.Zero);
-            this.E = indices.CreateArray(() => CartesianCoordinate.Zero);
-            this.H = indices.CreateArray(() => CartesianCoordinate.Zero);
-            this.IntegralD = indices.CreateArray(() => CartesianCoordinate.Zero);
-            this.IntegralH = indices.CreateArray(() => CartesianCoordinate.Zero);
+            this.FourierField = this.indices.CreateArray(
+                (i, j, k) => parameters.Medium[i, j, k].IsBody ? new FourierSeriesCoordinate() : null);
+
+            this.D = this.indices.CreateArray(() => CartesianCoordinate.Zero);
+            this.E = this.indices.CreateArray(() => CartesianCoordinate.Zero);
+            this.H = this.indices.CreateArray(() => CartesianCoordinate.Zero);
+            this.IntegralD = this.indices.CreateArray(() => CartesianCoordinate.Zero);
+            this.IntegralH = this.indices.CreateArray(() => CartesianCoordinate.Zero);
         }
 
         /// <summary>
         /// Calculates the fourier series of the field.
         /// </summary>
         /// <param name="time">The time value.</param>
-        public void DoFourierField(double time)
+        public void DoFourierField(int time)
         {
-            this.indices.ParallelFor(
+            this.indices.ParallelLinqFor(
                 (i, j, k) =>
                 {
                     var fourierSeries = this.FourierField[i, j, k];
                     if (fourierSeries != null)
                     {
-                        var electricField = this.E[i, j, k];
-
-                        fourierSeries.Aggregate(
-                            this.spectrum,
-                            freq =>
-                            ComplexCoordinate.FromPolarCoordinates(
-                                electricField,
-                                freq.ToType(SpectrumUnitType.CycleFrequency) * time));
+                        fourierSeries.Add(time, this.E[i, j, k]);
                     }
                 });
         }

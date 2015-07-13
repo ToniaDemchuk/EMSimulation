@@ -13,6 +13,9 @@ namespace Simulation.Medium.Medium
     {
         private double epsilon;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Dielectric"/> class.
+        /// </summary>
         public Dielectric()
         {
             this.epsilon = 1.0;
@@ -26,12 +29,18 @@ namespace Simulation.Medium.Medium
         /// </value>
         public double Epsilon
         {
-            get { return this.epsilon; }
+            get
+            {
+                return this.epsilon;
+            }
             set
             {
                 if (value < 1.0)
                 {
-                    throw new ArgumentOutOfRangeException("Epsilon", value, "Relative dielectric permittivity cannot be less than one.");
+                    throw new ArgumentOutOfRangeException(
+                        "Epsilon",
+                        value,
+                        "Relative dielectric permittivity cannot be less than one.");
                 }
                 this.epsilon = value;
             }

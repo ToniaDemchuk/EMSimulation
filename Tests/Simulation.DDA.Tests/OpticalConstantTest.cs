@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Numerics;
 
 using AwokeKnowing.GnuplotCSharp;
@@ -10,9 +8,7 @@ using GnuplotCSharp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Simulation.Medium.Medium;
-using Simulation.Models.Constants;
 using Simulation.Models.Enums;
-using Simulation.Models.Extensions;
 using Simulation.Models.Spectrum;
 
 namespace Simulation.DDA.Tests
@@ -76,7 +72,7 @@ namespace Simulation.DDA.Tests
             var dict = new Dictionary<double, Complex>();
             foreach (var waveLength in optConst.WaveLengthList)
             {
-                var freq = new SpectrumUnit(waveLength*1e-9, SpectrumUnitType.WaveLength);
+                var freq = new SpectrumUnit(waveLength / OpticalConstants.WaveLengthMultiplier, SpectrumUnitType.WaveLength);
                 dict.Add(waveLength, drudeLorentz.GetPermittivity(freq));
             }
 
@@ -89,7 +85,7 @@ namespace Simulation.DDA.Tests
 
                 gp.Plot(optConst.WaveLengthList, optConst.PermittivityList);
                 gp.Plot(dict);
-                
+
                 gp.Wait();
             }
             // Act
