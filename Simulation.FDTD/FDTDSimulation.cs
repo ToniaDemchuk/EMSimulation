@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Numerics;
+using System.Threading;
 
 using AwokeKnowing.GnuplotCSharp;
 
@@ -32,7 +33,7 @@ namespace Simulation.FDTD
         {
             this.initParams(parameters);
             var gp = new GnuPlot();
-            foreach (var time in Enumerable.Range(1, parameters.NumSteps))
+            for (var time = 0; time < parameters.NumSteps; time++)
             {
                 this.calcFields(time, parameters);
 
@@ -83,8 +84,8 @@ namespace Simulation.FDTD
             parameters.Indices.ShiftLower(1).ShiftUpper(1).ParallelLinqFor(
                 (i, j, k) => { this.fields.E[i, j, k] = parameters.Medium[i, j, k].Solve(this.fields.D[i, j, k]); });
 
-            this.fields.DoFourierField(time);
-            this.pulse.DoFourierPulse(time);
+            this.fields.DoFourierField();
+            this.pulse.DoFourierPulse();
 
             this.calculateHField(parameters, pulseIndex);
         }
@@ -106,23 +107,31 @@ namespace Simulation.FDTD
 
             this.pulse.MagneticFieldStepCalc();
 
-            // Incident Hx
-            pulseIndex.ForExceptJ(
-                (i, k) =>
-                {
-                    var cartesianCoordinate = CartesianCoordinate.XOrth *
-                                              (param.CourantNumber * this.pulse.E[pulseIndex.Lower]);
-                    this.fields.H[i, pulseIndex.Lower - 1, k] += cartesianCoordinate;
-                    this.fields.H[i, pulseIndex.Lower, k] -= cartesianCoordinate;
-                });
+            this.addPulseToH1(pulseIndex, param.CourantNumber);
 
-            // Incident Hy
-            pulseIndex.ForExceptI(
+            this.addPulseToH2(pulseIndex, param.CourantNumber);
+        }
+
+        private void addPulseToH2(IndexStore pulseIndex, double courantNumber)
+        {
+            pulseIndex.ParallelForExceptI(
                 (j, k) =>
                 {
-                    var cartesianCoordinate = CartesianCoordinate.YOrth * (param.CourantNumber * this.pulse.E[j]);
-                    this.fields.H[pulseIndex.Lower - 1, j, k] -= cartesianCoordinate;
-                    this.fields.H[pulseIndex.Lower, j, k] -= cartesianCoordinate;
+                    var cartesian = CartesianCoordinate.YOrth * (courantNumber * this.pulse.E[j]);
+                    this.fields.H[pulseIndex.Lower - 1, j, k] -= cartesian;
+                    this.fields.H[pulseIndex.Lower, j, k] -= cartesian;
+                });
+        }
+
+        private void addPulseToH1(IndexStore pulseIndex, double courantNumber)
+        {
+            var cartesianCoordinate = CartesianCoordinate.XOrth *
+                                      (courantNumber * this.pulse.E[pulseIndex.Lower]);
+            pulseIndex.ParallelForExceptJ(
+                (i, k) =>
+                {
+                    this.fields.H[i, pulseIndex.Lower - 1, k] += cartesianCoordinate;
+                    this.fields.H[i, pulseIndex.Lower, k] -= cartesianCoordinate;
                 });
         }
 
@@ -143,69 +152,77 @@ namespace Simulation.FDTD
 
             this.pulse.ElectricFieldStepCalc(time);
 
-            // Incident Dy
-            pulseIndex.ForExceptK(
+            this.addPulseToD1(pulseIndex, param.CourantNumber);
+
+            this.addPulseToD2(pulseIndex, param.CourantNumber);
+        }
+
+        private void addPulseToD1(IndexStore pulseIndex, double courantNumber)
+        {
+            pulseIndex.ParallelForExceptK(
                 (i, j) =>
                 {
-                    var cartesianCoordinate = CartesianCoordinate.YOrth *
-                                              (param.CourantNumber * this.pulse.H[j]);
+                    var cartesianCoordinate = CartesianCoordinate.YOrth * (courantNumber * this.pulse.H[j]);
                     this.fields.D[i, j, pulseIndex.Lower] -= cartesianCoordinate;
                     this.fields.D[i, j, pulseIndex.Lower + 1] -= cartesianCoordinate;
                 });
+        }
 
-            // Incident Dz
-            pulseIndex.ForExceptJ(
-                (i, k) =>
-                {
-                    this.fields.D[i, pulseIndex.Lower, k] +=
-                        CartesianCoordinate.ZOrth * (param.CourantNumber *
+        private void addPulseToD2(IndexStore pulseIndex, double courantNumber)
+        {
+            var cart = CartesianCoordinate.ZOrth * (courantNumber *
                                                     (this.pulse.H[pulseIndex.Lower - 1] -
                                                      this.pulse.H[pulseIndex.JLength]));
-                });
+            pulseIndex.ParallelForExceptJ(
+                (i, k) => { this.fields.D[i, pulseIndex.Lower, k] += cart; });
         }
 
         private SimulationResult calculateExtinction(SpectrumUnit freq, SimulationParameters parameters)
         {
-            double waveNumber = freq.ToType(SpectrumUnitType.WaveNumber);
-
             double timeStep = parameters.CellSize * parameters.CourantNumber / Fundamentals.SpeedOfLight;
-            double area = 0.0;
-
             var pulseFourier = this.pulse.FourierPulse.Select(x => x.Transform(freq, timeStep).Magnitude).ToArray();
-
             double extinction = 0;
-
             object obj = new object();
             parameters.Indices.ParallelLinqFor(
                 (i, j, k) =>
                 {
-                    if (parameters.Medium[i, j, k].IsBody)
+                    if (!parameters.Medium[i, j, k].IsBody)
                     {
-                        Complex eps = parameters.Medium[i, j, k].Permittivity.GetPermittivity(freq);
-
-                        double pulseMultiplier = 1 / pulseFourier[j];
-                        var complex = eps.Imaginary *
-                                      pulseMultiplier * this.fields.FourierField[i, j, k].Transform(freq, timeStep).Norm;
-
-                        lock (obj)
-                        {
-                            extinction += complex;
-                        }
+                        return;
                     }
+                    Complex eps = parameters.Medium[i, j, k].Permittivity.GetPermittivity(freq);
 
+                    double pulseMultiplier = 1 / pulseFourier[j];
+                    var complex = eps.Imaginary *
+                                  pulseMultiplier * this.fields.FourierField[i, j, k].Transform(freq, timeStep).Norm;
+
+                    lock (obj)
+                    {
+                        extinction += complex;
+                    }
                 });
 
-            parameters.Indices.ForExceptJ(
-                (i, k) => area += parameters.Medium[i, parameters.Indices.GetCenter().JLength, k].IsBody ? 1 : 0);
+            double area = calculateArea(parameters);
 
             var resu = new SimulationResult();
 
+            double waveNumber = freq.ToType(SpectrumUnitType.WaveNumber);
+
             extinction *= waveNumber * parameters.CellSize * parameters.CellSize * parameters.CellSize;
             resu.CrossSectionAbsorption = extinction;
+
             extinction /= area * parameters.CellSize * parameters.CellSize;
             resu.EffectiveCrossSectionAbsorption = extinction;
 
             return resu;
+        }
+
+        private static double calculateArea(SimulationParameters parameters)
+        {
+            double area = 0.0;
+            parameters.Indices.ForExceptJ(
+                (i, k) => area += parameters.Medium[i, parameters.Indices.GetCenter().JLength, k].IsBody ? 1 : 0);
+            return area;
         }
     }
 }

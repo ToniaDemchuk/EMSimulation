@@ -3,6 +3,7 @@ using System.Linq;
 
 using Simulation.FDTD.Models;
 using Simulation.Infrastructure;
+using Simulation.Medium.Factors;
 using Simulation.Medium.Medium;
 using Simulation.Medium.MediumSolver;
 using Simulation.Medium.Models;
@@ -53,6 +54,7 @@ namespace Simulation.FDTD.Console
             double timeStep = parameters.CellSize * parameters.CourantNumber / (Fundamentals.SpeedOfLight);
             var vacuum = new VacuumSolver();
             var silver = new DrudeLorentz();
+            var drudeLorentzParam = new DrudeLorentzFactor(silver, timeStep);
             double radius = 10;
 
             var centerIndices = parameters.Indices.GetCenter();
@@ -64,7 +66,7 @@ namespace Simulation.FDTD.Console
                     var point = new CartesianCoordinate(i, j, k) - center;
                     if (point.Norm <= radius)
                     {
-                        return new DrudeLorentzSolver(silver, timeStep) { IsBody = true };
+                        return new DrudeLorentzSolver(silver, drudeLorentzParam) { IsBody = true };
                     }
                     return vacuum;
                 });

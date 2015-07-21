@@ -14,7 +14,7 @@ namespace Simulation.Models.Extensions
         /// <summary>
         /// The maximum degree of parallelism for parallel methods.
         /// </summary>
-        public static int MaxDegreeOfParallelism = 8;
+        public static int MaxDegreeOfParallelism = 32;
 
         /// <summary>
         /// Iterates through the specified array.
@@ -67,7 +67,25 @@ namespace Simulation.Models.Extensions
             }
         }
 
-        static IEnumerable<Tuple<int,int,int>> RangeIterator(this IndexStore indices)
+        public static void ParallelLinqFor<T>(this T[,,] array, Func<int, int, int, T> function)
+        {
+            Parallel.For(
+                0,
+                array.GetLength(0),
+                new ParallelOptions { MaxDegreeOfParallelism = MaxDegreeOfParallelism },
+                i =>
+                {
+                    for (int j = 0; j < array.GetLength(1); j++)
+                    {
+                        for (int k = 0; k < array.GetLength(2); k++)
+                        {
+                            array[i, j, k] = function(i, j, k);
+                        }
+                    }
+                });
+        }
+
+        private static IEnumerable<Tuple<int, int, int>> RangeIterator(this IndexStore indices)
         {
             for (int i = indices.Lower; i < indices.ILength; i++)
             {
@@ -75,7 +93,7 @@ namespace Simulation.Models.Extensions
                 {
                     for (int k = indices.Lower; k < indices.KLength; k++)
                     {
-                        yield return new Tuple<int,int,int>(i, j, k);
+                        yield return new Tuple<int, int, int>(i, j, k);
                     }
                 }
             }
@@ -91,10 +109,9 @@ namespace Simulation.Models.Extensions
             Parallel.For(
                 indices.Lower,
                 indices.ILength,
-                new ParallelOptions{MaxDegreeOfParallelism = MaxDegreeOfParallelism},
+                new ParallelOptions { MaxDegreeOfParallelism = MaxDegreeOfParallelism },
                 i =>
                 {
-
                     for (int j = indices.Lower; j < indices.JLength; j++)
                     {
                         for (int k = indices.Lower; k < indices.KLength; k++)
@@ -102,7 +119,6 @@ namespace Simulation.Models.Extensions
                             action(i, j, k);
                         }
                     }
-
                 });
         }
 
@@ -114,7 +130,7 @@ namespace Simulation.Models.Extensions
                 indices.Lower,
                 indices.ILength,
                 new ParallelOptions { MaxDegreeOfParallelism = MaxDegreeOfParallelism },
-                ()=>0d,
+                () => 0d,
                 (i, state, local) =>
                 {
                     var sumloc = 0d;
@@ -281,6 +297,21 @@ namespace Simulation.Models.Extensions
             }
         }
 
+        public static void ParallelForExceptI(this IndexStore indices, Action<int, int> action)
+        {
+            Parallel.For(
+                indices.Lower,
+                indices.JLength,
+                new ParallelOptions { MaxDegreeOfParallelism = MaxDegreeOfParallelism },
+                i =>
+                {
+                    for (int k = indices.Lower; k < indices.KLength; k++)
+                    {
+                        action(i, k);
+                    }
+                });
+        }
+
         /// <summary>
         /// Iterates through the specified array except the second dimension.
         /// </summary>
@@ -297,6 +328,21 @@ namespace Simulation.Models.Extensions
             }
         }
 
+        public static void ParallelForExceptJ(this IndexStore indices, Action<int, int> action)
+        {
+            Parallel.For(
+                indices.Lower,
+                indices.ILength,
+                new ParallelOptions { MaxDegreeOfParallelism = MaxDegreeOfParallelism },
+                i =>
+                {
+                    for (int k = indices.Lower; k < indices.KLength; k++)
+                    {
+                        action(i, k);
+                    }
+                });
+        }
+
         /// <summary>
         /// Iterates through the specified array except the third dimension.
         /// </summary>
@@ -311,6 +357,21 @@ namespace Simulation.Models.Extensions
                     action(i, j);
                 }
             }
+        }
+
+        public static void ParallelForExceptK(this IndexStore indices, Action<int, int> action)
+        {
+            Parallel.For(
+                indices.Lower,
+                indices.ILength,
+                new ParallelOptions { MaxDegreeOfParallelism = MaxDegreeOfParallelism },
+                i =>
+                {
+                    for (int j = indices.Lower; j < indices.JLength; j++)
+                    {
+                        action(i, j);
+                    }
+                });
         }
 
         /// <summary>
@@ -337,7 +398,7 @@ namespace Simulation.Models.Extensions
         public static T[,,] CreateArray<T>(this IndexStore indices, Func<int, int, int, T> initializer)
         {
             var array = indices.CreateArray<T>();
-            array.For(initializer);
+            array.ParallelLinqFor(initializer);
             return array;
         }
 
@@ -353,7 +414,7 @@ namespace Simulation.Models.Extensions
         public static T[,,] CreateArray<T>(this IndexStore indices, Func<T> initializer)
         {
             var array = indices.CreateArray<T>();
-            array.For((i, j, k) => initializer());
+            array.ParallelLinqFor((i, j, k) => initializer());
             return array;
         }
     }

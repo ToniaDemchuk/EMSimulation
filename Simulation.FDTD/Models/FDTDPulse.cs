@@ -41,7 +41,7 @@ namespace Simulation.FDTD.Models
             this.pulseFunc = parameters.WaveFunc;
 
             this.FourierPulse = new FourierSeries[this.medLength];
-            this.FourierPulse.For(i => new FourierSeries());
+            this.FourierPulse.For(i => new FourierSeries(parameters.NumSteps));
         }
 
         /// <summary>
@@ -125,12 +125,11 @@ namespace Simulation.FDTD.Models
         /// <summary>
         /// Does the fourier pulse.
         /// </summary>
-        /// <param name="time">The time step.</param>
-        public void DoFourierPulse(int time)
+        public void DoFourierPulse()
         {
             for (int m = 0; m < this.medLength; m++)
             {
-                this.FourierPulse[m].Add(time, this.E[m]);
+                this.FourierPulse[m].Add(this.E[m]);
             }
         }
     }

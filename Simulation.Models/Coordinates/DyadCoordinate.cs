@@ -6,7 +6,7 @@ namespace Simulation.Models.Coordinates
     /// The CartesianCoordinate class.
     /// </summary>
     /// <typeparam name="T">The type of underlying value.</typeparam>
-    public class DyadCoordinate<T>
+    public class DyadCoordinate<T> where T : struct
     {
         /// <summary>
         /// The dyad length
@@ -47,14 +47,13 @@ namespace Simulation.Models.Coordinates
                 { default(T), initValue, default(T) },
                 { default(T), default(T), initValue }
             };
-
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DyadCoordinate{T}"/> class.
         /// </summary>
         /// <param name="dyad">The dyad matrix.</param>
-        protected DyadCoordinate(T[,] dyad)
+        private DyadCoordinate(T[,] dyad)
         {
             this.Dyad = dyad;
         }
@@ -65,7 +64,7 @@ namespace Simulation.Models.Coordinates
         /// <value>
         /// The dyad values.
         /// </value>
-        public T[,] Dyad { get; protected set; }
+        public T[,] Dyad { get; private set; }
 
         /// <summary>
         /// Implements the operator * (Multiply dyad on the value).
@@ -86,7 +85,7 @@ namespace Simulation.Models.Coordinates
             {
                 for (int j = 0; j < DyadLength; j++)
                 {
-                    newDyad[i, j] = (dynamic)point1.Dyad[i, j] * num;
+                    newDyad[i, j] = (dynamic) point1.Dyad[i, j] * num;
                 }
             }
 
@@ -127,7 +126,7 @@ namespace Simulation.Models.Coordinates
             {
                 for (int j = 0; j < DyadLength; j++)
                 {
-                    newDyad[i, j] = (dynamic)point1.Dyad[i, j] - point2.Dyad[i, j];
+                    newDyad[i, j] = (dynamic) point1.Dyad[i, j] - point2.Dyad[i, j];
                 }
             }
 
@@ -153,7 +152,7 @@ namespace Simulation.Models.Coordinates
             {
                 for (int j = 0; j < DyadLength; j++)
                 {
-                    newDyad[i, j] = (dynamic)point1.Dyad[i, j] + point2.Dyad[i, j];
+                    newDyad[i, j] = (dynamic) point1.Dyad[i, j] + point2.Dyad[i, j];
                 }
             }
 
@@ -175,7 +174,7 @@ namespace Simulation.Models.Coordinates
             {
                 for (int j = 0; j < DyadLength; j++)
                 {
-                    newDyad[i, j] = (dynamic)value.Dyad[i, j];
+                    newDyad[i, j] = (dynamic) value.Dyad[i, j];
                 }
             }
 

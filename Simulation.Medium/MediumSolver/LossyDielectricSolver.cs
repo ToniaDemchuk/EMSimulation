@@ -1,3 +1,4 @@
+using Simulation.Medium.Factors;
 using Simulation.Medium.Medium;
 using Simulation.Models.Constants;
 using Simulation.Models.Coordinates;
@@ -10,20 +11,17 @@ namespace Simulation.Medium.MediumSolver
     public class LossyDielectricSolver : DielectricSolver
     {
         /// <summary>
-        ///     Initializes a new instance of the <see cref="LossyDielectricSolver" /> class.
+        /// Initializes a new instance of the <see cref="LossyDielectricSolver" /> class.
         /// </summary>
         /// <param name="medium">The medium.</param>
-        /// <param name="timeStep">The time step.</param>
-        public LossyDielectricSolver(LossyDielectric medium, double timeStep)
-            : base(medium)
+        /// <param name="param">The parameter.</param>
+        public LossyDielectricSolver(LossyDielectric medium, LossyDielectricFactor param)
+            : base(medium, param)
         {
-            this.DisplacementFactor = 1.0 /
-                (medium.Epsilon + (medium.Conductivity * timeStep / Fundamentals.ElectricConst));
-
-            this.ElectricFactor = medium.Conductivity * timeStep / Fundamentals.ElectricConst;
-
-            this.IntegralField = CartesianCoordinate.Zero;
+            this.param = param;
         }
+
+        private readonly LossyDielectricFactor param;
 
         /// <summary>
         ///     Gets or sets the integral field.
@@ -32,14 +30,6 @@ namespace Simulation.Medium.MediumSolver
         ///     The integral field.
         /// </value>
         public CartesianCoordinate IntegralField { get; protected set; }
-
-        /// <summary>
-        ///     Gets or sets the integral factor.
-        /// </summary>
-        /// <value>
-        ///     The integral factor.
-        /// </value>
-        public double ElectricFactor { get; protected set; }
 
         /// <summary>
         ///     Solves the electric field using specified displacement field.
@@ -51,8 +41,8 @@ namespace Simulation.Medium.MediumSolver
         public override CartesianCoordinate Solve(
             CartesianCoordinate displacementField)
         {
-            CartesianCoordinate efield = (displacementField - this.IntegralField) * this.DisplacementFactor;
-            this.IntegralField = this.IntegralField + efield * this.ElectricFactor;
+            CartesianCoordinate efield = (displacementField - this.IntegralField) * this.param.Displacement;
+            this.IntegralField = this.IntegralField + efield * this.param.Electric;
             return efield;
         }
     }

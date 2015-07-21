@@ -1,5 +1,6 @@
 using System;
 
+using Simulation.Medium.Factors;
 using Simulation.Medium.Medium;
 using Simulation.Medium.Models;
 using Simulation.Models.Coordinates;
@@ -13,59 +14,17 @@ namespace Simulation.Medium.MediumSolver
     public class DrudeSolver : BaseMediumSolver
     {
         /// <summary>
-        ///     Initializes a new instance of the <see cref="DrudeSolver" /> class.
+        /// Initializes a new instance of the <see cref="DrudeSolver" /> class.
         /// </summary>
         /// <param name="medium">The medium.</param>
-        /// <param name="timeStep">The time step.</param>
-        public DrudeSolver(Drude medium, double timeStep)
+        /// <param name="param">The parameter.</param>
+        public DrudeSolver(Drude medium, DrudeFactor param)
             : base(medium)
         {
-            double collisionFreq = medium.PlasmaTerm.CollisionFrequency.ToType(SpectrumUnitType.Frequency);
-            double plasmaFreq = medium.PlasmaTerm.ResonanceFrequency.ToType(SpectrumUnitType.CycleFrequency);
-            double epsvc = collisionFreq * timeStep;
-            double exp = Math.Exp(epsvc);
-
-            this.SampledTimeDomain = CartesianCoordinate.Zero;
-            this.SampledTimeDomain1 = CartesianCoordinate.Zero;
-            this.SampledTimeDomain2 = CartesianCoordinate.Zero;
-
-            this.SampledTimeFactor1 = 1.0 + exp;
-            this.SampledTimeFactor2 = exp;
-            this.ElectricFactor = ((plasmaFreq * plasmaFreq * medium.PlasmaTerm.StrengthFactor) * timeStep / collisionFreq) * (1.0 - exp);
-            this.EpsilonInfinity = medium.EpsilonInfinity;
+            this.param = param;
         }
 
-        /// <summary>
-        ///     Gets or sets the sampled time factor1.
-        /// </summary>
-        /// <value>
-        ///     The sampled time factor1.
-        /// </value>
-        public double SampledTimeFactor1 { get; protected set; }
-
-        /// <summary>
-        ///     Gets or sets the sampled time factor2.
-        /// </summary>
-        /// <value>
-        ///     The sampled time factor2.
-        /// </value>
-        public double SampledTimeFactor2 { get; protected set; }
-
-        /// <summary>
-        ///     Gets or sets the electric factor.
-        /// </summary>
-        /// <value>
-        ///     The electric factor.
-        /// </value>
-        public double ElectricFactor { get; protected set; }
-
-        /// <summary>
-        ///     Gets or sets the epsilon infinity.
-        /// </summary>
-        /// <value>
-        ///     The epsilon infinity.
-        /// </value>
-        public double EpsilonInfinity { get; protected set; }
+        private readonly DrudeFactor param;
 
         /// <summary>
         ///     Gets or sets the sampled time domain.
@@ -100,11 +59,11 @@ namespace Simulation.Medium.MediumSolver
         /// </returns>
         public override CartesianCoordinate Solve(CartesianCoordinate displacementField)
         {
-            CartesianCoordinate efield = (displacementField - this.SampledTimeDomain) / this.EpsilonInfinity;
+            CartesianCoordinate efield = (displacementField - this.SampledTimeDomain) / param.EpsilonInfinity;
 
-            this.SampledTimeDomain = this.SampledTimeFactor1 * this.SampledTimeDomain1 -
-                                     this.SampledTimeFactor2 * this.SampledTimeDomain2 -
-                                     this.ElectricFactor * efield;
+            this.SampledTimeDomain = param.SampledTimeShift1 * this.SampledTimeDomain1 -
+                                     param.SampledTimeShift2 * this.SampledTimeDomain2 -
+                                     param.Electric * efield;
 
             this.SampledTimeDomain2 = this.SampledTimeDomain1;
             this.SampledTimeDomain1 = this.SampledTimeDomain;
