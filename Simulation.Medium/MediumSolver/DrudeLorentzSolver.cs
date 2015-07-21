@@ -27,12 +27,6 @@ namespace Simulation.Medium.MediumSolver
             this.SampledLorentzDomain1 = new CartesianCoordinate[medium.OscillatorTerms.Count];
             this.SampledLorentzDomain2 = new CartesianCoordinate[medium.OscillatorTerms.Count];
 
-            for (int l = 0; l < medium.OscillatorTerms.Count; l++)
-            {
-                this.SampledLorentzDomain[l] = CartesianCoordinate.Zero;
-                this.SampledLorentzDomain1[l] = CartesianCoordinate.Zero;
-                this.SampledLorentzDomain2[l] = CartesianCoordinate.Zero;
-            }
         }
 
         private readonly DrudeLorentzFactor param;
