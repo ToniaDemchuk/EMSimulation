@@ -42,7 +42,7 @@ namespace Simulation.Medium.MediumSolver
             CartesianCoordinate displacementField)
         {
             CartesianCoordinate efield = (displacementField - this.IntegralField) * this.param.Displacement;
-            this.IntegralField = this.IntegralField + efield * this.param.Electric;
+            this.IntegralField += efield * this.param.Electric;
             return efield;
         }
     }

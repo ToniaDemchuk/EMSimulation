@@ -1,34 +1,48 @@
 ﻿using Simulation.Models.Coordinates;
-using Simulation.Models.Extensions;
+using PmlCoef = System.Tuple<double, double, double>;
 
 namespace Simulation.FDTD.Models
 {
     public struct PmlCoefficient
     {
-        private CartesianCoordinate fieldFactor;
-        private CartesianCoordinate curlFactor;
-        private CartesianCoordinate integralFactor;
+        private readonly PmlCoef iCoef;
 
-        public PmlCoefficient(CartesianCoordinate fieldFactor, CartesianCoordinate curlFactor, CartesianCoordinate integralFactor)
+        private readonly PmlCoef jCoef;
+
+        private readonly PmlCoef kCoef;
+
+        public PmlCoefficient(
+            PmlCoef iCoef,
+            PmlCoef jCoef,
+            PmlCoef kCoef)
         {
-            this.fieldFactor = fieldFactor;
-            this.curlFactor = curlFactor;
-            this.integralFactor = integralFactor;
+            this.iCoef = iCoef;
+            this.jCoef = jCoef;
+            this.kCoef = kCoef;
         }
 
         public CartesianCoordinate FieldFactor(CartesianCoordinate coordinate)
         {
-            return this.fieldFactor.ComponentProduct(coordinate);
+            return new CartesianCoordinate(
+                coordinate.X * this.jCoef.Item3 * this.kCoef.Item3,
+                coordinate.Y * this.iCoef.Item3 * this.kCoef.Item3,
+                coordinate.Z * this.iCoef.Item3 * this.jCoef.Item3);
         }
 
         public CartesianCoordinate CurlFactor(CartesianCoordinate coordinate)
         {
-            return this.curlFactor.ComponentProduct(coordinate);
+            return new CartesianCoordinate(
+                coordinate.X * this.jCoef.Item2 * this.kCoef.Item2,
+                coordinate.Y * this.iCoef.Item2 * this.kCoef.Item2,
+                coordinate.Z * this.iCoef.Item2 * this.jCoef.Item2);
         }
 
         public CartesianCoordinate IntegralFactor(CartesianCoordinate coordinate)
         {
-            return this.integralFactor.ComponentProduct(coordinate);
+            return new CartesianCoordinate(
+                coordinate.X * this.iCoef.Item1,
+                coordinate.Y * this.jCoef.Item1,
+                coordinate.Z * this.kCoef.Item1);
         }
     }
 }

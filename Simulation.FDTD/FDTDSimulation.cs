@@ -71,8 +71,8 @@ namespace Simulation.FDTD
         {
             if (parameters.IsSpectrumCalculated)
             {
-                return parameters.Spectrum.ToSimulationResult(x => this.calculateExtinction(x, parameters));
-            }
+            return parameters.Spectrum.ToSimulationResult(x => this.calculateExtinction(x, parameters));
+        }
             return new SimulationResultDictionary();
         }
 
@@ -109,7 +109,7 @@ namespace Simulation.FDTD
                     CartesianCoordinate curlE = this.fields.E.Curl(i, j, k, +1);
                     this.fields.IntegralH[i, j, k] = this.fields.IntegralH[i, j, k] + curlE;
 
-                    var coefs = this.pml.Magnetic[i, j, k];
+                    var coefs = this.pml.Magnetic(i, j, k);
                     this.fields.H[i, j, k] =
                         coefs.FieldFactor(this.fields.H[i, j, k])
                         + param.CourantNumber * coefs.CurlFactor(
@@ -156,7 +156,7 @@ namespace Simulation.FDTD
                     CartesianCoordinate curlH = this.fields.H.Curl(i, j, k, -1);
                     this.fields.IntegralD[i, j, k] += curlH;
 
-                    var pmlCoefs = this.pml.Electric[i, j, k];
+                    var pmlCoefs = this.pml.Electric(i, j, k);
                     this.fields.D[i, j, k] =
                         pmlCoefs.FieldFactor(this.fields.D[i, j, k]) +
                         param.CourantNumber * pmlCoefs.CurlFactor(
@@ -205,11 +205,10 @@ namespace Simulation.FDTD
                         return 0;
                     }
                     Complex eps = parameters.Medium[i, j, k].Permittivity.GetPermittivity(freq);
-
+                    
                     double pulseMultiplier = 1 / pulseFourier[j];
                     var complex = eps.Imaginary *
                                   pulseMultiplier * this.fields.FourierField[i, j, k].Transform(freq, timeStep).Norm;
-
                     return complex;
                 });
 

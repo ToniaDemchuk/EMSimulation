@@ -19,6 +19,7 @@ namespace Simulation.Medium.Factors
             this.Electric = ((plasmaFreq * plasmaFreq * medium.PlasmaTerm.StrengthFactor) * timeStep / collisionFreq) * (1.0 - exp);
             this.EpsilonInfinity = medium.EpsilonInfinity;
         }
+
         /// <summary>
         ///     Gets or sets the sampled time factor1.
         /// </summary>
