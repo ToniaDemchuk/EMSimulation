@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -10,6 +11,7 @@ namespace AwokeKnowing.GnuplotCSharp
 {
     public class GnuPlot : IDisposable
     {
+        private const string defaultPath = @"C:\Program Files (x86)\gnuplot\bin\gnuplot.exe";
         private Process ExtPro;
 
         private StreamWriter GnupStWr;
@@ -24,11 +26,15 @@ namespace AwokeKnowing.GnuplotCSharp
 
         public bool Hold { get; private set; }
 
-        public GnuPlot()
+        public GnuPlot():this(defaultPath)
+        {
+        }
+
+        public GnuPlot(string filePath)
         {
             ProcessStartInfo processStartInfo = new ProcessStartInfo
             {
-                FileName = getExePath(),
+                FileName = filePath,
                 UseShellExecute = false,
                 RedirectStandardInput = true,
                 RedirectStandardOutput = true,
@@ -115,17 +121,6 @@ namespace AwokeKnowing.GnuplotCSharp
         {
             this.ExtPro.WaitForExit(600000);
 
-        }
-
-        private static string getExePath()
-        {
-            var enviromentPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Machine);
-
-            var paths = enviromentPath.Split(';');
-            var exePath = paths
-                .Select(x => Path.Combine(x, "gnuplot.exe"))
-                .FirstOrDefault(File.Exists);
-            return exePath;
         }
 
         public void WriteLine(string gnuplotcommands)
@@ -865,7 +860,7 @@ namespace AwokeKnowing.GnuplotCSharp
         /// </summary>
         public void Dispose()
         {
-
+            this.ExtPro.Close();
         }
     }
 }

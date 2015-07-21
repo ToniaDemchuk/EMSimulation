@@ -3,18 +3,11 @@ using Simulation.Models.Extensions;
 
 namespace Simulation.FDTD.Models
 {
-    public class PmlCoefficient
+    public struct PmlCoefficient
     {
         private CartesianCoordinate fieldFactor;
         private CartesianCoordinate curlFactor;
         private CartesianCoordinate integralFactor;
-
-        public PmlCoefficient()
-        {
-            this.fieldFactor = CartesianCoordinate.One;
-            this.curlFactor = CartesianCoordinate.One;
-            this.integralFactor = CartesianCoordinate.Zero;
-        }
 
         public PmlCoefficient(CartesianCoordinate fieldFactor, CartesianCoordinate curlFactor, CartesianCoordinate integralFactor)
         {

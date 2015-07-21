@@ -68,7 +68,7 @@ namespace Simulation.FDTD.Models
             this.indices = parameters.Indices;
 
             this.FourierField = this.indices.CreateArray(
-                (i, j, k) => parameters.Medium[i, j, k].IsBody ? new FourierSeriesCoordinate() : null);
+                (i, j, k) => parameters.Medium[i, j, k].IsBody ? new FourierSeriesCoordinate(parameters.NumSteps) : null);
 
             this.D = this.indices.CreateArray(() => CartesianCoordinate.Zero);
             this.E = this.indices.CreateArray(() => CartesianCoordinate.Zero);
@@ -80,8 +80,7 @@ namespace Simulation.FDTD.Models
         /// <summary>
         /// Calculates the fourier series of the field.
         /// </summary>
-        /// <param name="time">The time value.</param>
-        public void DoFourierField(int time)
+        public void DoFourierField()
         {
             this.indices.ParallelLinqFor(
                 (i, j, k) =>
@@ -89,7 +88,7 @@ namespace Simulation.FDTD.Models
                     var fourierSeries = this.FourierField[i, j, k];
                     if (fourierSeries != null)
                     {
-                        fourierSeries.Add(time, this.E[i, j, k]);
+                        fourierSeries.Add(this.E[i, j, k]);
                     }
                 });
         }

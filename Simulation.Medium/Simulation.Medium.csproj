@@ -58,6 +58,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Factors\DrudeLorentzFactor.cs" />
+    <Compile Include="Factors\DrudeFactor.cs" />
+    <Compile Include="Factors\LossyDielectricFactor.cs" />
+    <Compile Include="Factors\DielectricFactor.cs" />
     <Compile Include="Models\DispersionParameter.cs" />
     <Compile Include="MediumSolver\DielectricSolver.cs" />
     <Compile Include="Medium\Drude.cs" />
