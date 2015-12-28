@@ -13,6 +13,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Simulation.FDTD.Console;
 using Simulation.Models.Extensions;
+using Simulation.Infrastructure.Iterators;
 
 namespace Simulation.FDTD.Tests
 {
@@ -33,7 +34,7 @@ namespace Simulation.FDTD.Tests
                 for (var i = 1; i <= 16; i++)
                 {
                     watch.Start();
-                    ArrayExtensions.MaxDegreeOfParallelism = i;
+                    ParallelIterator.MaxDegreeOfParallelism = i;
 
                     FDTDProgram.Calculate();
                     watch.Stop();

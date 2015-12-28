@@ -849,7 +849,12 @@ namespace AwokeKnowing.GnuplotCSharp
             PlotBuffer.Clear();
             SPlotBuffer.Clear();
         }
-
+        public void Clear()
+        {
+            PlotBuffer.Clear();
+            SPlotBuffer.Clear();
+            this.Replot();
+        }
         public void Close()
         {
             this.ExtPro.CloseMainWindow();

@@ -10,6 +10,7 @@ using Simulation.Models.Coordinates;
 using Simulation.Models.Enums;
 using Simulation.Models.Extensions;
 using Simulation.Models.Spectrum;
+using Simulation.Infrastructure.Iterators;
 
 namespace Simulation.FDTD
 {
@@ -18,6 +19,11 @@ namespace Simulation.FDTD
     /// </summary>
     public class FDTDSimulation
     {
+        IIterator iterator;
+        public FDTDSimulation(IIterator iterator)
+        {
+            this.iterator = iterator;
+        }
         private FDTDField fields;
 
         private PmlBoundary pml;
@@ -37,20 +43,21 @@ namespace Simulation.FDTD
             {
                 this.calcFields(time, parameters);
 
-                //var surf = new double[parameters.Indices.ILength, parameters.Indices.JLength];
+                var surf = new double[parameters.Indices.ILength, parameters.Indices.JLength];
 
-                //parameters.Indices.ForExceptK(
-                //    (i, j) =>
-                //    {
-                //        surf[i, j] = this.fields.E[i, j, parameters.Indices.GetCenter().KLength].Z;
-                //    });
-                //gp.SPlot(surf);
+                iterator.ForExceptK(
+                    parameters.Indices,
+                    (i, j) =>
+                    {
+                        surf[i, j] = this.fields.E[i, j, parameters.Indices.GetCenter().KLength].Z;
+                    });
+                gp.SPlot(surf);
 
                 //gp.Plot(pulse.E);
             }
 
             var result = this.CalcExtinction(parameters);
-            //gp.Plot(result.Select(x=>x.Value.EffectiveCrossSectionAbsorption));
+            //gp.Plot(result.Select(x => x.Value.EffectiveCrossSectionAbsorption));
             //gp.Wait();
             return result;
         }
@@ -62,12 +69,16 @@ namespace Simulation.FDTD
         /// <returns>The simulation results.</returns>
         public SimulationResultDictionary CalcExtinction(SimulationParameters parameters)
         {
-            return parameters.Spectrum.ToSimulationResult(x => this.calculateExtinction(x, parameters));
+            if (parameters.IsSpectrumCalculated)
+            {
+                return parameters.Spectrum.ToSimulationResult(x => this.calculateExtinction(x, parameters));
+            }
+            return new SimulationResultDictionary();
         }
 
         private void initParams(SimulationParameters parameters)
         {
-            this.fields = new FDTDField(parameters);
+            this.fields = new FDTDField(parameters, iterator);
             this.pulse = new FDTDPulse(parameters);
 
             this.pml = new PmlBoundary(parameters.PmlLength, parameters.Indices);
@@ -81,7 +92,7 @@ namespace Simulation.FDTD
             this.calculateDField(parameters, pulseIndex, time);
 
             // Calculate the E from D field
-            parameters.Indices.ShiftLower(1).ShiftUpper(1).ParallelLinqFor(
+            iterator.For(parameters.Indices.ShiftLower(1).ShiftUpper(1),
                 (i, j, k) => { this.fields.E[i, j, k] = parameters.Medium[i, j, k].Solve(this.fields.D[i, j, k]); });
 
             this.fields.DoFourierField();
@@ -92,7 +103,7 @@ namespace Simulation.FDTD
 
         private void calculateHField(SimulationParameters param, IndexStore pulseIndex)
         {
-            param.Indices.ShiftUpper(1).ParallelLinqFor(
+            iterator.For(param.Indices.ShiftUpper(1),
                 (i, j, k) =>
                 {
                     CartesianCoordinate curlE = this.fields.E.Curl(i, j, k, +1);
@@ -114,7 +125,8 @@ namespace Simulation.FDTD
 
         private void addPulseToH2(IndexStore pulseIndex, double courantNumber)
         {
-            pulseIndex.ParallelForExceptI(
+            this.iterator.ForExceptI(
+                pulseIndex,
                 (j, k) =>
                 {
                     var cartesian = CartesianCoordinate.YOrth * (courantNumber * this.pulse.E[j]);
@@ -127,7 +139,8 @@ namespace Simulation.FDTD
         {
             var cartesianCoordinate = CartesianCoordinate.XOrth *
                                       (courantNumber * this.pulse.E[pulseIndex.Lower]);
-            pulseIndex.ParallelForExceptJ(
+            this.iterator.ForExceptJ(
+                pulseIndex,
                 (i, k) =>
                 {
                     this.fields.H[i, pulseIndex.Lower - 1, k] += cartesianCoordinate;
@@ -137,7 +150,7 @@ namespace Simulation.FDTD
 
         private void calculateDField(SimulationParameters param, IndexStore pulseIndex, int time)
         {
-            param.Indices.ShiftLower(1).ParallelLinqFor(
+            iterator.For(param.Indices.ShiftLower(1),
                 (i, j, k) =>
                 {
                     CartesianCoordinate curlH = this.fields.H.Curl(i, j, k, -1);
@@ -159,7 +172,8 @@ namespace Simulation.FDTD
 
         private void addPulseToD1(IndexStore pulseIndex, double courantNumber)
         {
-            pulseIndex.ParallelForExceptK(
+            iterator.ForExceptK(
+                pulseIndex,
                 (i, j) =>
                 {
                     var cartesianCoordinate = CartesianCoordinate.YOrth * (courantNumber * this.pulse.H[j]);
@@ -173,22 +187,22 @@ namespace Simulation.FDTD
             var cart = CartesianCoordinate.ZOrth * (courantNumber *
                                                     (this.pulse.H[pulseIndex.Lower - 1] -
                                                      this.pulse.H[pulseIndex.JLength]));
-            pulseIndex.ParallelForExceptJ(
+            iterator.ForExceptJ(
+                pulseIndex,
                 (i, k) => { this.fields.D[i, pulseIndex.Lower, k] += cart; });
         }
 
         private SimulationResult calculateExtinction(SpectrumUnit freq, SimulationParameters parameters)
         {
             double timeStep = parameters.CellSize * parameters.CourantNumber / Fundamentals.SpeedOfLight;
+
             var pulseFourier = this.pulse.FourierPulse.Select(x => x.Transform(freq, timeStep).Magnitude).ToArray();
-            double extinction = 0;
-            object obj = new object();
-            parameters.Indices.ParallelLinqFor(
+            double extinction = iterator.Sum(parameters.Indices,
                 (i, j, k) =>
                 {
                     if (!parameters.Medium[i, j, k].IsBody)
                     {
-                        return;
+                        return 0;
                     }
                     Complex eps = parameters.Medium[i, j, k].Permittivity.GetPermittivity(freq);
 
@@ -196,10 +210,7 @@ namespace Simulation.FDTD
                     var complex = eps.Imaginary *
                                   pulseMultiplier * this.fields.FourierField[i, j, k].Transform(freq, timeStep).Norm;
 
-                    lock (obj)
-                    {
-                        extinction += complex;
-                    }
+                    return complex;
                 });
 
             double area = calculateArea(parameters);
@@ -217,10 +228,12 @@ namespace Simulation.FDTD
             return resu;
         }
 
-        private static double calculateArea(SimulationParameters parameters)
+        private  double calculateArea(SimulationParameters parameters)
         {
             double area = 0.0;
-            parameters.Indices.ForExceptJ(
+            //todo: check concurrent sum
+            iterator.ForExceptJ(
+                parameters.Indices,            
                 (i, k) => area += parameters.Medium[i, parameters.Indices.GetCenter().JLength, k].IsBody ? 1 : 0);
             return area;
         }

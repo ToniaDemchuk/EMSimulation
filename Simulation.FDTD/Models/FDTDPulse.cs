@@ -23,13 +23,14 @@ namespace Simulation.FDTD.Models
         private double eMl1;
 
         private double eMl2;
-
+        bool isSpectrumCalculated;
         /// <summary>
         /// Initializes a new instance of the <see cref="FDTDPulse" /> class.
         /// </summary>
         /// <param name="parameters">The parameters.</param>
         public FDTDPulse(SimulationParameters parameters)
         {
+            isSpectrumCalculated = parameters.IsSpectrumCalculated;
             this.courantNumber = parameters.CourantNumber;
             this.medLength = 2 * parameters.Indices.JLength;
             this.E = new double[this.medLength]; // electric field
@@ -40,8 +41,12 @@ namespace Simulation.FDTD.Models
 
             this.pulseFunc = parameters.WaveFunc;
 
-            this.FourierPulse = new FourierSeries[this.medLength];
-            this.FourierPulse.For(i => new FourierSeries(parameters.NumSteps));
+            if (isSpectrumCalculated)
+            {
+                this.FourierPulse = new FourierSeries[this.medLength];
+                this.FourierPulse.For(i => new FourierSeries());
+            }
+
         }
 
         /// <summary>
@@ -127,6 +132,9 @@ namespace Simulation.FDTD.Models
         /// </summary>
         public void DoFourierPulse()
         {
+            if (!isSpectrumCalculated) {
+                return;
+            }
             for (int m = 0; m < this.medLength; m++)
             {
                 this.FourierPulse[m].Add(this.E[m]);

@@ -170,9 +170,9 @@ namespace Simulation.DDA.Tests
                     Dictionary<double, double> azim90 = SimpleFormatter.Read(
                         this.getFileFormat(dirAzimuth90, distance, radius));
 
-                    peaks0.Add(distance, azim0.Aggregate((l, r) => l.Value > r.Value ? l : r).Key);
+                    peaks0.Add(distance, azim0.MaxPair().Key);
 
-                    peaks90.Add(distance, azim90.Aggregate((l, r) => l.Value > r.Value ? l : r).Key);
+                    peaks90.Add(distance, azim0.MaxPair().Key);
                 }
                 // gp.HoldOn();
                 // gp.Set(string.Format("terminal win {0}", radius));
@@ -267,8 +267,8 @@ namespace Simulation.DDA.Tests
                 Dictionary<double, double> drudeLorentz = SimpleFormatter.Read(
                     this.getFileFormat(dirDrudeLorentz, distance, radius));
 
-                gp.Plot(optical,@"title ""optical""");
-                gp.Plot(drudeLorentz,@"title ""drude-lorentz""");
+                gp.Plot(optical, @"title ""optical""");
+                gp.Plot(drudeLorentz, @"title ""drude-lorentz""");
 
                 //AssertHelper.DictionaryAreClose(optical, drudeLorentz, 0.1);
             }
@@ -418,7 +418,6 @@ namespace Simulation.DDA.Tests
             this.writeParameters(radiuses, distances);
         }
 
-
         [TestMethod]
         [Ignore]
         public void RadiusDistanceOutput_AzimuthSum()
@@ -493,6 +492,239 @@ namespace Simulation.DDA.Tests
 
         #endregion
 
+        [TestMethod]
+        public void RadiusChangeOutput_Azimuth45()
+        {
+            // Arrange
+            const int DistanceMax = 3;
+            const double DistanceStep = 0.1;
+            List<double> distances = getDistances(DistanceStep, DistanceMax);
+            var radiuses = new List<double> { 4, 10, 20, 40, 70, 100, 200 };
+            var radius1 = 4;
+            this.ddaConfig.IncidentMagnitude.Azimuth = 45;
+
+            double maxRadius = radiuses.Max();
+
+            foreach (double radius in radiuses)
+            {
+                foreach (double distance in distances)
+                {
+                    this.calculateOneStepDiffRadius(radius1, radius, distance, maxRadius, x => x.CrossSectionExtinction);
+                }
+            }
+
+            this.writeParameters(radiuses, distances);
+        }
+
+        [TestMethod]
+        public void RadiusChangeOutput_Azimuth0()
+        {
+            // Arrange
+            const int DistanceMax = 3;
+            const double DistanceStep = 0.1;
+            List<double> distances = getDistances(DistanceStep, DistanceMax);
+            var radiuses = new List<double> { 4, 10, 20, 40, 70, 100, 200 };
+            var radius1 = 4;
+            this.ddaConfig.IncidentMagnitude.Azimuth = 0;
+
+            double maxRadius = radiuses.Max();
+
+            foreach (double radius in radiuses)
+            {
+                foreach (double distance in distances)
+                {
+                    this.calculateOneStepDiffRadius(radius1, radius, distance, maxRadius, x => x.CrossSectionExtinction);
+                }
+            }
+
+            this.writeParameters(radiuses, distances);
+        }
+
+        [TestMethod]
+        public void RadiusChangeOutput_Azimuth90()
+        {
+            // Arrange
+            const int DistanceMax = 3;
+            const double DistanceStep = 0.1;
+            List<double> distances = getDistances(DistanceStep, DistanceMax);
+            var radiuses = new List<double> { 4, 10, 20, 40, 70, 100, 200 };
+            var radius1 = 4;
+            this.ddaConfig.IncidentMagnitude.Azimuth = 90;
+
+            double maxRadius = radiuses.Max();
+
+            foreach (double radius in radiuses)
+            {
+                foreach (double distance in distances)
+                {
+                    this.calculateOneStepDiffRadius(radius1, radius, distance, maxRadius, x => x.CrossSectionExtinction);
+                }
+            }
+
+            this.writeParameters(radiuses, distances);
+        }
+
+
+        [TestMethod]
+        public void RadiusChangeOutput_Azimuth45_EffectiveExtinction()
+        {
+            // Arrange
+            const int DistanceMax = 3;
+            const double DistanceStep = 0.1;
+            List<double> distances = getDistances(DistanceStep, DistanceMax);
+            var radiuses = new List<double> { 4, 10, 20, 40, 70, 100, 200 };
+            var radius1 = 4;
+            this.ddaConfig.IncidentMagnitude.Azimuth = 45;
+
+            double maxRadius = radiuses.Max();
+
+            foreach (double radius in radiuses)
+            {
+                foreach (double distance in distances)
+                {
+                    this.calculateOneStepDiffRadius(radius1, radius, distance, maxRadius, x => x.EffectiveCrossSectionExtinction);
+                }
+            }
+
+            this.writeParameters(radiuses, distances);
+        }
+
+        [TestMethod]
+        public void RadiusChangeOutput_Azimuth0_EffectiveExtinction()
+        {
+            // Arrange
+            const int DistanceMax = 3;
+            const double DistanceStep = 0.1;
+            List<double> distances = getDistances(DistanceStep, DistanceMax);
+            var radiuses = new List<double> { 4, 10, 20, 40, 70, 100, 200 };
+            var radius1 = 4;
+            this.ddaConfig.IncidentMagnitude.Azimuth = 0;
+
+            double maxRadius = radiuses.Max();
+
+            foreach (double radius in radiuses)
+            {
+                foreach (double distance in distances)
+                {
+                    this.calculateOneStepDiffRadius(radius1, radius, distance, maxRadius, x => x.EffectiveCrossSectionExtinction);
+                }
+            }
+
+            this.writeParameters(radiuses, distances);
+        }
+
+        [TestMethod]
+        public void RadiusChangeOutput_Azimuth90_EffectiveExtinction()
+        {
+            // Arrange
+            const int DistanceMax = 3;
+            const double DistanceStep = 0.1;
+            List<double> distances = getDistances(DistanceStep, DistanceMax);
+            var radiuses = new List<double> { 4, 10, 20, 40, 70, 100, 200 };
+            var radius1 = 4;
+            this.ddaConfig.IncidentMagnitude.Azimuth = 90;
+
+            double maxRadius = radiuses.Max();
+
+            foreach (double radius in radiuses)
+            {
+                foreach (double distance in distances)
+                {
+                    this.calculateOneStepDiffRadius(radius1, radius, distance, maxRadius, x => x.EffectiveCrossSectionExtinction);
+                }
+            }
+
+            this.writeParameters(radiuses, distances);
+        }
+
+        [TestMethod]
+        public void RadiusChangeOutput_Azimuth_Spectrum()
+        {
+            // Arrange
+            const int DistanceMax = 3;
+            const double DistanceStep = 0.1;
+
+            var radius1 = 4;
+            var radiuses = new List<double> { 4, 10, 20, 40, 70, 100, 200 };
+            List<double> distances = getDistances(DistanceStep, DistanceMax);
+            string dirAzimuth45 = "RadiusChangeOutput_Azimuth45";
+
+            var gp = new GnuPlot();
+            gp.Set("style data lines");
+            gp.HoldOn();
+            foreach (double radius in radiuses)
+            {
+                Dictionary<decimal, List<double>> spectrum = this.zipToDictionaryDiffRadiuses(distances, dirAzimuth45, radius1, radius);
+                string filename = Path.Combine(BasePath, this.TestContext.TestName, "Azim45.txt");
+                SimpleFormatter.WriteDictionary(filename, spectrum, distances);
+
+                foreach (double distance in distances.Take(5))
+                {
+
+                    Dictionary<double, double> azim45 = SimpleFormatter.Read(
+                        this.getFileFormatDiffRadiuses(dirAzimuth45, distance, radius1, radius));
+                    gp.Plot(azim45, string.Format(@"title ""{0}""", radius));
+                }
+                gp.Clear();
+
+            }
+
+
+            gp.Wait();
+        }
+
+
+        [TestMethod]
+        public void RadiusChangeOutputPeaks_Azimuth0_Azimuth90()
+        {
+            // Arrange
+            const int DistanceMax = 3;
+            const double DistanceStep = 0.1;
+            var radiuses = new List<double> { 4, 10, 20, 40, 70, 100, 200 };
+            var radius1 = 4;
+            List<double> distances = getDistances(DistanceStep, DistanceMax);
+            string dirAzimuth0 = "RadiusChangeOutput_Azimuth0";
+            string dirAzimuth90 = "RadiusChangeOutput_Azimuth90";
+            var gp = new GnuPlot();
+            gp.Set("style data lines");
+            gp.HoldOn();
+            radiuses.Reverse();
+            foreach (double radius in radiuses)
+            {
+                var peaks0 = new Dictionary<double, double>();
+
+                var peaks90 = new Dictionary<double, double>();
+
+                foreach (double distance in distances)
+                {
+                    Dictionary<double, double> azim0 = SimpleFormatter.Read(
+                        this.getFileFormatDiffRadiuses(dirAzimuth0, distance, radius1, radius));
+                    Dictionary<double, double> azim90 = SimpleFormatter.Read(
+                        this.getFileFormatDiffRadiuses(dirAzimuth90, distance, radius1, radius));
+
+                    peaks0.Add(distance, azim0.MaxPair().Key);
+
+                    peaks90.Add(distance, azim0.MaxPair().Key);
+                }
+                // gp.HoldOn();
+                // gp.Set(string.Format("terminal win {0}", radius));
+                gp.Plot(peaks0);
+                gp.Plot(peaks90);
+                // gp.HoldOff();
+
+                string basepath = Path.Combine(BasePath, this.TestContext.TestName);
+                string filename0 = Path.Combine(
+                    basepath,
+                    string.Format("peaks_0deg_{0}.txt", radius));
+                SimpleFormatter.Write(filename0, peaks0);
+                string filename90 = Path.Combine(
+                    basepath,
+                    string.Format("peaks_90deg_{0}.txt", radius));
+                SimpleFormatter.Write(filename90, peaks90);
+            }
+            gp.Wait();
+        }
+
         #region Private methods
 
         private static List<double> getDistances(double distanceStep, double distanceMax)
@@ -537,15 +769,60 @@ namespace Simulation.DDA.Tests
                 result.ToDictionary(x => x.ToType(SpectrumUnitType.WaveLength), valueSelector));
         }
 
+        private void calculateOneStepDiffRadius(
+            double radius1,
+            double radius2,
+            double distance,
+            double maxRadius,
+            Func<SimulationResult, double> valueSelector)
+        {
+            var firstPoint = new CartesianCoordinate(maxRadius, maxRadius, 0);
+
+            double secondPointCoord = maxRadius + 2 * radius1 + distance * radius2;
+            var secondPoint = new CartesianCoordinate(maxRadius, secondPointCoord, 0);
+
+            var systConfig = new SystemConfig(
+                new List<double>
+                {
+                    radius1,
+                    radius2
+                },
+                new List<CartesianCoordinate>
+                {
+                    firstPoint,
+                    secondPoint
+                });
+
+            SimulationResultDictionary result = DDAProgram.Calculate(this.ddaConfig, systConfig, this.opticalConstants);
+
+            string filename = this.getFileFormatDiffRadiuses(this.TestContext.TestName, distance, radius1, radius2);
+
+            SimpleFormatter.Write(
+                filename,
+                result.ToDictionary(x => x.ToType(SpectrumUnitType.WaveLength), valueSelector));
+        }
+
         private string getFileFormat(string dirPath, double distance, double radius)
         {
             string format = string.Format(
                 CultureInfo.InvariantCulture,
                 "rezult_ext_{0}_{1}.txt",
-                (decimal) distance,
-                (decimal) radius);
+                (decimal)distance,
+                (decimal)radius);
             return Path.Combine(BasePath, dirPath, format);
         }
+
+        private string getFileFormatDiffRadiuses(string dirPath, double distance, double radius1, double radius2)
+        {
+            string format = string.Format(
+                CultureInfo.InvariantCulture,
+                "rezult_ext_{0}_{1}_{2}.txt",
+                (decimal)distance,
+                (decimal)radius1,
+                (decimal)radius2);
+            return Path.Combine(BasePath, dirPath, format);
+        }
+
 
         private void writeParameters(List<double> radiuses, List<double> distances)
         {
@@ -554,11 +831,11 @@ namespace Simulation.DDA.Tests
             {
                 string radiusJoin = string.Join(
                     ",",
-                    radiuses.Select(x => ((decimal) x).ToString(CultureInfo.InvariantCulture)));
+                    radiuses.Select(SimpleFormatter.ToDecimalString));
                 sw.WriteLine("radius = {0}", radiusJoin);
                 string distanceJoin = string.Join(
                     ",",
-                    distances.Select(x => ((decimal) x).ToString(CultureInfo.InvariantCulture)));
+                    distances.Select(SimpleFormatter.ToDecimalString));
                 sw.WriteLine("distance = {0}", distanceJoin);
             }
         }
@@ -574,11 +851,33 @@ namespace Simulation.DDA.Tests
                         this.getFileFormat(dirAzim, distance, radius));
                     foreach (KeyValuePair<double, double> azim in azimuthDict)
                     {
-                        if (!dict.ContainsKey((decimal) azim.Key))
+                        if (!dict.ContainsKey((decimal)azim.Key))
                         {
-                            dict[(decimal) azim.Key] = new List<double>();
+                            dict[(decimal)azim.Key] = new List<double>();
                         }
-                        dict[(decimal) azim.Key].Add(azim.Value);
+                        dict[(decimal)azim.Key].Add(azim.Value);
+                    }
+                    return dict;
+                });
+            return spectrum;
+        }
+
+        private Dictionary<decimal, List<double>> zipToDictionaryDiffRadiuses(List<double> distances, string dirAzim, double radius1, double radius2)
+        {
+            var spectrum = new Dictionary<decimal, List<double>>();
+            distances.Aggregate(
+                spectrum,
+                (dict, distance) =>
+                {
+                    Dictionary<double, double> azimuthDict = SimpleFormatter.Read(
+                        this.getFileFormatDiffRadiuses(dirAzim, distance, radius1, radius2));
+                    foreach (KeyValuePair<double, double> azim in azimuthDict)
+                    {
+                        if (!dict.ContainsKey((decimal)azim.Key))
+                        {
+                            dict[(decimal)azim.Key] = new List<double>();
+                        }
+                        dict[(decimal)azim.Key].Add(azim.Value);
                     }
                     return dict;
                 });

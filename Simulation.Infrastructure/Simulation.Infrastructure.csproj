@@ -78,6 +78,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssertHelper.cs" />
+    <Compile Include="Iterators\IIterator.cs" />
+    <Compile Include="Iterators\ParallelInvokeIterator.cs" />
+    <Compile Include="Iterators\ParallelIterator.cs" />
+    <Compile Include="Iterators\SequentialIterator.cs" />
     <Compile Include="MathHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimpleFormatter.cs" />

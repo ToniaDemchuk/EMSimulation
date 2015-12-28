@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Simulation.Infrastructure
 {
     /// <summary>
     /// The MathHelper class.
     /// </summary>
-    public class MathHelper
+    public static class MathHelper
     {
         /// <summary>
         /// Checks whether double values are close.
@@ -24,6 +26,11 @@ namespace Simulation.Infrastructure
             var max = Math.Max(value1, value2);
             var relativeDiff = Math.Abs((value1 - value2) / max);
             return relativeDiff < epsilon;
+        }
+
+        public static KeyValuePair<double, double> MaxPair(this Dictionary<double, double> dictionary)
+        {
+            return dictionary.Aggregate((l, r) => l.Value > r.Value ? l : r);
         }
     }
 }
