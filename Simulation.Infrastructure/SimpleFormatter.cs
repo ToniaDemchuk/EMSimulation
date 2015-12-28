@@ -90,5 +90,10 @@ namespace Simulation.Infrastructure
                 return dict;
             }
         }
+
+        public static string ToDecimalString(double x)
+        {
+            return ((decimal)x).ToString(CultureInfo.InvariantCulture);
+        }
     }
 }

@@ -32,7 +32,7 @@ namespace Simulation.FDTD.Tests
                 for (int j = 0; j < 20; j++)
                 {
                     Stopwatch watch = Stopwatch.StartNew();
-                    ArrayExtensions.MaxDegreeOfParallelism = i;
+                    //ArrayExtensions.MaxDegreeOfParallelism = i;
 
                     FDTDProgram.Calculate();
                     watch.Stop();

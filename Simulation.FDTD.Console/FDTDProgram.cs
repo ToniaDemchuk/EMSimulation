@@ -13,6 +13,7 @@ using Simulation.Models.Coordinates;
 using Simulation.Models.Enums;
 using Simulation.Models.Extensions;
 using Simulation.Models.Spectrum;
+using Simulation.Infrastructure.Iterators;
 
 namespace Simulation.FDTD.Console
 {
@@ -30,18 +31,20 @@ namespace Simulation.FDTD.Console
 
         public static SimulationResultDictionary Calculate()
         {
-            var ext = new FDTDSimulation();
+            var iterator = new ParallelIterator();
+            var ext = new FDTDSimulation(iterator);
 
             SimulationParameters parameters = new SimulationParameters
             {
-                Indices = new IndexStore(50, 50, 50),
+                Indices = new IndexStore(100, 100, 100),
                 CellSize = 1e-9,
                 Spectrum =
                     new OpticalSpectrum(new LinearDiscreteCollection(300e-9, 700e-9, 100), SpectrumUnitType.WaveLength),
                 CourantNumber = 0.5,
                 PmlLength = 7,
-                NumSteps = 100,
+                NumSteps = 1000,
                 WaveFunc = time => Math.Exp(-0.5 * Math.Pow((30 - time) / 5.0, 2.0)),
+                IsSpectrumCalculated = false
             };
 
             setMedium(parameters);

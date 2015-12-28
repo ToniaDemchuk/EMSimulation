@@ -63,6 +63,10 @@
       <Project>{8949422C-3987-4A3C-AA4F-3539B59FEB1E}</Project>
       <Name>Simulation.FDTD.Console</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Simulation.Infrastructure\Simulation.Infrastructure.csproj">
+      <Project>{e43fabf6-e2f6-43b1-a0e0-c906beb6fdb2}</Project>
+      <Name>Simulation.Infrastructure</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Simulation.Models\Simulation.Models.csproj">
       <Project>{866CA2C4-C878-45A2-A947-7C89B0A2AE61}</Project>
       <Name>Simulation.Models</Name>
