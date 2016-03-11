@@ -20,6 +20,8 @@ namespace Simulation.DDA.Console.Simulation
         /// <param name="args">The arguments.</param>
         public static void Main(string[] args)
         {
+            VoxelReader.ReadInfo(@"C:\Users\akolkev\Desktop\swanky_snaget (1).obj.v5.voxels");
+
             var result = Calculate();
 
             SimpleFormatter.Write(
