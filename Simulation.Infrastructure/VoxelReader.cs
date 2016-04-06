@@ -1,14 +1,15 @@
 ﻿using System;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+
+using Simulation.Infrastructure.Models;
 
 namespace Simulation.Infrastructure
 {
     public static class VoxelReader
     {
-        public static void ReadInfo(string fileName)
+        public static MeshInfo ReadInfo(string fileName)
         {
             using (BinaryReader reader = new BinaryReader(File.Open(fileName, FileMode.Open)))
             {
@@ -18,7 +19,7 @@ namespace Simulation.Infrastructure
                 var voxel_struct_size = reader.ReadInt32();
 
                 var num_voxels = reader.ReadInt32();
-                var voxel_resolution = new double[]
+                var voxel_resolution = new int[]
                 {
                     reader.ReadInt32(),
                     reader.ReadInt32(),
@@ -45,20 +46,13 @@ namespace Simulation.Infrastructure
                     reader.ReadSingle()
                 };
                 var has_texture = reader.ReadByte();
-                var converter = new UTF8Encoding();
-                var texture_filename = new string(reader.ReadChars(260));
-
-                var ind = texture_filename.IndexOf('\0');
-                if (ind > -1)
-                {
-                    texture_filename = texture_filename.Remove(ind);
-                }
+                string texture_filename = getTextureFileName(reader.ReadChars(260));
 
                 var list =
-                    Enumerable.Range(0, (int) Math.Round(voxel_resolution.Aggregate(1.0, (x, y) => x * y)));
+                    Enumerable.Range(0, voxel_resolution.Aggregate(1, (x, y) => x * y));
                 var s = list
                     .TakeWhile(x => reader.BaseStream.Position != reader.BaseStream.Length)
-                    .Where(x=> reader.ReadChar() == '2')
+                    .Where(x => reader.ReadChar() == '2')
                     .Select(x=>new
                     {
                         coords = new int[]
@@ -117,8 +111,35 @@ namespace Simulation.Infrastructure
                         },
                         is_on_border = Convert.ToBoolean(reader.ReadByte())
                     }).ToList();
-
+                return new MeshInfo()
+                {
+                    Voxels = s.Select(
+                        x => new Voxel
+                        {
+                            I = x.coords[0],
+                            J = x.coords[1],
+                            K = x.coords[2]
+                        }).ToList(),
+                    Resolution = new Voxel()
+                    {
+                        I = voxel_resolution[0],
+                        J = voxel_resolution[1],
+                        K = voxel_resolution[2]
+                    }
+                };
             }
+        }
+
+        private static string getTextureFileName(char[] chars)
+        {
+            var texture_filename = new string(chars);
+
+            var ind = texture_filename.IndexOf('\0');
+            if (ind > -1)
+            {
+                texture_filename = texture_filename.Remove(ind);
+            }
+            return texture_filename;
         }
     }
 }

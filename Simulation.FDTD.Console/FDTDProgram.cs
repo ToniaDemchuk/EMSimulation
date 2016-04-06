@@ -58,12 +58,22 @@ namespace Simulation.FDTD.Console
             var vacuum = new VacuumSolver();
             var silver = new DrudeLorentz();
             var drudeLorentzParam = new DrudeLorentzFactor(silver, timeStep);
+            parameters.Medium = setSphere(parameters, silver, drudeLorentzParam, vacuum); 
+            parameters.Medium = setObject(parameters, silver, drudeLorentzParam, vacuum); 
+        }
+
+        private static IMediumSolver[,,] setSphere(
+            SimulationParameters parameters,
+            DrudeLorentz silver,
+            DrudeLorentzFactor drudeLorentzParam,
+            VacuumSolver vacuum)
+        {
             double radius = 10;
 
             var centerIndices = parameters.Indices.GetCenter();
             var center = new CartesianCoordinate(centerIndices.ILength, centerIndices.JLength, centerIndices.KLength);
 
-            parameters.Medium = parameters.Indices.CreateArray<IMediumSolver>(
+            return parameters.Indices.CreateArray<IMediumSolver>(
                 (i, j, k) =>
                 {
                     var point = new CartesianCoordinate(i, j, k) - center;
@@ -74,5 +84,26 @@ namespace Simulation.FDTD.Console
                     return vacuum;
                 });
         }
+
+        private static IMediumSolver[,,] setObject(
+            SimulationParameters parameters,
+            DrudeLorentz silver,
+            DrudeLorentzFactor drudeLorentzParam,
+            VacuumSolver vacuum)
+        {
+
+            var mesh = VoxelReader.ReadInfo(@"D:\study\vozelizer\conf1.obj.v80.voxels");
+
+            var medium = parameters.Indices.CreateArray<IMediumSolver>(
+                (i, j, k) => vacuum);
+
+            var offset = parameters.PmlLength + 3;
+            foreach (var voxel in mesh.Voxels)
+            {
+                medium[voxel.I + offset, voxel.J + offset, voxel.K + offset] = new DrudeLorentzSolver(silver, drudeLorentzParam) { IsBody = true };
+            }
+            return medium;
+        }
+
     }
 }

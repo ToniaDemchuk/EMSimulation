@@ -19,7 +19,8 @@ namespace Simulation.FDTD
     /// </summary>
     public class FDTDSimulation
     {
-        IIterator iterator;
+        private readonly IIterator iterator;
+
         public FDTDSimulation(IIterator iterator)
         {
             this.iterator = iterator;
