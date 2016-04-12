@@ -11,6 +11,10 @@ using Simulation.Models.Enums;
 using Simulation.Models.Extensions;
 using Simulation.Models.Spectrum;
 using Simulation.Infrastructure.Iterators;
+using GnuplotCSharp;
+using System;
+using Simulation.Infrastructure;
+using System.Collections.Generic;
 
 namespace Simulation.FDTD
 {
@@ -52,14 +56,20 @@ namespace Simulation.FDTD
                     {
                         surf[i, j] = this.fields.E[i, j, parameters.Indices.GetCenter().KLength].Z;
                     });
+                gp.Set("zrange [-1:1]");
                 gp.SPlot(surf);
 
                 //gp.Plot(pulse.E);
             }
-
+            gp.Set("style data lines");
             var result = this.CalcExtinction(parameters);
-            //gp.Plot(result.Select(x => x.Value.EffectiveCrossSectionAbsorption));
-            //gp.Wait();
+            gp.Plot(result.Select(x => x.Value.EffectiveCrossSectionAbsorption));
+            SimpleFormatter.Write(
+               "rezult_ext.txt",
+               result.ToDictionary(
+                   x => x.Key.ToType(SpectrumUnitType.WaveLength),
+                   x => new List<double>(){ x.Value.CrossSectionAbsorption, x.Value.EffectiveCrossSectionAbsorption }));
+            gp.Wait();
             return result;
         }
 
@@ -88,7 +98,8 @@ namespace Simulation.FDTD
         private void calcFields(int time, SimulationParameters parameters)
         {
             // границі розсіяного поля.
-            IndexStore pulseIndex = parameters.Indices.ShiftLower(this.pml.Length + 1).ShiftUpper(this.pml.Length + 1);
+            var pulseShift = this.pml.Length + 2;
+            IndexStore pulseIndex = parameters.Indices.ShiftLower(pulseShift).ShiftUpper(pulseShift);
 
             this.calculateDField(parameters, pulseIndex, time);
 
@@ -132,7 +143,7 @@ namespace Simulation.FDTD
                 {
                     var cartesian = CartesianCoordinate.YOrth * (courantNumber * this.pulse.E[j]);
                     this.fields.H[pulseIndex.Lower - 1, j, k] -= cartesian;
-                    this.fields.H[pulseIndex.Lower, j, k] -= cartesian;
+                    this.fields.H[pulseIndex.ILength, j, k] += cartesian;
                 });
         }
 
@@ -140,12 +151,14 @@ namespace Simulation.FDTD
         {
             var cartesianCoordinate = CartesianCoordinate.XOrth *
                                       (courantNumber * this.pulse.E[pulseIndex.Lower]);
+            var cartesianCoordinate2 = CartesianCoordinate.XOrth *
+                          (courantNumber * this.pulse.E[pulseIndex.JLength]);
             this.iterator.ForExceptJ(
                 pulseIndex,
                 (i, k) =>
                 {
                     this.fields.H[i, pulseIndex.Lower - 1, k] += cartesianCoordinate;
-                    this.fields.H[i, pulseIndex.Lower, k] -= cartesianCoordinate;
+                    this.fields.H[i, pulseIndex.JLength, k] -= cartesianCoordinate2;
                 });
         }
 
@@ -177,20 +190,25 @@ namespace Simulation.FDTD
                 pulseIndex,
                 (i, j) =>
                 {
-                    var cartesianCoordinate = CartesianCoordinate.YOrth * (courantNumber * this.pulse.H[j]);
+                    var cartesianCoordinate = CartesianCoordinate.YOrth * 
+                        (courantNumber * this.pulse.H[j]);
                     this.fields.D[i, j, pulseIndex.Lower] -= cartesianCoordinate;
-                    this.fields.D[i, j, pulseIndex.Lower + 1] -= cartesianCoordinate;
+                    this.fields.D[i, j, pulseIndex.KLength + 1] += cartesianCoordinate;
                 });
         }
 
         private void addPulseToD2(IndexStore pulseIndex, double courantNumber)
         {
-            var cart = CartesianCoordinate.ZOrth * (courantNumber *
-                                                    (this.pulse.H[pulseIndex.Lower - 1] -
-                                                     this.pulse.H[pulseIndex.JLength]));
+            var cart1 = CartesianCoordinate.ZOrth * 
+                (courantNumber * this.pulse.H[pulseIndex.Lower - 1]);
+            var cart2 = CartesianCoordinate.ZOrth * 
+                (courantNumber * this.pulse.H[pulseIndex.JLength]);
             iterator.ForExceptJ(
                 pulseIndex,
-                (i, k) => { this.fields.D[i, pulseIndex.Lower, k] += cart; });
+                (i, k) => {
+                    this.fields.D[i, pulseIndex.Lower, k] += cart1;
+                    this.fields.D[i, pulseIndex.JLength, k] -= cart2;
+                });
         }
 
         private SimulationResult calculateExtinction(SpectrumUnit freq, SimulationParameters parameters)
@@ -201,11 +219,12 @@ namespace Simulation.FDTD
             double extinction = iterator.Sum(parameters.Indices,
                 (i, j, k) =>
                 {
-                    if (!parameters.Medium[i, j, k].IsBody)
+                    var medium = parameters.Medium[i, j, k];
+                    if (!medium.IsBody)
                     {
                         return 0;
                     }
-                    Complex eps = parameters.Medium[i, j, k].Permittivity.GetPermittivity(freq);
+                    Complex eps = medium.Permittivity.GetPermittivity(freq);
                     
                     double pulseMultiplier = 1 / pulseFourier[j];
                     var complex = eps.Imaginary *
@@ -219,22 +238,35 @@ namespace Simulation.FDTD
 
             double waveNumber = freq.ToType(SpectrumUnitType.WaveNumber);
 
-            extinction *= waveNumber * parameters.CellSize * parameters.CellSize * parameters.CellSize;
-            resu.CrossSectionAbsorption = extinction;
+            extinction = extinction * parameters.CellSize * waveNumber;
+            double areamult = 1 / area;
+            resu.EffectiveCrossSectionAbsorption = (extinction * areamult);
 
-            extinction /= area * parameters.CellSize * parameters.CellSize;
-            resu.EffectiveCrossSectionAbsorption = extinction;
+            resu.CrossSectionAbsorption = extinction * Math.Pow(parameters.CellSize, 2);
 
             return resu;
         }
 
-        private  double calculateArea(SimulationParameters parameters)
+        private Nullable<double> crossSectionArea;
+        private double calculateArea(SimulationParameters parameters)
         {
+            if (crossSectionArea.HasValue)
+            {
+                return crossSectionArea.Value;
+            }
             double area = 0.0;
+            var lockobj = new object();
             //todo: check concurrent sum
             iterator.ForExceptJ(
                 parameters.Indices,            
-                (i, k) => area += parameters.Medium[i, parameters.Indices.GetCenter().JLength, k].IsBody ? 1 : 0);
+                (i, k) => {
+                    lock (lockobj)
+                    {
+                        area += parameters.Medium[i, parameters.Indices.GetCenter().JLength, k].IsBody ? 1 : 0;
+                    }
+                });
+
+            crossSectionArea = area;
             return area;
         }
     }

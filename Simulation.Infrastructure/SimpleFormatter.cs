@@ -35,6 +35,29 @@ namespace Simulation.Infrastructure
         }
 
         /// <summary>
+        /// Writes the specified dictionary to the file.
+        /// </summary>
+        /// <param name="filename">The filename.</param>
+        /// <param name="dictionary">The dictionary of values.</param>
+        public static void Write(string filename, Dictionary<double, List<double>> dictionary)
+        {
+            CreateDirectory(filename);
+
+            using (var sw = new StreamWriter(filename))
+            {
+                foreach (var pair in dictionary)
+                {
+                    sw.WriteLine(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            "{0} {1}",
+                            pair.Key,
+                            String.Join(" ", pair.Value)));
+                }
+            }
+        }
+
+        /// <summary>
         /// Creates the directory if does not exist.
         /// </summary>
         /// <param name="filename">The filename.</param>

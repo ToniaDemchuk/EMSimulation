@@ -70,7 +70,7 @@ namespace Simulation.FDTD.Models
         {
             isSpectrumCalculated = parameters.IsSpectrumCalculated;
             this.indices = parameters.Indices;
-
+            this.iterator = iterator;
             if (isSpectrumCalculated) {
                 this.FourierField = this.indices.CreateArray(
                     (i, j, k) => parameters.Medium[i, j, k].IsBody ? new FourierSeriesCoordinate() : null);

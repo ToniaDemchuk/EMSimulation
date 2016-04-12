@@ -36,15 +36,15 @@ namespace Simulation.FDTD.Console
 
             SimulationParameters parameters = new SimulationParameters
             {
-                Indices = new IndexStore(100, 100, 100),
+                Indices = new IndexStore(60, 60, 60),
                 CellSize = 1e-9,
                 Spectrum =
-                    new OpticalSpectrum(new LinearDiscreteCollection(300e-9, 700e-9, 100), SpectrumUnitType.WaveLength),
+                    new OpticalSpectrum(new LinearDiscreteCollection(200e-9, 500e-9, 100), SpectrumUnitType.WaveLength),
                 CourantNumber = 0.5,
-                PmlLength = 7,
-                NumSteps = 1000,
+                PmlLength = 10,
+                NumSteps = 150,
                 WaveFunc = time => Math.Exp(-0.5 * Math.Pow((30 - time) / 5.0, 2.0)),
-                IsSpectrumCalculated = false
+                IsSpectrumCalculated = true
             };
 
             setMedium(parameters);
