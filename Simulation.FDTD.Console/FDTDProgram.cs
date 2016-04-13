@@ -92,7 +92,8 @@ namespace Simulation.FDTD.Console
             VacuumSolver vacuum)
         {
 
-            var mesh = VoxelReader.ReadInfo(@"D:\study\vozelizer\conf1.obj.v80.voxels");
+            //var mesh = VoxelReader.ReadInfo(@"D:\study\vozelizer\conf1.obj.v80.voxels");
+            var mesh = ObjToVoxelReader.ReadInfo(@"C:\Users\akolkev\Documents\sphere7888obj.obj");
 
             var medium = parameters.Indices.CreateArray<IMediumSolver>(
                 (i, j, k) => vacuum);

@@ -205,6 +205,23 @@ namespace Simulation.Models.Coordinates
         }
 
         /// <summary>
+        /// Implements the operator / (Divide point to the point).
+        /// </summary>
+        /// <param name="point1">The point1.</param>
+        /// <param name="num">The number.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
+        public static CartesianCoordinate operator /(CartesianCoordinate point1, CartesianCoordinate point2)
+        {
+            double x = point1.X / point2.X;
+            double y = point1.Y / point2.Y;
+            double z = point1.Z / point2.Z;
+
+            return new CartesianCoordinate(x, y, z);
+        }
+
+        /// <summary>
         /// Implements the operator * (Scalar product).
         /// </summary>
         /// <param name="point1">The point1.</param>
