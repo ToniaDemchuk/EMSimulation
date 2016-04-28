@@ -1,59 +1,26 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 using Simulation.Infrastructure.Models;
+using Simulation.Infrastructure.Readers;
 
 namespace Simulation.Infrastructure
 {
-    public static class VoxelReader
+    public class VoxelReader : IVoxelReader
     {
-        public static MeshInfo ReadInfo(string fileName)
+        public MeshInfo ReadInfo(string fileName)
         {
             using (BinaryReader reader = new BinaryReader(File.Open(fileName, FileMode.Open)))
             {
-                var header_size = reader.ReadInt32();
-                var num_objects = reader.ReadInt32();
-                var object_header_size = reader.ReadInt32();
-                var voxel_struct_size = reader.ReadInt32();
-
-                var num_voxels = reader.ReadInt32();
-                var voxel_resolution = new int[]
-                {
-                    reader.ReadInt32(),
-                    reader.ReadInt32(),
-                    reader.ReadInt32()
-                };
-
-                var voxel_size = new double[]
-                {
-                    reader.ReadSingle(),
-                    reader.ReadSingle(),
-                    reader.ReadSingle()
-                };
-                var model_scale_factor = reader.ReadSingle();
-                var model_offset = new double[]
-                {
-                    reader.ReadSingle(),
-                    reader.ReadSingle(),
-                    reader.ReadSingle()
-                };
-                var zero_coordinate = new double[]
-                {
-                    reader.ReadSingle(),
-                    reader.ReadSingle(),
-                    reader.ReadSingle()
-                };
-                var has_texture = reader.ReadByte();
-                string texture_filename = getTextureFileName(reader.ReadChars(260));
+                int[] voxel_resolution = readHeaderInfo(reader);
 
                 var list =
                     Enumerable.Range(0, voxel_resolution.Aggregate(1, (x, y) => x * y));
                 var s = list
                     .TakeWhile(x => reader.BaseStream.Position != reader.BaseStream.Length)
                     .Where(x => reader.ReadChar() == '2')
-                    .Select(x=>new
+                    .Select(x => new
                     {
                         coords = new int[]
                         {
@@ -128,6 +95,45 @@ namespace Simulation.Infrastructure
                     }
                 };
             }
+        }
+
+        private static int[] readHeaderInfo(BinaryReader reader)
+        {
+            var header_size = reader.ReadInt32();
+            var num_objects = reader.ReadInt32();
+            var object_header_size = reader.ReadInt32();
+            var voxel_struct_size = reader.ReadInt32();
+
+            var num_voxels = reader.ReadInt32();
+            var voxel_resolution = new int[]
+            {
+                reader.ReadInt32(),
+                reader.ReadInt32(),
+                reader.ReadInt32()
+            };
+
+            var voxel_size = new double[]
+            {
+                reader.ReadSingle(),
+                reader.ReadSingle(),
+                reader.ReadSingle()
+            };
+            var model_scale_factor = reader.ReadSingle();
+            var model_offset = new double[]
+            {
+                reader.ReadSingle(),
+                reader.ReadSingle(),
+                reader.ReadSingle()
+            };
+            var zero_coordinate = new double[]
+            {
+                reader.ReadSingle(),
+                reader.ReadSingle(),
+                reader.ReadSingle()
+            };
+            var has_texture = reader.ReadByte();
+            string texture_filename = getTextureFileName(reader.ReadChars(260));
+            return voxel_resolution;
         }
 
         private static string getTextureFileName(char[] chars)
