@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Linq;
 
+using AwokeKnowing.GnuplotCSharp;
+
+using Simulation.FDTD.EventArgs;
 using Simulation.FDTD.Models;
 using Simulation.Infrastructure;
 using Simulation.Medium.Factors;
@@ -33,10 +36,13 @@ namespace Simulation.FDTD.Console
         {
             var iterator = new ParallelIterator();
             var ext = new FDTDSimulation(iterator);
+            var fieldPlotter = new FieldPlotter();
+            var pulsePlotter = new PulsePlotter();
+            var spectrumPlotter = new SpectrumPlotter();
 
             SimulationParameters parameters = new SimulationParameters
             {
-                Indices = new IndexStore(60, 60, 60),
+                Indices = new IndexStore(50, 50, 50),
                 CellSize = 1e-9,
                 Spectrum =
                     new OpticalSpectrum(new LinearDiscreteCollection(200e-9, 500e-9, 100), SpectrumUnitType.WaveLength),
@@ -48,9 +54,14 @@ namespace Simulation.FDTD.Console
             };
 
             setMedium(parameters);
-
-            return ext.Calculate(parameters);
+            ext.TimeStepCalculated += fieldPlotter.Plot;
+            ext.TimeStepCalculated += pulsePlotter.Plot;
+            var res = ext.Calculate(parameters);
+            spectrumPlotter.Plot(res);
+            return res;
         }
+
+        #region Set Medium
 
         private static void setMedium(SimulationParameters parameters)
         {
@@ -59,7 +70,7 @@ namespace Simulation.FDTD.Console
             var silver = new DrudeLorentz();
             var drudeLorentzParam = new DrudeLorentzFactor(silver, timeStep);
             parameters.Medium = setSphere(parameters, silver, drudeLorentzParam, vacuum); 
-            parameters.Medium = setObject(parameters, silver, drudeLorentzParam, vacuum); 
+            //parameters.Medium = setObject(parameters, silver, drudeLorentzParam, vacuum); 
         }
 
         private static IMediumSolver[,,] setSphere(
@@ -93,11 +104,22 @@ namespace Simulation.FDTD.Console
         {
 
             //var mesh = VoxelReader.ReadInfo(@"D:\study\vozelizer\conf1.obj.v80.voxels");
-            var mesh = ObjToVoxelReader.ReadInfo(@"C:\Users\akolkev\Documents\sphere7888obj.obj");
+            var mesh = ObjToVoxelReader.ReadInfo(@"C:\Users\akolkev\Documents\sphere444.obj");
+            //var mesh = MagicaVoxelReader.ReadInfo(@"C:\Users\akolkev\Documents\spherevox.vox");
 
             var medium = parameters.Indices.CreateArray<IMediumSolver>(
                 (i, j, k) => vacuum);
+            var gp = new GnuPlot();
+            gp.Set("zrange [0:60]");
+            gp.Set("xrange [0:60]");
+            gp.Set("yrange [0:60]");
+            gp.HoldOn();
 
+                gp.Unset("key");
+                //gp.SPlot(mesh.Voxels.Select(x=>(double)x.I).ToArray(), mesh.Voxels.Select(x => (double) x.J).ToArray(), mesh.Voxels.Select(x => (double)x.K).ToArray(), "with points pt 1");
+
+            gp.Wait();
+            
             var offset = parameters.PmlLength + 3;
             foreach (var voxel in mesh.Voxels)
             {
@@ -106,5 +128,6 @@ namespace Simulation.FDTD.Console
             return medium;
         }
 
+        #endregion
     }
 }

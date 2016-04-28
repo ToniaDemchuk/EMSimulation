@@ -15,6 +15,9 @@ using GnuplotCSharp;
 using System;
 using Simulation.Infrastructure;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+
+using Simulation.FDTD.EventArgs;
 
 namespace Simulation.FDTD
 {
@@ -24,7 +27,7 @@ namespace Simulation.FDTD
     public class FDTDSimulation
     {
         private readonly IIterator iterator;
-
+        
         public FDTDSimulation(IIterator iterator)
         {
             this.iterator = iterator;
@@ -47,29 +50,11 @@ namespace Simulation.FDTD
             for (var time = 0; time < parameters.NumSteps; time++)
             {
                 this.calcFields(time, parameters);
-
-                var surf = new double[parameters.Indices.ILength, parameters.Indices.JLength];
-
-                iterator.ForExceptK(
-                    parameters.Indices,
-                    (i, j) =>
-                    {
-                        surf[i, j] = this.fields.E[i, j, parameters.Indices.GetCenter().KLength].Z;
-                    });
-                gp.Set("zrange [-1:1]");
-                gp.SPlot(surf);
-
-                //gp.Plot(pulse.E);
+                this.OnTimeStepCalculated(new TimeStepCalculatedEventArgs() {Parameters = parameters,Fields = this.fields, Pulse = this.pulse});
             }
-            gp.Set("style data lines");
+            
             var result = this.CalcExtinction(parameters);
-            gp.Plot(result.Select(x => x.Value.EffectiveCrossSectionAbsorption));
-            SimpleFormatter.Write(
-               "rezult_ext.txt",
-               result.ToDictionary(
-                   x => x.Key.ToType(SpectrumUnitType.WaveLength),
-                   x => new List<double>(){ x.Value.CrossSectionAbsorption, x.Value.EffectiveCrossSectionAbsorption }));
-            gp.Wait();
+           
             return result;
         }
 
@@ -232,7 +217,7 @@ namespace Simulation.FDTD
                     return complex;
                 });
 
-            double area = calculateArea(parameters);
+            double area = this.calculateArea(parameters);
 
             var resu = new SimulationResult();
 
@@ -247,27 +232,42 @@ namespace Simulation.FDTD
             return resu;
         }
 
-        private Nullable<double> crossSectionArea;
+        private double? crossSectionArea;
         private double calculateArea(SimulationParameters parameters)
         {
             if (crossSectionArea.HasValue)
             {
                 return crossSectionArea.Value;
             }
-            double area = 0.0;
-            var lockobj = new object();
-            //todo: check concurrent sum
-            iterator.ForExceptJ(
+            int area = 0;
+
+            this.iterator.ForExceptJ(
                 parameters.Indices,            
-                (i, k) => {
-                    lock (lockobj)
-                    {
-                        area += parameters.Medium[i, parameters.Indices.GetCenter().JLength, k].IsBody ? 1 : 0;
-                    }
+                (i, k) =>
+                {
+                    Interlocked.Add(
+                        ref area,
+                        parameters.Medium[i, parameters.Indices.GetCenter().JLength, k].IsBody ? 1 : 0);
                 });
 
-            crossSectionArea = area;
+            this.crossSectionArea = area;
             return area;
         }
+
+
+        #region Events
+
+        public event EventHandler<TimeStepCalculatedEventArgs> TimeStepCalculated;
+
+        protected virtual void OnTimeStepCalculated(TimeStepCalculatedEventArgs e)
+        {
+            EventHandler<TimeStepCalculatedEventArgs> handler = this.TimeStepCalculated;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        #endregion
     }
 }

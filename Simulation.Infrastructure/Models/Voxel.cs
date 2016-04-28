@@ -21,5 +21,6 @@ namespace Simulation.Infrastructure.Models
         public int I { get; set; }
         public int J { get; set; }
         public int K { get; set; }
+        public string Material { get; set; }
     }
 }

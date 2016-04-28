@@ -81,6 +81,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EventArgs\TimeStepCalculatedEventArgs.cs" />
     <Compile Include="FDTDSimulation.cs" />
     <Compile Include="Models\FDTDField.cs" />
     <Compile Include="Models\FDTDPulse.cs" />

@@ -85,13 +85,16 @@
     <Compile Include="Iterators\ParallelInvokeIterator.cs" />
     <Compile Include="Iterators\ParallelIterator.cs" />
     <Compile Include="Iterators\SequentialIterator.cs" />
+    <Compile Include="Readers\FDSToVoxelReader.cs" />
+    <Compile Include="Readers\IVoxelReader.cs" />
+    <Compile Include="Readers\MagicaVoxelReader.cs" />
     <Compile Include="MathHelper.cs" />
     <Compile Include="Models\MeshInfo.cs" />
     <Compile Include="Models\Voxel.cs" />
-    <Compile Include="ObjToVoxelReader.cs" />
+    <Compile Include="Readers\ObjToVoxelReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimpleFormatter.cs" />
-    <Compile Include="VoxelReader.cs" />
+    <Compile Include="Readers\VoxelReader.cs" />
     <Compile Include="XmlSerializerHelper.cs" />
   </ItemGroup>
   <ItemGroup>
