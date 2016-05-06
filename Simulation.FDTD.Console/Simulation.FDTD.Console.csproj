@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FDTDProgram.cs" />
+    <Compile Include="MediumPlotter.cs" />
     <Compile Include="SpectrumPlotter.cs" />
     <Compile Include="PulsePlotter.cs" />
     <Compile Include="FieldPlotter.cs" />
