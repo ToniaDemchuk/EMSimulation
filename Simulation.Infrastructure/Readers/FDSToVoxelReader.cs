@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
 using Simulation.Infrastructure.Models;
 using Simulation.Models.Coordinates;
+using Simulation.Models.Extensions;
 
 namespace Simulation.Infrastructure.Readers
 {
@@ -15,89 +15,108 @@ namespace Simulation.Infrastructure.Readers
         {
             var lines = File.ReadAllLines(fileName);
 
-            var instr = parseList(lines);
+            var instr = parseObjects(lines);
 
-            //var meshObj = new ;
-            //var box = getBox(meshObj);
-            //var resol = getResolution(meshObj);
+            var meshObj = instr[FDSTokens.Mesh].FirstOrDefault();
+            var box = getBox(meshObj);
+            var resol = getResolution(meshObj);
+            var res = 0.1;
+
+            List<Voxel> voxels = getVoxels(instr, box, res);
 
             return new MeshInfo()
             {
-
+                Voxels = voxels,
+                Resolution = resol
             };
         }
 
-        public IEnumerable<IEnumerable<T>> GetByKey<T>(IEnumerable<IGrouping<T, IEnumerable<T>>> source, T key)
+        private static List<Voxel> getVoxels(ILookup<string, IEnumerable<string>> instr, Tuple<CartesianCoordinate, CartesianCoordinate, string> meshBox, double resolution)
         {
-            return source.FirstOrDefault(x => x.Key.Equals(key)).Select(x => x);
-        }
-
-        private IEnumerable<IGrouping<string, string[]>> parseList(string[] lines)
+            var voxels = new List<Voxel>();
+            var obstructions = instr[FDSTokens.Obstruction];
+            foreach (var obstruction in obstructions)
         {
-            IEnumerable<string> list = lines.Where(x => !(string.IsNullOrWhiteSpace(x) || x.StartsWith("!"))).Select(x => x.TrimStart()).SkipWhile(x=>!x.StartsWith("&"));
+                var obstBox = getBox(obstruction);
+                var point1 = new Voxel((obstBox.Item1 - meshBox.Item1) / resolution);
+                var point2 = new Voxel((obstBox.Item2 - meshBox.Item1) / resolution);
 
-            var a = SplitOn(lines, x => x.StartsWith("/")).Select(x=>x.ToArray()).GroupBy(x=>x[0].Substring(1,4));
-            return a;
-        }
-
-
-
-        public IEnumerable<IEnumerable<T>> SplitOn<T>(IEnumerable<T> source, Func<T, bool> predicate)
+                for (int i = point1.I; i < point2.I; i++)
         {
-            return source.Aggregate(new List<List<T>> { new List<T>() },
-                                    (list, value) =>
+                    for (int j = point1.J; j < point2.J; j++)
                                     {
-                                        if (predicate(value))
+                        for (int k = point1.K; k < point2.K; k++)
                                         {
-                                            list.Add(new List<T>());
+                            var vox = new Voxel { I = i, J = j, K = k, Material = obstBox.Item3 };
+                            voxels.Add(vox);
                                         }
-                                        else
-                                        {
-                                            list.Last().Add(value);
                                         }
-                                        return list;
-                                    });
+        }
+            }
+            return voxels;
         }
 
-        private static Tuple<CartesianCoordinate, CartesianCoordinate> getBox(IEnumerable<string> meshObj)
+        private ILookup<string, IEnumerable<string>> parseObjects(IEnumerable<string> lines)
         {
-            var meshCoords =
-                meshObj.Where(x => x.StartsWith("XB"))
-                    .Select(x => x.Substring(0, 3).Split(',')).FirstOrDefault();
+            IEnumerable<string> list = lines
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Where(x => !FDSTokens.IsCommentSeparator(x))
+                .Select(x => x.TrimStart());
 
+            var objects = list.SplitOn(FDSTokens.IsStartSeparator, FDSTokens.IsEndSeparator);
+
+            return objects.ToLookup(x => x.First().Substring(1, 4)); // e.g. &OBST 
+        }
+
+        private static Tuple<CartesianCoordinate, CartesianCoordinate, string> getBox(IEnumerable<string> meshObj)
+        {
+            var meshCoords = getParams(meshObj, FDSTokens.Box);
             if (meshCoords == null)
             {
                 return null;
             }
 
-            var y = meshCoords.Select(double.Parse).ToArray();
-            if (y.Length != 6)
+            var coords = meshCoords.Select(double.Parse).ToArray();
+            if (coords.Length != 6)
             {
                 return null;
             }
+
+            string materialStr = "";
+            var material = getParams(meshObj, FDSTokens.SurfaceId);
+            if (material != null && material.Length > 0)
+            {
+                materialStr = material[0].Trim('\'');
+            }
+
             return Tuple.Create(
-                new CartesianCoordinate(y[0], y[2], y[4]),
-                new CartesianCoordinate(y[1], y[3], y[5]));
+                new CartesianCoordinate(coords[0], coords[2], coords[4]),
+                new CartesianCoordinate(coords[1], coords[3], coords[5]),
+                materialStr);
         }
 
         private static Voxel getResolution(IEnumerable<string> meshObj)
         {
-            var meshCoords =
-                meshObj.Where(x => x.StartsWith("IJK"))
-                    .Select(x => x.Substring(0, 4).Split(',')).FirstOrDefault();
-
+            var meshCoords = getParams(meshObj, FDSTokens.Resolution);
             if (meshCoords == null)
             {
                 return null;
             }
 
-            var y = meshCoords.Select(double.Parse).ToArray();
-            if (y.Length != 3)
+            var coords = meshCoords.Select(double.Parse).ToArray();
+            if (coords.Length != 3)
             {
                 return null;
             }
-            return new Voxel(new CartesianCoordinate(y[0], y[1], y[2]));
+            return new Voxel(new CartesianCoordinate(coords[0], coords[1], coords[2]));
         }
 
+        private static string[] getParams(IEnumerable<string> meshObj, string paramName)
+        {
+            var param = paramName + "=";
+            return meshObj.Where(x => x.StartsWith(param))
+                .Select(x => x.Substring(param.Length).Split(','))
+                .FirstOrDefault();
+    }
     }
 }

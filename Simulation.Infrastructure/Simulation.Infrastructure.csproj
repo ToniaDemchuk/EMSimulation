@@ -85,6 +85,7 @@
     <Compile Include="Iterators\ParallelInvokeIterator.cs" />
     <Compile Include="Iterators\ParallelIterator.cs" />
     <Compile Include="Iterators\SequentialIterator.cs" />
+    <Compile Include="Models\FDSTokens.cs" />
     <Compile Include="Readers\FDSToVoxelReader.cs" />
     <Compile Include="Readers\IVoxelReader.cs" />
     <Compile Include="Readers\MagicaVoxelReader.cs" />
