@@ -1,6 +1,4 @@
 using Simulation.Medium.Factors;
-using Simulation.Medium.Medium;
-using Simulation.Models.Constants;
 using Simulation.Models.Coordinates;
 
 namespace Simulation.Medium.MediumSolver
@@ -10,18 +8,17 @@ namespace Simulation.Medium.MediumSolver
     /// </summary>
     public class LossyDielectricSolver : DielectricSolver
     {
+        private readonly LossyDielectricFactor param;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="LossyDielectricSolver" /> class.
         /// </summary>
-        /// <param name="medium">The medium.</param>
         /// <param name="param">The parameter.</param>
-        public LossyDielectricSolver(LossyDielectric medium, LossyDielectricFactor param)
-            : base(medium, param)
+        public LossyDielectricSolver(LossyDielectricFactor param)
+            : base(param)
         {
             this.param = param;
         }
-
-        private readonly LossyDielectricFactor param;
 
         /// <summary>
         ///     Gets or sets the integral field.

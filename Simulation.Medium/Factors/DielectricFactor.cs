@@ -1,10 +1,18 @@
 ﻿using Simulation.Medium.Medium;
+using Simulation.Medium.Models;
 
 namespace Simulation.Medium.Factors
 {
-    public class DielectricFactor
+    /// <summary>
+    /// The factors for dielectric medium
+    /// </summary>
+    public class DielectricFactor : BaseMediumFactor
     {
-        public DielectricFactor(Dielectric medium)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DielectricFactor"/> class.
+        /// </summary>
+        /// <param name="medium">The medium.</param>
+        public DielectricFactor(Dielectric medium) : base(medium)
         {
             this.Displacement = 1 / medium.Epsilon;
         }

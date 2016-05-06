@@ -7,25 +7,27 @@ using Simulation.Models.Enums;
 namespace Simulation.Medium.Factors
 {
     /// <summary>
-    ///     The DrudeLorentzSolver class.
+    ///     The DrudeLorentz factor class.
     /// </summary>
     public class DrudeLorentzFactor : DrudeFactor
     {
         /// <summary>
-        ///     Initializes a new instance of the <see cref="DrudeLorentzSolver" /> class.
+        ///     Initializes a new instance of the <see cref="DrudeLorentzFactor" /> class.
         /// </summary>
         /// <param name="medium">The medium.</param>
         /// <param name="timeStep">The time step.</param>
         public DrudeLorentzFactor(DrudeLorentz medium, double timeStep)
             : base(medium, timeStep)
         {
-            this.SampledLorentzShift1 = new double[medium.OscillatorTerms.Count];
-            this.SampledLorentzShift2 = new double[medium.OscillatorTerms.Count];
-            this.ElectricLorentz = new double[medium.OscillatorTerms.Count];
+            this.OscillatorCount = medium.OscillatorTerms.Count;
+
+            this.SampledLorentzShift1 = new double[this.OscillatorCount];
+            this.SampledLorentzShift2 = new double[this.OscillatorCount];
+            this.ElectricLorentz = new double[this.OscillatorCount];
 
             double plasmaFreq = medium.PlasmaTerm.ResonanceFrequency.ToType(SpectrumUnitType.CycleFrequency);
 
-            for (int l = 0; l < medium.OscillatorTerms.Count; l++)
+            for (int l = 0; l < this.OscillatorCount; l++)
             {
                 double collisionFreq =
                     medium.OscillatorTerms[l].CollisionFrequency.ToType(SpectrumUnitType.Frequency);
@@ -43,6 +45,14 @@ namespace Simulation.Medium.Factors
                 this.ElectricLorentz[l] = exp * Math.Sin(betadt) * gammadt;
             }
         }
+
+        /// <summary>
+        /// Gets or sets the oscillator count.
+        /// </summary>
+        /// <value>
+        /// The oscillator count.
+        /// </value>
+        public int OscillatorCount { get; set; }
 
         /// <summary>
         ///     Gets or sets the sampled lorentz factor1.

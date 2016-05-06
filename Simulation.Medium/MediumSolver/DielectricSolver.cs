@@ -1,5 +1,4 @@
 using Simulation.Medium.Factors;
-using Simulation.Medium.Medium;
 using Simulation.Medium.Models;
 using Simulation.Models.Coordinates;
 
@@ -10,19 +9,18 @@ namespace Simulation.Medium.MediumSolver
     /// </summary>
     public class DielectricSolver : BaseMediumSolver
     {
+        private readonly DielectricFactor param;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DielectricSolver" /> class.
         /// </summary>
-        /// <param name="medium">The medium.</param>
         /// <param name="param">The parameter.</param>
-        public DielectricSolver(Dielectric medium, DielectricFactor param)
-            : base(medium)
+        public DielectricSolver(DielectricFactor param)
+            : base(param)
         {
             this.param = param;
         }
-
-        private readonly DielectricFactor param;
-
+        
         /// <summary>
         /// Solves the electric field using specified displacement field.
         /// </summary>
@@ -34,6 +32,5 @@ namespace Simulation.Medium.MediumSolver
         {
             return this.param.Displacement * displacementField;
         }
-
     }
 }

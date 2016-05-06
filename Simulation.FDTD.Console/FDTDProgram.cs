@@ -66,7 +66,7 @@ namespace Simulation.FDTD.Console
         private static void setMedium(SimulationParameters parameters)
         {
             double timeStep = parameters.CellSize * parameters.CourantNumber / (Fundamentals.SpeedOfLight);
-            var vacuum = new VacuumSolver();
+            var vacuum = VacuumSolver.Default;
             var silver = new DrudeLorentz();
             var drudeLorentzParam = new DrudeLorentzFactor(silver, timeStep);
             parameters.Medium = setSphere(parameters, silver, drudeLorentzParam, vacuum); 
@@ -90,7 +90,7 @@ namespace Simulation.FDTD.Console
                     var point = new CartesianCoordinate(i, j, k) - center;
                     if (point.Norm <= radius)
                     {
-                        return new DrudeLorentzSolver(silver, drudeLorentzParam) { IsBody = true };
+                        return new DrudeLorentzSolver(drudeLorentzParam) { IsBody = true };
                     }
                     return vacuum;
                 });
@@ -123,7 +123,7 @@ namespace Simulation.FDTD.Console
             var offset = parameters.PmlLength + 3;
             foreach (var voxel in mesh.Voxels)
             {
-                medium[voxel.I + offset, voxel.J + offset, voxel.K + offset] = new DrudeLorentzSolver(silver, drudeLorentzParam) { IsBody = true };
+                medium[voxel.I + offset, voxel.J + offset, voxel.K + offset] = new DrudeLorentzSolver(drudeLorentzParam) { IsBody = true };
             }
             return medium;
         }
