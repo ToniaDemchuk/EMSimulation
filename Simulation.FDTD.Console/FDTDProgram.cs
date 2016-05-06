@@ -104,7 +104,7 @@ namespace Simulation.FDTD.Console
         {
 
             //var mesh = VoxelReader.ReadInfo(@"D:\study\vozelizer\conf1.obj.v80.voxels");
-            var mesh = ObjToVoxelReader.ReadInfo(@"C:\Users\akolkev\Documents\sphere444.obj");
+            var mesh = new ObjToVoxelReader().ReadInfo(@"C:\Users\akolkev\Documents\sphere444.obj");
             //var mesh = MagicaVoxelReader.ReadInfo(@"C:\Users\akolkev\Documents\spherevox.vox");
 
             var medium = parameters.Indices.CreateArray<IMediumSolver>(

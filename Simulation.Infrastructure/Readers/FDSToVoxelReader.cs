@@ -17,9 +17,9 @@ namespace Simulation.Infrastructure.Readers
 
             var instr = parseList(lines);
 
-            var meshObj = ;
-            var box = getBox(meshObj);
-            var resol = getResolution(meshObj);
+            //var meshObj = new ;
+            //var box = getBox(meshObj);
+            //var resol = getResolution(meshObj);
 
             return new MeshInfo()
             {
