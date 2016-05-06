@@ -76,8 +76,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\MemoDictionary.cs" />
+    <Compile Include="Common\FuncDictionary.cs" />
     <Compile Include="Coordinates\IndexStore.cs" />
     <Compile Include="Extensions\ArrayExtensions.cs" />
+    <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Extensions\LinearDiscreteExtensions.cs" />
     <Compile Include="Extensions\SimulationResultExtensions.cs" />
     <Compile Include="Coordinates\CartesianCoordinate.cs" />

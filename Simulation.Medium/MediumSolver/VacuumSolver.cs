@@ -9,11 +9,13 @@ namespace Simulation.Medium.MediumSolver
     /// </summary>
     public class VacuumSolver : BaseMediumSolver
     {
+        public static VacuumSolver Default = new VacuumSolver();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="VacuumSolver" /> class.
         /// </summary>
-        public VacuumSolver()
-            : base(new Vacuum())
+        protected VacuumSolver()
+            : base(new BaseMediumFactor(new Vacuum()))
         {
         }
 

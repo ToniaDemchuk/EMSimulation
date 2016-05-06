@@ -1,13 +1,22 @@
 ﻿using System;
 
 using Simulation.Medium.Medium;
+using Simulation.Medium.Models;
 using Simulation.Models.Enums;
 
 namespace Simulation.Medium.Factors
 {
-    public class DrudeFactor
+    /// <summary>
+    /// The factors for Drude medium.
+    /// </summary>
+    public class DrudeFactor : BaseMediumFactor
     {
-        public DrudeFactor(Drude medium, double timeStep)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DrudeFactor"/> class.
+        /// </summary>
+        /// <param name="medium">The medium.</param>
+        /// <param name="timeStep">The time step.</param>
+        public DrudeFactor(Drude medium, double timeStep) : base(medium)
         {
             double collisionFreq = medium.PlasmaTerm.CollisionFrequency.ToType(SpectrumUnitType.Frequency);
             double plasmaFreq = medium.PlasmaTerm.ResonanceFrequency.ToType(SpectrumUnitType.CycleFrequency);

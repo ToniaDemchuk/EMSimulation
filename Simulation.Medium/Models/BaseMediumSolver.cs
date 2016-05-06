@@ -5,15 +5,15 @@ namespace Simulation.Medium.Models
     /// <summary>
     /// The BaseMediumSolver class.
     /// </summary>
-    public abstract class BaseMediumSolver : IMediumSolver
+    public abstract class BaseMediumSolver : IMediumSolver 
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseMediumSolver"/> class.
         /// </summary>
-        /// <param name="permittivity">The permittivity.</param>
-        protected BaseMediumSolver(BaseMedium permittivity)
+        /// <param name="factor">The permittivity.</param>
+        protected BaseMediumSolver(BaseMediumFactor factor)
         {
-            this.Permittivity = permittivity;
+            this.Permittivity = factor.Permittivity;
         }
 
         /// <summary>

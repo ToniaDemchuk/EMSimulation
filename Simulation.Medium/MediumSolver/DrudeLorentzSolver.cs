@@ -1,10 +1,7 @@
-using System;
 using System.Linq;
 
 using Simulation.Medium.Factors;
-using Simulation.Medium.Medium;
 using Simulation.Models.Coordinates;
-using Simulation.Models.Enums;
 
 namespace Simulation.Medium.MediumSolver
 {
@@ -13,23 +10,22 @@ namespace Simulation.Medium.MediumSolver
     /// </summary>
     public class DrudeLorentzSolver : DrudeSolver
     {
+        private readonly DrudeLorentzFactor param;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DrudeLorentzSolver" /> class.
         /// </summary>
-        /// <param name="medium">The medium.</param>
         /// <param name="param">The parameter.</param>
-        public DrudeLorentzSolver(DrudeLorentz medium, DrudeLorentzFactor param)
-            : base(medium, param)
+        public DrudeLorentzSolver(DrudeLorentzFactor param)
+            : base(param)
         {
             this.param = param;
 
-            this.SampledLorentzDomain = new CartesianCoordinate[medium.OscillatorTerms.Count];
-            this.SampledLorentzDomain1 = new CartesianCoordinate[medium.OscillatorTerms.Count];
-            this.SampledLorentzDomain2 = new CartesianCoordinate[medium.OscillatorTerms.Count];
+            this.SampledLorentzDomain = new CartesianCoordinate[param.OscillatorCount];
+            this.SampledLorentzDomain1 = new CartesianCoordinate[param.OscillatorCount];
+            this.SampledLorentzDomain2 = new CartesianCoordinate[param.OscillatorCount];
 
         }
-
-        private readonly DrudeLorentzFactor param;
 
         /// <summary>
         ///     Gets or sets the sampled lorentz domain.
