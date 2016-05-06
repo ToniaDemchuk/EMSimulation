@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using AwokeKnowing.GnuplotCSharp;
@@ -17,6 +18,9 @@ using Simulation.Models.Enums;
 using Simulation.Models.Extensions;
 using Simulation.Models.Spectrum;
 using Simulation.Infrastructure.Iterators;
+using Simulation.Infrastructure.Models;
+using Simulation.Infrastructure.Readers;
+using Simulation.Medium.Factories;
 
 namespace Simulation.FDTD.Console
 {
@@ -25,6 +29,11 @@ namespace Simulation.FDTD.Console
         private static void Main(string[] args)
         {
             var result = Calculate();
+            SimpleFormatter.Write(
+                "rezult_ext.txt",
+                result.ToDictionary(
+                    x => x.Key.ToType(SpectrumUnitType.WaveLength),
+                    x => new List<double>() { x.Value.CrossSectionAbsorption, x.Value.EffectiveCrossSectionAbsorption }));
             SimpleFormatter.Write(
                 "rezult_ext.txt",
                 result.ToDictionary(
@@ -39,47 +48,58 @@ namespace Simulation.FDTD.Console
             var fieldPlotter = new FieldPlotter();
             var pulsePlotter = new PulsePlotter();
             var spectrumPlotter = new SpectrumPlotter();
+            var mediumPlotter = new MediumPlotter();
+            var mesh = getMeshInfo();
+
+            mediumPlotter.Plot(mesh);
+
+            var pmlLength = 10;
 
             SimulationParameters parameters = new SimulationParameters
             {
-                Indices = new IndexStore(50, 50, 50),
+                Indices = getIndexStore(pmlLength, mesh.Resolution),
                 CellSize = 1e-9,
                 Spectrum =
                     new OpticalSpectrum(new LinearDiscreteCollection(200e-9, 500e-9, 100), SpectrumUnitType.WaveLength),
                 CourantNumber = 0.5,
-                PmlLength = 10,
+                PmlLength = pmlLength,
                 NumSteps = 150,
                 WaveFunc = time => Math.Exp(-0.5 * Math.Pow((30 - time) / 5.0, 2.0)),
                 IsSpectrumCalculated = true
             };
 
-            setMedium(parameters);
+            setMedium(parameters, mesh);
+
             ext.TimeStepCalculated += fieldPlotter.Plot;
             ext.TimeStepCalculated += pulsePlotter.Plot;
+
             var res = ext.Calculate(parameters);
+
             spectrumPlotter.Plot(res);
             return res;
         }
 
+        private static IndexStore getIndexStore(int pmlLength, Voxel resolution)
+        {
+            var res = resolution ?? new Voxel() { I = 50, J = 50, K = 50 };
+            return new IndexStore(res.I + 2 * pmlLength, res.J + 2 * pmlLength, res.K + 2 * pmlLength);
+        }
+
         #region Set Medium
 
-        private static void setMedium(SimulationParameters parameters)
+        private static void setMedium(SimulationParameters parameters, MeshInfo meshInfo)
         {
-            double timeStep = parameters.CellSize * parameters.CourantNumber / (Fundamentals.SpeedOfLight);
-            var vacuum = VacuumSolver.Default;
-            var silver = new DrudeLorentz();
-            var drudeLorentzParam = new DrudeLorentzFactor(silver, timeStep);
-            parameters.Medium = setSphere(parameters, silver, drudeLorentzParam, vacuum); 
-            //parameters.Medium = setObject(parameters, silver, drudeLorentzParam, vacuum); 
+            var factory = new MediumSolverFactory(parameters.TimeStep);
+            //parameters.Medium = setSphere(parameters, silver, drudeLorentzParam, vacuum); 
+            parameters.Medium = setObject(parameters, meshInfo.Voxels, factory);
         }
 
         private static IMediumSolver[,,] setSphere(
             SimulationParameters parameters,
-            DrudeLorentz silver,
             DrudeLorentzFactor drudeLorentzParam,
             VacuumSolver vacuum)
         {
-            double radius = 10;
+            const double Radius = 10;
 
             var centerIndices = parameters.Indices.GetCenter();
             var center = new CartesianCoordinate(centerIndices.ILength, centerIndices.JLength, centerIndices.KLength);
@@ -88,9 +108,9 @@ namespace Simulation.FDTD.Console
                 (i, j, k) =>
                 {
                     var point = new CartesianCoordinate(i, j, k) - center;
-                    if (point.Norm <= radius)
+                    if (point.Norm <= Radius)
                     {
-                        return new DrudeLorentzSolver(drudeLorentzParam) { IsBody = true };
+                        return getMaterial(drudeLorentzParam);
                     }
                     return vacuum;
                 });
@@ -98,34 +118,32 @@ namespace Simulation.FDTD.Console
 
         private static IMediumSolver[,,] setObject(
             SimulationParameters parameters,
-            DrudeLorentz silver,
-            DrudeLorentzFactor drudeLorentzParam,
-            VacuumSolver vacuum)
+            List<Voxel> voxels,
+            MediumSolverFactory fact)
         {
-
-            //var mesh = VoxelReader.ReadInfo(@"D:\study\vozelizer\conf1.obj.v80.voxels");
-            var mesh = new ObjToVoxelReader().ReadInfo(@"C:\Users\akolkev\Documents\sphere444.obj");
-            //var mesh = MagicaVoxelReader.ReadInfo(@"C:\Users\akolkev\Documents\spherevox.vox");
-
             var medium = parameters.Indices.CreateArray<IMediumSolver>(
-                (i, j, k) => vacuum);
-            var gp = new GnuPlot();
-            gp.Set("zrange [0:60]");
-            gp.Set("xrange [0:60]");
-            gp.Set("yrange [0:60]");
-            gp.HoldOn();
+                (i, j, k) => fact.GetMediumSolver(string.Empty));
 
-                gp.Unset("key");
-                //gp.SPlot(mesh.Voxels.Select(x=>(double)x.I).ToArray(), mesh.Voxels.Select(x => (double) x.J).ToArray(), mesh.Voxels.Select(x => (double)x.K).ToArray(), "with points pt 1");
-
-            gp.Wait();
-            
-            var offset = parameters.PmlLength + 3;
-            foreach (var voxel in mesh.Voxels)
+            var offset = parameters.PmlLength;
+            foreach (var voxel in voxels)
             {
-                medium[voxel.I + offset, voxel.J + offset, voxel.K + offset] = new DrudeLorentzSolver(drudeLorentzParam) { IsBody = true };
+                medium[voxel.I + offset, voxel.J + offset, voxel.K + offset] = fact.GetMediumSolver(voxel.Material, true);
             }
             return medium;
+        }
+
+        private static DrudeLorentzSolver getMaterial(DrudeLorentzFactor drudeLorentzParam)
+        {
+            return new DrudeLorentzSolver(drudeLorentzParam) { IsBody = true };
+        }
+
+        private static MeshInfo getMeshInfo()
+        {
+            //var mesh = new VoxelReader().ReadInfo(@"D:\study\vozelizer\conf1.obj.v80.voxels");
+            //var mesh = new ObjToVoxelReader().ReadInfo(@"C:\Users\akolkev\Documents\sphere444.obj");
+            //var mesh = new MagicaVoxelReader().ReadInfo(@"C:\Users\akolkev\Documents\spherevox.vox");
+            var mesh = new FDSToVoxelReader().ReadInfo(@"D:\sphere.fds");
+            return mesh;
         }
 
         #endregion

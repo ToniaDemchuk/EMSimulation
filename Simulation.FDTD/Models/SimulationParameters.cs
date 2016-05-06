@@ -1,6 +1,7 @@
 ﻿using System;
 
 using Simulation.Medium.Models;
+using Simulation.Models.Constants;
 using Simulation.Models.Coordinates;
 using Simulation.Models.Spectrum;
 
@@ -42,6 +43,25 @@ namespace Simulation.FDTD.Models
         /// The size of the cell.
         /// </value>
         public double CellSize { get; set; }
+
+        public double TimeStep {
+            get
+            {
+                if (!this.timeStep.HasValue)
+                {
+                    this.timeStep = this.CellSize * this.CourantNumber / (Fundamentals.SpeedOfLight);
+                }
+                return this.timeStep.Value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the lazy timeStep.
+        /// </summary>
+        /// <value>
+        /// The lazy timeStep.
+        /// </value>
+        private double? timeStep;
 
         public int NumSteps { get; set; }
 

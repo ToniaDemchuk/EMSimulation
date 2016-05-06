@@ -5,17 +5,13 @@ using System.Threading;
 using AwokeKnowing.GnuplotCSharp;
 
 using Simulation.FDTD.Models;
-using Simulation.Models.Constants;
 using Simulation.Models.Coordinates;
 using Simulation.Models.Enums;
 using Simulation.Models.Extensions;
 using Simulation.Models.Spectrum;
 using Simulation.Infrastructure.Iterators;
-using GnuplotCSharp;
+
 using System;
-using Simulation.Infrastructure;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 using Simulation.FDTD.EventArgs;
 
@@ -198,9 +194,7 @@ namespace Simulation.FDTD
 
         private SimulationResult calculateExtinction(SpectrumUnit freq, SimulationParameters parameters)
         {
-            double timeStep = parameters.CellSize * parameters.CourantNumber / Fundamentals.SpeedOfLight;
-
-            var pulseFourier = this.pulse.FourierPulse.Select(x => x.Transform(freq, timeStep).Magnitude).ToArray();
+            var pulseFourier = this.pulse.FourierPulse.Select(x => x.Transform(freq, parameters.TimeStep).Magnitude).ToArray();
             double extinction = iterator.Sum(parameters.Indices,
                 (i, j, k) =>
                 {
@@ -213,7 +207,7 @@ namespace Simulation.FDTD
                     
                     double pulseMultiplier = 1 / pulseFourier[j];
                     var complex = eps.Imaginary *
-                                  pulseMultiplier * this.fields.FourierField[i, j, k].Transform(freq, timeStep).Norm;
+                                  pulseMultiplier * this.fields.FourierField[i, j, k].Transform(freq, parameters.TimeStep).Norm;
                     return complex;
                 });
 
