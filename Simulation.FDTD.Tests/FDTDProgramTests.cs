@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
@@ -10,7 +9,6 @@ using GnuplotCSharp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Simulation.FDTD.Console;
-using Simulation.Models.Extensions;
 
 namespace Simulation.FDTD.Tests
 {

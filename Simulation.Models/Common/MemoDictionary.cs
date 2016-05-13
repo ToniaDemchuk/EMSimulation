@@ -39,10 +39,10 @@ namespace Simulation.Models.Common
         /// <returns>The value.</returns>
         public TValue Get(TKey key)
         {
-            TValue value = default(TValue);
+            TValue value;
             if (!this.storage.TryGetValue(key, out value))
             {
-                Func<TValue> func = null;
+                Func<TValue> func;
                 if (this.factory.TryGetValue(key, out func))
                 {
                     value = func();

@@ -31,12 +31,12 @@ namespace Simulation.FDTD.Models
 
         public PmlCoefficient Magnetic(int i, int j, int k)
         {
-            return new PmlCoefficient(mi[i], mj[j], mk[k]);
+            return new PmlCoefficient(this.mi[i], this.mj[j], this.mk[k]);
         }
 
         public PmlCoefficient Electric(int i, int j, int k)
         {
-            return new PmlCoefficient(ei[i], ej[j], ek[k]);
+            return new PmlCoefficient(this.ei[i], this.ej[j], this.ek[k]);
         }
 
         /// <summary>
@@ -49,11 +49,11 @@ namespace Simulation.FDTD.Models
 
         private void boundaryConditionsCalc(IndexStore indices)
         {
-            this.oneDirectionBoundary(indices.ILength, out ei, out mi);
+            this.oneDirectionBoundary(indices.ILength, out this.ei, out this.mi);
 
-            this.oneDirectionBoundary(indices.JLength, out ej, out mj);
+            this.oneDirectionBoundary(indices.JLength, out this.ej, out this.mj);
 
-            this.oneDirectionBoundary(indices.KLength, out ek, out mk);
+            this.oneDirectionBoundary(indices.KLength, out this.ek, out this.mk);
         }
 
         private void oneDirectionBoundary(

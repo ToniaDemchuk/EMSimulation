@@ -52,7 +52,7 @@ namespace Simulation.Infrastructure
                             CultureInfo.InvariantCulture,
                             "{0} {1}",
                             pair.Key,
-                            String.Join(" ", pair.Value)));
+                            string.Join(" ", pair.Value)));
                 }
             }
         }

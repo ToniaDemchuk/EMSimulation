@@ -2,9 +2,8 @@
 using System.Linq;
 
 using Simulation.Infrastructure.Models;
-using Simulation.Infrastructure.Readers;
 
-namespace Simulation.Infrastructure
+namespace Simulation.Infrastructure.Readers
 {
     public class MagicaVoxelReader : IVoxelReader
     {
@@ -30,10 +29,10 @@ namespace Simulation.Infrastructure
 
             public MagicaVoxelData(BinaryReader stream, bool subsample)
             {
-                x = (byte)(subsample ? stream.ReadByte() / 2 : stream.ReadByte());
-                y = (byte)(subsample ? stream.ReadByte() / 2 : stream.ReadByte());
-                z = (byte)(subsample ? stream.ReadByte() / 2 : stream.ReadByte());
-                color = stream.ReadByte();
+                this.x = (byte)(subsample ? stream.ReadByte() / 2 : stream.ReadByte());
+                this.y = (byte)(subsample ? stream.ReadByte() / 2 : stream.ReadByte());
+                this.z = (byte)(subsample ? stream.ReadByte() / 2 : stream.ReadByte());
+                this.color = stream.ReadByte();
             }
         }
 
@@ -53,8 +52,9 @@ namespace Simulation.Infrastructure
         /// Load a MagicaVoxel .vox format file into the custom ushort[] structure that we use for voxel chunks.
         /// </summary>
         /// <param name="stream">An open BinaryReader stream that is the .vox file.</param>
-        /// <param name="overrideColors">Optional color lookup table for converting RGB values into my internal engine color format.</param>
-        /// <returns>The voxel chunk data for the MagicaVoxel .vox file.</returns>
+        /// <returns>
+        /// The voxel chunk data for the MagicaVoxel .vox file.
+        /// </returns>
         private static MagicaVoxelData[] FromMagica(BinaryReader stream)
         {
             // check out http://voxel.codeplex.com/wikipage?title=VOX%20Format&referringTitle=Home for the file format used below

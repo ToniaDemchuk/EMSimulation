@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 
 using AwokeKnowing.GnuplotCSharp;
 
-using Simulation.Infrastructure;
-using Simulation.Models.Enums;
 using Simulation.Models.Spectrum;
 using GnuplotCSharp;
 
@@ -28,11 +25,11 @@ namespace Simulation.FDTD.Console
         /// <param name="result">The result.</param>
         public void Plot(SimulationResultDictionary result)
         {
-            gp.Set("style data lines");
+            this.gp.Set("style data lines");
 
-            gp.Plot(result.Select(x => x.Value.EffectiveCrossSectionAbsorption));
+            this.gp.Plot(result.Select(x => x.Value.EffectiveCrossSectionAbsorption));
 
-            gp.Wait();
+            this.gp.Wait();
         }
     }
 }

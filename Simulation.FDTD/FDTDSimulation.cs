@@ -42,7 +42,6 @@ namespace Simulation.FDTD
         public SimulationResultDictionary Calculate(SimulationParameters parameters)
         {
             this.initParams(parameters);
-            var gp = new GnuPlot();
             for (var time = 0; time < parameters.NumSteps; time++)
             {
                 this.calcFields(time, parameters);
@@ -70,7 +69,7 @@ namespace Simulation.FDTD
 
         private void initParams(SimulationParameters parameters)
         {
-            this.fields = new FDTDField(parameters, iterator);
+            this.fields = new FDTDField(parameters, this.iterator);
             this.pulse = new FDTDPulse(parameters);
 
             this.pml = new PmlBoundary(parameters.PmlLength, parameters.Indices);
@@ -85,7 +84,7 @@ namespace Simulation.FDTD
             this.calculateDField(parameters, pulseIndex, time);
 
             // Calculate the E from D field
-            iterator.For(parameters.Indices.ShiftLower(1).ShiftUpper(1),
+            this.iterator.For(parameters.Indices.ShiftLower(1).ShiftUpper(1),
                 (i, j, k) => { this.fields.E[i, j, k] = parameters.Medium[i, j, k].Solve(this.fields.D[i, j, k]); });
 
             this.fields.DoFourierField();
@@ -96,7 +95,7 @@ namespace Simulation.FDTD
 
         private void calculateHField(SimulationParameters param, IndexStore pulseIndex)
         {
-            iterator.For(param.Indices.ShiftUpper(1),
+            this.iterator.For(param.Indices.ShiftUpper(1),
                 (i, j, k) =>
                 {
                     CartesianCoordinate curlE = this.fields.E.Curl(i, j, k, +1);
@@ -145,7 +144,7 @@ namespace Simulation.FDTD
 
         private void calculateDField(SimulationParameters param, IndexStore pulseIndex, int time)
         {
-            iterator.For(param.Indices.ShiftLower(1),
+            this.iterator.For(param.Indices.ShiftLower(1),
                 (i, j, k) =>
                 {
                     CartesianCoordinate curlH = this.fields.H.Curl(i, j, k, -1);
@@ -167,7 +166,7 @@ namespace Simulation.FDTD
 
         private void addPulseToD1(IndexStore pulseIndex, double courantNumber)
         {
-            iterator.ForExceptK(
+            this.iterator.ForExceptK(
                 pulseIndex,
                 (i, j) =>
                 {
@@ -184,7 +183,7 @@ namespace Simulation.FDTD
                 (courantNumber * this.pulse.H[pulseIndex.Lower - 1]);
             var cart2 = CartesianCoordinate.ZOrth * 
                 (courantNumber * this.pulse.H[pulseIndex.JLength]);
-            iterator.ForExceptJ(
+            this.iterator.ForExceptJ(
                 pulseIndex,
                 (i, k) => {
                     this.fields.D[i, pulseIndex.Lower, k] += cart1;
@@ -195,7 +194,7 @@ namespace Simulation.FDTD
         private SimulationResult calculateExtinction(SpectrumUnit freq, SimulationParameters parameters)
         {
             var pulseFourier = this.pulse.FourierPulse.Select(x => x.Transform(freq, parameters.TimeStep).Magnitude).ToArray();
-            double extinction = iterator.Sum(parameters.Indices,
+            double extinction = this.iterator.Sum(parameters.Indices,
                 (i, j, k) =>
                 {
                     var medium = parameters.Medium[i, j, k];
@@ -229,9 +228,9 @@ namespace Simulation.FDTD
         private double? crossSectionArea;
         private double calculateArea(SimulationParameters parameters)
         {
-            if (crossSectionArea.HasValue)
+            if (this.crossSectionArea.HasValue)
             {
-                return crossSectionArea.Value;
+                return this.crossSectionArea.Value;
             }
             int area = 0;
 

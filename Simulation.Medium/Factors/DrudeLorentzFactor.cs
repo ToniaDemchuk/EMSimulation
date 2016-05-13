@@ -1,7 +1,6 @@
 using System;
 
 using Simulation.Medium.Medium;
-using Simulation.Medium.MediumSolver;
 using Simulation.Models.Enums;
 
 namespace Simulation.Medium.Factors

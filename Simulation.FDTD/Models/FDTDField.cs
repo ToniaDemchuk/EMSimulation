@@ -59,19 +59,22 @@ namespace Simulation.FDTD.Models
         public FourierSeriesCoordinate[,,] FourierField { get; set; }
 
         private readonly IndexStore indices;
-        IIterator iterator;
-        bool isSpectrumCalculated;
+
+        readonly IIterator iterator;
+
+        readonly bool isSpectrumCalculated;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FDTDField" /> class.
         /// </summary>
         /// <param name="parameters">The parameters.</param>
+        /// <param name="iterator">The iterator.</param>
         public FDTDField(SimulationParameters parameters, IIterator iterator)
         {
-            isSpectrumCalculated = parameters.IsSpectrumCalculated;
+            this.isSpectrumCalculated = parameters.IsSpectrumCalculated;
             this.indices = parameters.Indices;
             this.iterator = iterator;
-            if (isSpectrumCalculated) {
+            if (this.isSpectrumCalculated) {
                 this.FourierField = this.indices.CreateArray(
                     (i, j, k) => parameters.Medium[i, j, k].IsBody ? new FourierSeriesCoordinate() : null);
             }
@@ -89,7 +92,7 @@ namespace Simulation.FDTD.Models
         /// </summary>
         public void DoFourierField()
         {
-            if (!isSpectrumCalculated) {
+            if (!this.isSpectrumCalculated) {
                 return;
             }
             this.iterator.For(this.indices,
