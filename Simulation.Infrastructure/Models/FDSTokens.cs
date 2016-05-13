@@ -11,6 +11,7 @@ namespace Simulation.Infrastructure.Models
         public static readonly string Box = "XB";
         public static readonly string SurfaceId = "SURF_ID";
         public static readonly string Resolution = "IJK";
+        public static readonly string CellSize = "RES";
             
         public static bool IsStartSeparator(string str)
         {

@@ -15,12 +15,12 @@ namespace Simulation.Infrastructure.Readers
         {
             var lines = File.ReadAllLines(fileName);
 
-            var instr = parseObjects(lines);
+            var instr = this.parseObjects(lines);
 
             var meshObj = instr[FDSTokens.Mesh].FirstOrDefault();
             var box = getBox(meshObj);
             var resol = getResolution(meshObj);
-            var res = 0.1;
+            var res = getCellSize(meshObj);
 
             List<Voxel> voxels = getVoxels(instr, box, res);
 
@@ -31,27 +31,27 @@ namespace Simulation.Infrastructure.Readers
             };
         }
 
-        private static List<Voxel> getVoxels(ILookup<string, IEnumerable<string>> instr, Tuple<CartesianCoordinate, CartesianCoordinate, string> meshBox, double resolution)
+        private static List<Voxel> getVoxels(ILookup<string, IEnumerable<string>> instr, Tuple<CartesianCoordinate, CartesianCoordinate, string> meshBox, CartesianCoordinate resolution)
         {
             var voxels = new List<Voxel>();
             var obstructions = instr[FDSTokens.Obstruction];
             foreach (var obstruction in obstructions)
-        {
+            {
                 var obstBox = getBox(obstruction);
                 var point1 = new Voxel((obstBox.Item1 - meshBox.Item1) / resolution);
                 var point2 = new Voxel((obstBox.Item2 - meshBox.Item1) / resolution);
 
                 for (int i = point1.I; i < point2.I; i++)
-        {
+                {
                     for (int j = point1.J; j < point2.J; j++)
-                                    {
+                    {
                         for (int k = point1.K; k < point2.K; k++)
-                                        {
+                        {
                             var vox = new Voxel { I = i, J = j, K = k, Material = obstBox.Item3 };
                             voxels.Add(vox);
-                                        }
-                                        }
-        }
+                        }
+                    }
+                }
             }
             return voxels;
         }
@@ -111,12 +111,28 @@ namespace Simulation.Infrastructure.Readers
             return new Voxel(new CartesianCoordinate(coords[0], coords[1], coords[2]));
         }
 
+        private static CartesianCoordinate getCellSize(IEnumerable<string> meshObj)
+        {
+            var meshCoords = getParams(meshObj, FDSTokens.CellSize);
+            if (meshCoords == null)
+            {
+                return CartesianCoordinate.One;
+            }
+
+            var coords = meshCoords.Select(double.Parse).ToArray();
+            if (coords.Length != 3)
+            {
+                return CartesianCoordinate.One;
+            }
+            return new CartesianCoordinate(coords[0], coords[1], coords[2]);
+        }
+
         private static string[] getParams(IEnumerable<string> meshObj, string paramName)
         {
             var param = paramName + "=";
             return meshObj.Where(x => x.StartsWith(param))
                 .Select(x => x.Substring(param.Length).Split(','))
                 .FirstOrDefault();
-    }
+        }
     }
 }
