@@ -3,9 +3,8 @@ using System.IO;
 using System.Linq;
 
 using Simulation.Infrastructure.Models;
-using Simulation.Infrastructure.Readers;
 
-namespace Simulation.Infrastructure
+namespace Simulation.Infrastructure.Readers
 {
     public class VoxelReader : IVoxelReader
     {

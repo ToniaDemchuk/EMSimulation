@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Numerics;
-using System.Security.Cryptography.X509Certificates;
 
 using Simulation.Models.Coordinates;
 using Simulation.Models.Enums;

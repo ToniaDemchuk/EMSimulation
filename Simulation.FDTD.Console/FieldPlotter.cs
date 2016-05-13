@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using AwokeKnowing.GnuplotCSharp;
+﻿using AwokeKnowing.GnuplotCSharp;
 
 using Simulation.FDTD.EventArgs;
 using Simulation.Infrastructure.Iterators;

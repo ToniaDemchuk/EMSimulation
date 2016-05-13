@@ -208,7 +208,7 @@ namespace Simulation.Models.Coordinates
         /// Implements the operator / (Divide point to the point).
         /// </summary>
         /// <param name="point1">The point1.</param>
-        /// <param name="num">The number.</param>
+        /// <param name="point2">The point2.</param>
         /// <returns>
         /// The result of the operator.
         /// </returns>

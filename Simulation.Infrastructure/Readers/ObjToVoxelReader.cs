@@ -6,10 +6,9 @@ using System.Linq;
 using ObjLoader.Loader.Loaders;
 
 using Simulation.Infrastructure.Models;
-using Simulation.Infrastructure.Readers;
 using Simulation.Models.Coordinates;
 
-namespace Simulation.Infrastructure
+namespace Simulation.Infrastructure.Readers
 {
     public class ObjToVoxelReader:IVoxelReader
     {

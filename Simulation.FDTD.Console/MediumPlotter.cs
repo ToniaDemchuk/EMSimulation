@@ -21,18 +21,18 @@ namespace Simulation.FDTD.Console
         public void Plot(MeshInfo meshInfo)
         {
             var voxels = meshInfo.Voxels;
-            gp.Set(string.Format("xrange [0:{0}]", meshInfo.Resolution.I));
-            gp.Set(string.Format("yrange [0:{0}]", meshInfo.Resolution.J));
-            gp.Set(string.Format("zrange [0:{0}]", meshInfo.Resolution.K));
-            gp.HoldOn();
+            this.gp.Set(string.Format("xrange [0:{0}]", meshInfo.Resolution.I));
+            this.gp.Set(string.Format("yrange [0:{0}]", meshInfo.Resolution.J));
+            this.gp.Set(string.Format("zrange [0:{0}]", meshInfo.Resolution.K));
+            this.gp.HoldOn();
 
-            gp.Unset("key");
+            this.gp.Unset("key");
 
             var groups = voxels.GroupBy(x => x.Material);
             int pointIndex = 0;
             foreach (var @group in groups)
             {
-                gp.SPlot(
+                this.gp.SPlot(
                 @group.Select(x => (double)x.I).ToArray(),
                 @group.Select(x => (double)x.J).ToArray(),
                 @group.Select(x => (double)x.K).ToArray(),

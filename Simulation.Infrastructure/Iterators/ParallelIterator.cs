@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Simulation.Models.Coordinates;
 
@@ -85,13 +82,11 @@ namespace Simulation.Infrastructure.Iterators
                 (i, j, k) =>
                 {
                     var val = action(i, j, k);
-                    if (val != 0.0)
+                    lock (obj)
                     {
-                        lock (obj)
-                        {
-                            sum += val;
-                        }
+                        sum += val;
                     }
+
                 });
 
             return sum;

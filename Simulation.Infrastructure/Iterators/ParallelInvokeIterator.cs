@@ -1,8 +1,6 @@
 ﻿using Simulation.Models.Coordinates;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Simulation.Infrastructure.Iterators
@@ -155,7 +153,7 @@ namespace Simulation.Infrastructure.Iterators
             Parallel.For(
                 indices.Lower,
                 indices.ILength,
-                new ParallelOptions { MaxDegreeOfParallelism = MaxDegreeOfParallelism },
+                new ParallelOptions { MaxDegreeOfParallelism = this.MaxDegreeOfParallelism },
                 () => 0d,
                 (i, state, local) =>
                 {

@@ -2,17 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using AwokeKnowing.GnuplotCSharp;
-
-using Simulation.FDTD.EventArgs;
 using Simulation.FDTD.Models;
 using Simulation.Infrastructure;
 using Simulation.Medium.Factors;
-using Simulation.Medium.Medium;
 using Simulation.Medium.MediumSolver;
 using Simulation.Medium.Models;
 using Simulation.Models.Common;
-using Simulation.Models.Constants;
 using Simulation.Models.Coordinates;
 using Simulation.Models.Enums;
 using Simulation.Models.Extensions;
