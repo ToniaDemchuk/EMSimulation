@@ -11,6 +11,7 @@ using Simulation.Models.Coordinates;
 using Simulation.Models.Enums;
 using Simulation.Models.Extensions;
 using Simulation.Models.Spectrum;
+using Simulation.Infrastructure.Readers;
 
 namespace Simulation.DDA
 {
@@ -49,6 +50,17 @@ namespace Simulation.DDA
 
                 return new SystemConfig(radiusList, pointList);
             }
+        }
+
+        public static SystemConfig ReadSystemConfigFromMesh(string fileName)
+        {
+            var mesh = new FDSToVoxelReader().ReadInfo(fileName);
+
+            var pointList = mesh.Voxels.Select(voxel => new CartesianCoordinate(voxel.I, voxel.J, voxel.K)).ToList();
+
+            var radiusList = Enumerable.Repeat(Math.Pow(3 / (4 * Math.PI), 1.0 / 3.0), pointList.Count).ToList();
+
+            return new SystemConfig(radiusList, pointList);
         }
 
         /// <summary>
