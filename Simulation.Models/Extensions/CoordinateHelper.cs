@@ -44,25 +44,61 @@ namespace Simulation.Models.Extensions
         public static double[] ConvertToPlainArray(DyadCoordinate<Complex>[,] coordinate)
         {
             var size = coordinate.GetLength(0);
-            var dyadSize = DyadCoordinate<Complex>.DyadLength;
+            var dyadSize = 3;
 
             double[] array = new double[size * size * ComplexMultiplier * dyadSize];
             for (int i = 0; i < size; i++)
             {
                 for (int j = 0; j < size; j++)
                 {
-                    Complex[,] dyadic = coordinate[i, j].Dyad;
-                    for (int ii = 0; ii < dyadSize; ii++)
-                    {
-                        for (int jj = 0; jj < dyadSize; jj++)
-                        {
-                            Complex dyadCoord = dyadic[ii, jj];
-                            array[ComplexMultiplier * size * (dyadSize * i + ii) + ComplexMultiplier * j + 2 * jj + 0] =
-                                dyadCoord.Real;
-                            array[ComplexMultiplier * size * (dyadSize * i + ii) + ComplexMultiplier * j + 2 * jj + 1] =
-                                dyadCoord.Imaginary;
-                        }
-                    }
+                    DyadCoordinate<Complex> dyadic = coordinate[i, j];
+
+                    array[ComplexMultiplier * size * (dyadSize * i + 0) + ComplexMultiplier * j + 2 * 0 + 0] =
+                        dyadic.xx.Real;
+                    array[ComplexMultiplier * size * (dyadSize * i + 0) + ComplexMultiplier * j + 2 * 0 + 1] =
+                        dyadic.xx.Imaginary;
+                    
+                    array[ComplexMultiplier * size * (dyadSize * i + 1) + ComplexMultiplier * j + 2 * 0 + 0] =
+                        dyadic.xy.Real;
+                    array[ComplexMultiplier * size * (dyadSize * i + 1) + ComplexMultiplier * j + 2 * 0 + 1] =
+                        dyadic.xy.Imaginary;
+                    
+                    array[ComplexMultiplier * size * (dyadSize * i + 2) + ComplexMultiplier * j + 2 * 0 + 0] =
+                        dyadic.xz.Real;
+                    array[ComplexMultiplier * size * (dyadSize * i + 2) + ComplexMultiplier * j + 2 * 0 + 1] =
+                        dyadic.xz.Imaginary;
+
+
+                    array[ComplexMultiplier * size * (dyadSize * i + 0) + ComplexMultiplier * j + 2 * 1 + 0] =
+                        dyadic.yx.Real;
+                    array[ComplexMultiplier * size * (dyadSize * i + 0) + ComplexMultiplier * j + 2 * 1 + 1] =
+                        dyadic.yx.Imaginary;
+
+                    array[ComplexMultiplier * size * (dyadSize * i + 1) + ComplexMultiplier * j + 2 * 1 + 0] =
+                        dyadic.yy.Real;
+                    array[ComplexMultiplier * size * (dyadSize * i + 1) + ComplexMultiplier * j + 2 * 1 + 1] =
+                        dyadic.yy.Imaginary;
+
+                    array[ComplexMultiplier * size * (dyadSize * i + 2) + ComplexMultiplier * j + 2 * 1 + 0] =
+                        dyadic.yz.Real;
+                    array[ComplexMultiplier * size * (dyadSize * i + 2) + ComplexMultiplier * j + 2 * 1 + 1] =
+                        dyadic.yz.Imaginary;
+
+
+                    array[ComplexMultiplier * size * (dyadSize * i + 0) + ComplexMultiplier * j + 2 * 2 + 0] =
+                        dyadic.zx.Real;
+                    array[ComplexMultiplier * size * (dyadSize * i + 0) + ComplexMultiplier * j + 2 * 2 + 1] =
+                        dyadic.zx.Imaginary;
+
+                    array[ComplexMultiplier * size * (dyadSize * i + 1) + ComplexMultiplier * j + 2 * 2 + 0] =
+                        dyadic.zy.Real;
+                    array[ComplexMultiplier * size * (dyadSize * i + 1) + ComplexMultiplier * j + 2 * 2 + 1] =
+                        dyadic.zy.Imaginary;
+
+                    array[ComplexMultiplier * size * (dyadSize * i + 2) + ComplexMultiplier * j + 2 * 2 + 0] =
+                        dyadic.zz.Real;
+                    array[ComplexMultiplier * size * (dyadSize * i + 2) + ComplexMultiplier * j + 2 * 2 + 1] =
+                        dyadic.zz.Imaginary;
                 }
             }
             return array;

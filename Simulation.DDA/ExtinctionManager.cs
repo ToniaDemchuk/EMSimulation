@@ -7,6 +7,7 @@ using Simulation.Medium.Models;
 using Simulation.Models.Coordinates;
 using Simulation.Models.Extensions;
 using Simulation.Models.Spectrum;
+using System.Threading.Tasks;
 
 namespace Simulation.DDA
 {
@@ -89,15 +90,19 @@ namespace Simulation.DDA
         {
             var a = new DyadCoordinate<Complex>[system.Size, system.Size];
 
-            for (int i = 0; i < system.Size; i++)
-            {
+            Parallel.For(0,system.Size, i=> {
                 for (int j = 0; j < system.Size; j++)
                 {
                     a[i, j] = i == j
                                   ? this.setDiagonalElements(system, i, dispersion)
                                   : this.setNonDiagonalElements(system, i, j, dispersion);
                 }
-            }
+            });
+
+            //for (int i = 0; i < system.Size; i++)
+            //{
+               
+            //}
 
             return a;
         }

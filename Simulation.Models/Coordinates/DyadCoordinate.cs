@@ -8,10 +8,17 @@ namespace Simulation.Models.Coordinates
     /// <typeparam name="T">The type of underlying value.</typeparam>
     public class DyadCoordinate<T> where T : struct
     {
-        /// <summary>
-        /// The dyad length
-        /// </summary>
-        public const int DyadLength = 3;
+        public T xx { get; private set; }
+        public T xy { get; private set; }
+        public T xz { get; private set; }
+
+        public T yx { get; private set; }
+        public T yy { get; private set; }
+        public T yz { get; private set; }
+
+        public T zx { get; private set; }
+        public T zy { get; private set; }
+        public T zz { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CartesianCoordinate" /> class.
@@ -27,12 +34,9 @@ namespace Simulation.Models.Coordinates
         /// <param name="zz">The z-z value.</param>
         public DyadCoordinate(T xx, T xy, T xz, T yx, T yy, T yz, T zx, T zy, T zz)
         {
-            this.Dyad = new[,]
-            {
-                { xx, xy, xz },
-                { yx, yy, yz },
-                { zx, zy, zz }
-            };
+            this.xx = xx; this.yx = yx; this.zx = zx;
+            this.xy = xy; this.yy = yy; this.zy = zy;
+            this.xz = xz; this.yz = yz; this.zz = zz;
         }
 
         /// <summary>
@@ -41,30 +45,10 @@ namespace Simulation.Models.Coordinates
         /// <param name="initValue">The value on the main diagonal of identity matrix.</param>
         public DyadCoordinate(T initValue)
         {
-            this.Dyad = new[,]
-            {
-                { initValue, default(T), default(T) },
-                { default(T), initValue, default(T) },
-                { default(T), default(T), initValue }
-            };
+            xx = initValue;     yx = default(T);    zx = default(T);
+            xy = default(T);    yy = initValue;     zy = default(T);
+            xz = default(T);    yz = default(T);    zz = initValue;
         }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DyadCoordinate{T}"/> class.
-        /// </summary>
-        /// <param name="dyad">The dyad matrix.</param>
-        private DyadCoordinate(T[,] dyad)
-        {
-            this.Dyad = dyad;
-        }
-
-        /// <summary>
-        /// Gets or sets the dyad values.
-        /// </summary>
-        /// <value>
-        /// The dyad values.
-        /// </value>
-        public T[,] Dyad { get; private set; }
 
         /// <summary>
         /// Implements the operator * (Multiply dyad on the value).
@@ -78,18 +62,11 @@ namespace Simulation.Models.Coordinates
             DyadCoordinate<T> point1,
             T num)
         {
-            var newDyad =
-                new T[DyadLength, DyadLength];
-
-            for (int i = 0; i < DyadLength; i++)
-            {
-                for (int j = 0; j < DyadLength; j++)
-                {
-                    newDyad[i, j] = (dynamic) point1.Dyad[i, j] * num;
-                }
-            }
-
-            return new DyadCoordinate<T>(newDyad);
+            return new DyadCoordinate<T>(
+                (dynamic)point1.xx * num, (dynamic)point1.yx * num, (dynamic)point1.zx * num,
+                (dynamic)point1.xy * num, (dynamic)point1.yy * num, (dynamic)point1.zy * num,
+                (dynamic)point1.xz * num, (dynamic)point1.yz * num, (dynamic)point1.zz * num
+               );
         }
 
         /// <summary>
@@ -119,18 +96,11 @@ namespace Simulation.Models.Coordinates
             DyadCoordinate<T> point1,
             DyadCoordinate<T> point2)
         {
-            var newDyad =
-                new T[DyadLength, DyadLength];
-
-            for (int i = 0; i < DyadLength; i++)
-            {
-                for (int j = 0; j < DyadLength; j++)
-                {
-                    newDyad[i, j] = (dynamic) point1.Dyad[i, j] - point2.Dyad[i, j];
-                }
-            }
-
-            return new DyadCoordinate<T>(newDyad);
+            return new DyadCoordinate<T>(
+                (dynamic)point1.xx - point2.xx, (dynamic)point1.yx - point2.yx, (dynamic)point1.zx - point2.zx,
+                (dynamic)point1.xy - point2.xy, (dynamic)point1.yy - point2.yy, (dynamic)point1.zy - point2.zy,
+                (dynamic)point1.xz - point2.xz, (dynamic)point1.yz - point2.yz, (dynamic)point1.zz - point2.zz
+               );
         }
 
         /// <summary>
@@ -145,18 +115,11 @@ namespace Simulation.Models.Coordinates
             DyadCoordinate<T> point1,
             DyadCoordinate<T> point2)
         {
-            var newDyad =
-                new T[DyadLength, DyadLength];
-
-            for (int i = 0; i < DyadLength; i++)
-            {
-                for (int j = 0; j < DyadLength; j++)
-                {
-                    newDyad[i, j] = (dynamic) point1.Dyad[i, j] + point2.Dyad[i, j];
-                }
-            }
-
-            return new DyadCoordinate<T>(newDyad);
+            return new DyadCoordinate<T>(
+                (dynamic)point1.xx + point2.xx, (dynamic)point1.yx + point2.yx, (dynamic)point1.zx + point2.zx,
+                (dynamic)point1.xy + point2.xy, (dynamic)point1.yy + point2.yy, (dynamic)point1.zy + point2.zy,
+                (dynamic)point1.xz + point2.xz, (dynamic)point1.yz + point2.yz, (dynamic)point1.zz + point2.zz
+               );
         }
 
         /// <summary>
@@ -168,17 +131,11 @@ namespace Simulation.Models.Coordinates
         /// </returns>
         public static implicit operator DyadCoordinate<Complex>(DyadCoordinate<T> value)
         {
-            var newDyad = new Complex[DyadLength, DyadLength];
-
-            for (int i = 0; i < DyadLength; i++)
-            {
-                for (int j = 0; j < DyadLength; j++)
-                {
-                    newDyad[i, j] = (dynamic) value.Dyad[i, j];
-                }
-            }
-
-            return new DyadCoordinate<Complex>(newDyad);
+            return new DyadCoordinate<Complex>(
+                (dynamic)value.xx, (dynamic)value.yx, (dynamic)value.zx,
+                (dynamic)value.xy, (dynamic)value.yy, (dynamic)value.zy,
+                (dynamic)value.xz, (dynamic)value.yz, (dynamic)value.zz
+               );
         }
     }
 }
