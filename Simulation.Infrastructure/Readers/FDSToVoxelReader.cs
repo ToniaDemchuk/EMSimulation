@@ -6,6 +6,7 @@ using System.Linq;
 using Simulation.Infrastructure.Models;
 using Simulation.Models.Coordinates;
 using Simulation.Models.Extensions;
+using System.Globalization;
 
 namespace Simulation.Infrastructure.Readers
 {
@@ -76,7 +77,7 @@ namespace Simulation.Infrastructure.Readers
                 return null;
             }
 
-            var coords = meshCoords.Select(double.Parse).ToArray();
+            var coords = meshCoords.Select(x => double.Parse(x, CultureInfo.InvariantCulture)).ToArray();
             if (coords.Length != 6)
             {
                 return null;
@@ -103,7 +104,7 @@ namespace Simulation.Infrastructure.Readers
                 return null;
             }
 
-            var coords = meshCoords.Select(double.Parse).ToArray();
+            var coords = meshCoords.Select(x => double.Parse(x, CultureInfo.InvariantCulture)).ToArray();
             if (coords.Length != 3)
             {
                 return null;
@@ -119,7 +120,7 @@ namespace Simulation.Infrastructure.Readers
                 return CartesianCoordinate.One;
             }
 
-            var coords = meshCoords.Select(double.Parse).ToArray();
+            var coords = meshCoords.Select(x => double.Parse(x, CultureInfo.InvariantCulture)).ToArray();
             if (coords.Length != 3)
             {
                 return CartesianCoordinate.One;
