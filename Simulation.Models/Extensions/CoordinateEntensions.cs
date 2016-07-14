@@ -14,8 +14,19 @@ namespace Simulation.Models.Extensions
         /// <param name="point1">The point1.</param>
         /// <param name="point2">The point2.</param>
         /// <returns>The result of dyad product operation.</returns>
-        public static DyadCoordinate<T> DyadProduct<T>(this ICoordinate<T> point1, ICoordinate<T> point2) where T : struct
+        public static BaseDyadCoordinate<T> DyadProduct<T>(this ICoordinate<T> point1, ICoordinate<T> point2) where T : struct
         {
+            if (point1.Equals(point2))
+            {
+                return new SymmetricDyadCoordinate<T>(
+                    (dynamic)point1.X * point2.X,
+                    (dynamic)point1.X * point2.Y,
+                    (dynamic)point1.X * point2.Z,
+                    (dynamic)point1.Y * point2.Y,
+                    (dynamic)point1.Y * point2.Z,
+                    (dynamic)point1.Z * point2.Z);
+            }
+
             return new DyadCoordinate<T>(
                 (dynamic)point1.X * point2.X,
                 (dynamic)point1.X * point2.Y,

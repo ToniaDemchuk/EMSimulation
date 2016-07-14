@@ -2,17 +2,14 @@
 
 namespace Simulation.Models.Coordinates
 {
+    using Simulation.Models.Matrices;
+
     /// <summary>
     /// The CartesianCoordinate class.
     /// </summary>
     /// <typeparam name="T">The type of underlying value.</typeparam>
-    public class DyadCoordinate<T> where T : struct
+    public class DyadCoordinate<T>: BaseDyadCoordinate<T> where T : struct
     {
-        /// <summary>
-        /// The dyad length
-        /// </summary>
-        public const int DyadLength = 3;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="CartesianCoordinate" /> class.
         /// </summary>
@@ -179,6 +176,14 @@ namespace Simulation.Models.Coordinates
             }
 
             return new DyadCoordinate<Complex>(newDyad);
+        }
+
+        public override T this[int i, int j]
+        {
+            get
+            {
+                return this.Dyad[i, j];
+            }
         }
     }
 }
