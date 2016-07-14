@@ -5,6 +5,8 @@ using Simulation.Models.Coordinates;
 
 namespace Simulation.Models.Extensions
 {
+    using Simulation.Models.Matrices;
+
     /// <summary>
     /// The CoordinateExtensions class.
     /// </summary>
@@ -32,6 +34,33 @@ namespace Simulation.Models.Extensions
                 array[ComplexMultiplier * i + 3] = complexCoordinate.Y.Imaginary;
                 array[ComplexMultiplier * i + 4] = complexCoordinate.Z.Real;
                 array[ComplexMultiplier * i + 5] = complexCoordinate.Z.Imaginary;
+            }
+            return array;
+        }
+
+        public static double[] ConvertToPlainArrayMatrix(IMatrix<DyadCoordinate<Complex>> coordinate)
+        {
+            var size = coordinate.Length;
+            var dyadSize = DyadCoordinate<Complex>.DyadLength;
+
+            double[] array = new double[size * size * ComplexMultiplier * dyadSize];
+            for (int i = 0; i < size; i++)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    Complex[,] dyadic = coordinate[i, j].Dyad;
+                    for (int ii = 0; ii < dyadSize; ii++)
+                    {
+                        for (int jj = 0; jj < dyadSize; jj++)
+                        {
+                            Complex dyadCoord = dyadic[ii, jj];
+                            array[ComplexMultiplier * size * (dyadSize * i + ii) + ComplexMultiplier * j + 2 * jj + 0] =
+                                dyadCoord.Real;
+                            array[ComplexMultiplier * size * (dyadSize * i + ii) + ComplexMultiplier * j + 2 * jj + 1] =
+                                dyadCoord.Imaginary;
+                        }
+                    }
+                }
             }
             return array;
         }

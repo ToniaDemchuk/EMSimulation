@@ -78,6 +78,7 @@
   <ItemGroup>
     <Compile Include="Common\MemoDictionary.cs" />
     <Compile Include="Common\FuncDictionary.cs" />
+    <Compile Include="Comparers\CoordinateEqualityComparer.cs" />
     <Compile Include="Coordinates\IndexStore.cs" />
     <Compile Include="Extensions\ArrayExtensions.cs" />
     <Compile Include="Extensions\CollectionExtensions.cs" />
@@ -85,6 +86,8 @@
     <Compile Include="Extensions\SimulationResultExtensions.cs" />
     <Compile Include="Coordinates\CartesianCoordinate.cs" />
     <Compile Include="Enums\SpectrumUnitType.cs" />
+    <Compile Include="Matrices\IMatrix.cs" />
+    <Compile Include="Matrices\LazyDiagonalMatrix.cs" />
     <Compile Include="Spectrum\FourierSeries.cs" />
     <Compile Include="Constants\Fundamentals.cs" />
     <Compile Include="Spectrum\OpticalSpectrum.cs" />

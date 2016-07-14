@@ -88,6 +88,9 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GnuplotCSharp">
+      <HintPath>..\Libs\GnuplotCSharp.dll</HintPath>
+    </Reference>
     <Reference Include="ModernKDDA">
       <HintPath>..\Libs\ModernKDDA.dll</HintPath>
     </Reference>

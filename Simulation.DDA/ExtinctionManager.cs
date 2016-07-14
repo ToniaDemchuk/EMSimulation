@@ -4,8 +4,11 @@ using System.Numerics;
 
 using Simulation.DDA.Models;
 using Simulation.Medium.Models;
+
+using Simulation.Models.Comparers;
 using Simulation.Models.Coordinates;
 using Simulation.Models.Extensions;
+using Simulation.Models.Matrices;
 using Simulation.Models.Spectrum;
 
 namespace Simulation.DDA
@@ -61,13 +64,13 @@ namespace Simulation.DDA
                 parameters.IncidentMagnitude,
                 dispersion);
 
-            DyadCoordinate<Complex>[,] a = this.buildMatrixA(
+            IMatrix<DyadCoordinate<Complex>> a = this.buildMatrixA(
                 parameters.SystemConfig,
                 dispersion);
 
             ModernKDDAEntryPoint.OpenMPCGMethod(
                 this.polarization.Length,
-                CoordinateHelper.ConvertToPlainArray(a),
+                CoordinateHelper.ConvertToPlainArrayMatrix(a),
                 this.polarization,
                 CoordinateHelper.ConvertToPlainArray(e));
 
@@ -85,21 +88,14 @@ namespace Simulation.DDA
             return result;
         }
 
-        private DyadCoordinate<Complex>[,] buildMatrixA(SystemConfig system, DispersionParameter dispersion)
+        private IMatrix<DyadCoordinate<Complex>> buildMatrixA(SystemConfig system, DispersionParameter dispersion)
         {
-            var a = new DyadCoordinate<Complex>[system.Size, system.Size];
-
-            for (int i = 0; i < system.Size; i++)
-            {
-                for (int j = 0; j < system.Size; j++)
-                {
-                    a[i, j] = i == j
-                                  ? this.setDiagonalElements(system, i, dispersion)
-                                  : this.setNonDiagonalElements(system, i, j, dispersion);
-                }
-            }
-
-            return a;
+            return new LazyDiagonalMatrix<CartesianCoordinate, DyadCoordinate<Complex>>(
+                system.Size,
+                system.GetDistanceUniform,
+                (i, j) => this.setNonDiagonalElements(dispersion, system.GetPoint(i) - system.GetPoint(j)),
+                i => this.setDiagonalElements(dispersion, system.Radius[i]),
+                new CoordinateEqualityComparer());
         }
 
         private ComplexCoordinate[] getIncidentField(
@@ -109,10 +105,10 @@ namespace Simulation.DDA
         {
             double medRef = dispersion.MediumRefractiveIndex * dispersion.MediumRefractiveIndex;
             var e = new ComplexCoordinate[system.Size];
-
+            
             for (int j = 0; j < system.Size; j++)
             {
-                CartesianCoordinate point = system.Points[j];
+                CartesianCoordinate point = system.GetPoint(j);
                 double kr = dispersion.WaveVector * point;
                 e[j] = ComplexCoordinate.FromPolarCoordinates(exyz * medRef, kr);
             }
@@ -128,20 +124,17 @@ namespace Simulation.DDA
         }
 
         private DyadCoordinate<Complex> setNonDiagonalElements(
-            SystemConfig system,
-            int i,
-            int j,
-            DispersionParameter dispersion)
+            DispersionParameter dispersion, 
+            CartesianCoordinate displacement)
         {
-            CartesianCoordinate r = system.Points[j] - system.Points[i];
-            double rmod = r.Norm;
+            double rmod = displacement.Norm;
             double rmod2 = rmod * rmod;
             double rmod3 = rmod2 * rmod;
 
             double kmod = dispersion.WaveVector.Norm;
             double kr = kmod * rmod;
 
-            DyadCoordinate<Complex> dyadProduct = r.DyadProduct(r);
+            DyadCoordinate<Complex> dyadProduct = displacement.DyadProduct(displacement);
 
             var initDyad = new DyadCoordinate<Complex>(rmod2);
 
@@ -156,13 +149,11 @@ namespace Simulation.DDA
         }
 
         private DyadCoordinate<Complex> setDiagonalElements(
-            SystemConfig system,
-            int index,
-            DispersionParameter dispersion)
+            DispersionParameter dispersion, 
+            double radius)
         {
             double medRef = dispersion.MediumRefractiveIndex * dispersion.MediumRefractiveIndex;
 
-            double radius = system.Radius[index];
             Complex eps = this.mediumManager.GetEpsilon(dispersion, radius);
 
             // Complex value inverted to Clausius-Mossotti polarization.

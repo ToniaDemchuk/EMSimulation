@@ -11,6 +11,8 @@ namespace Simulation.DDA.Models
     /// </summary>
     public class SystemConfig
     {
+        private const double NanoMeters = 1e-9; //position is set in relative units, need to convert in nm.
+
         /// <summary>
         /// Gets or sets the size of system.
         /// </summary>
@@ -33,7 +35,7 @@ namespace Simulation.DDA.Models
         /// <value>
         /// The points.
         /// </value>
-        public IList<CartesianCoordinate> Points { get; protected set; }
+        protected IList<CartesianCoordinate> Points { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SystemConfig"/> class.
@@ -48,9 +50,19 @@ namespace Simulation.DDA.Models
             }
 
             this.Size = radius.Count;
-            const double NanoMeters = 1e-9; //position is set in relative units, need to convert in nm.
+            
             this.Radius = radius.Select(r => r * NanoMeters).ToList().AsReadOnly();
-            this.Points = points.Select(p => p * NanoMeters).ToList().AsReadOnly();
+            this.Points = points.AsReadOnly();
+        }
+
+        public CartesianCoordinate GetPoint(int index)
+        {
+            return this.Points[index] * NanoMeters;
+        }
+
+        public CartesianCoordinate GetDistanceUniform(int i, int j)
+        {
+            return this.Points[i] - this.Points[j];
         }
     }
 }
