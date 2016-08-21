@@ -64,7 +64,7 @@ namespace Simulation.DDA
                 parameters.IncidentMagnitude,
                 dispersion);
 
-            IMatrix<DyadCoordinate<Complex>> a = this.buildMatrixA(
+            IMatrix<IMatrix<Complex>> a = this.buildMatrixA(
                 parameters.SystemConfig,
                 dispersion);
 
@@ -88,9 +88,9 @@ namespace Simulation.DDA
             return result;
         }
 
-        private IMatrix<DyadCoordinate<Complex>> buildMatrixA(SystemConfig system, DispersionParameter dispersion)
+        private IMatrix<IMatrix<Complex>> buildMatrixA(SystemConfig system, DispersionParameter dispersion)
         {
-            return new LazyDiagonalMatrix<CartesianCoordinate, DyadCoordinate<Complex>>(
+            return new LazyDiagonalMatrix<CartesianCoordinate, IMatrix<Complex>>(
                 system.Size,
                 system.GetDistanceUniform,
                 (i, j) => this.setNonDiagonalElements(dispersion, system.GetPoint(i) - system.GetPoint(j)),
@@ -123,7 +123,7 @@ namespace Simulation.DDA
             this.polarization = new double[sizeAdbl];
         }
 
-        private DyadCoordinate<Complex> setNonDiagonalElements(
+        private BaseDyadCoordinate<Complex> setNonDiagonalElements(
             DispersionParameter dispersion, 
             CartesianCoordinate displacement)
         {
@@ -134,13 +134,13 @@ namespace Simulation.DDA
             double kmod = dispersion.WaveVector.Norm;
             double kr = kmod * rmod;
 
-            DyadCoordinate<Complex> dyadProduct = displacement.DyadProduct(displacement);
+            BaseDyadCoordinate<Complex> dyadProduct = displacement.DyadProduct(displacement);
 
-            var initDyad = new DyadCoordinate<Complex>(rmod2);
+            var initDyad = new DiagonalDyadCoordinate<Complex>(rmod2);
 
-            DyadCoordinate<Complex> firstMember = (kmod * kmod) * (dyadProduct - initDyad);
+            BaseDyadCoordinate<Complex> firstMember = (kmod * kmod) * (dyadProduct - initDyad);
 
-            DyadCoordinate<Complex> secondMember = (1 / rmod2) * (Complex.ImaginaryOne * kr - 1) *
+            BaseDyadCoordinate<Complex> secondMember = (1 / rmod2) * (Complex.ImaginaryOne * kr - 1) *
                                                    (3 * dyadProduct - initDyad);
 
             Complex multiplier = Complex.FromPolarCoordinates(1 / rmod3, kr);

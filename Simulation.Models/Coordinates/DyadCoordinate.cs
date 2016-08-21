@@ -50,7 +50,7 @@ namespace Simulation.Models.Coordinates
         /// Initializes a new instance of the <see cref="DyadCoordinate{T}"/> class.
         /// </summary>
         /// <param name="dyad">The dyad matrix.</param>
-        private DyadCoordinate(T[,] dyad)
+        public DyadCoordinate(T[,] dyad)
         {
             this.Dyad = dyad;
         }

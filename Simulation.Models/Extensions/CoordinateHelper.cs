@@ -38,7 +38,7 @@ namespace Simulation.Models.Extensions
             return array;
         }
 
-        public static double[] ConvertToPlainArrayMatrix(IMatrix<DyadCoordinate<Complex>> coordinate)
+        public static double[] ConvertToPlainArrayMatrix(IMatrix<IMatrix<Complex>> coordinate)
         {
             var size = coordinate.Length;
             var dyadSize = DyadCoordinate<Complex>.DyadLength;
@@ -48,12 +48,11 @@ namespace Simulation.Models.Extensions
             {
                 for (int j = 0; j < size; j++)
                 {
-                    Complex[,] dyadic = coordinate[i, j].Dyad;
                     for (int ii = 0; ii < dyadSize; ii++)
                     {
                         for (int jj = 0; jj < dyadSize; jj++)
                         {
-                            Complex dyadCoord = dyadic[ii, jj];
+                            Complex dyadCoord = coordinate[i, j][ii, jj];
                             array[ComplexMultiplier * size * (dyadSize * i + ii) + ComplexMultiplier * j + 2 * jj + 0] =
                                 dyadCoord.Real;
                             array[ComplexMultiplier * size * (dyadSize * i + ii) + ComplexMultiplier * j + 2 * jj + 1] =
