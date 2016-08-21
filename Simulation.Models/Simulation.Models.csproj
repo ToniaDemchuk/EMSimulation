@@ -79,6 +79,9 @@
     <Compile Include="Common\MemoDictionary.cs" />
     <Compile Include="Common\FuncDictionary.cs" />
     <Compile Include="Comparers\CoordinateEqualityComparer.cs" />
+    <Compile Include="Coordinates\BaseDyadCoordinate.cs" />
+    <Compile Include="Coordinates\SymmetricDyadCoordinate.cs" />
+    <Compile Include="Coordinates\DiagonalDyadCoordinate.cs" />
     <Compile Include="Coordinates\IndexStore.cs" />
     <Compile Include="Extensions\ArrayExtensions.cs" />
     <Compile Include="Extensions\CollectionExtensions.cs" />
