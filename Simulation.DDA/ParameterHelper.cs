@@ -6,6 +6,7 @@ using System.Linq;
 using System.Numerics;
 
 using Simulation.DDA.Models;
+using Simulation.FDTD.Console;
 using Simulation.Infrastructure;
 using Simulation.Models.Coordinates;
 using Simulation.Models.Enums;
@@ -56,9 +57,12 @@ namespace Simulation.DDA
         {
             var mesh = new FDSToVoxelReader().ReadInfo(fileName);
 
+            new MediumPlotter().Plot(mesh);
+
             var pointList = mesh.Voxels.Select(voxel => new CartesianCoordinate(voxel.I, voxel.J, voxel.K)).ToList();
 
-            var radiusList = Enumerable.Repeat(Math.Pow(3 / (4 * Math.PI), 1.0 / 3.0), pointList.Count).ToList();
+            //var radiusList = Enumerable.Repeat(Math.Pow(3 / (4 * Math.PI), 1.0 / 3.0), pointList.Count).ToList();
+            var radiusList = Enumerable.Repeat(0.5, pointList.Count).ToList();
 
             return new SystemConfig(radiusList, pointList);
         }

@@ -69,6 +69,9 @@
     <Reference Include="CjClutter.ObjLoader.Loader">
       <HintPath>..\Libs\CjClutter.ObjLoader.Loader.dll</HintPath>
     </Reference>
+    <Reference Include="GnuplotCSharp">
+      <HintPath>..\Libs\GnuplotCSharp.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -86,6 +89,8 @@
     <Compile Include="Iterators\ParallelIterator.cs" />
     <Compile Include="Iterators\SequentialIterator.cs" />
     <Compile Include="Models\FDSTokens.cs" />
+    <Compile Include="Plotters\MediumPlotter.cs" />
+    <Compile Include="Plotters\SpectrumPlotter.cs" />
     <Compile Include="Readers\FDSToVoxelReader.cs" />
     <Compile Include="Readers\IVoxelReader.cs" />
     <Compile Include="Readers\MagicaVoxelReader.cs" />

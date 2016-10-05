@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Simulation.FDTD.Models;
+using Simulation.FDTD.Plotters;
 using Simulation.Infrastructure;
 using Simulation.Medium.Factors;
 using Simulation.Medium.MediumSolver;

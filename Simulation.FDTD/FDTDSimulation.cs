@@ -1,9 +1,6 @@
 ﻿using System.Linq;
 using System.Numerics;
 using System.Threading;
-
-using AwokeKnowing.GnuplotCSharp;
-
 using Simulation.FDTD.Models;
 using Simulation.Models.Coordinates;
 using Simulation.Models.Enums;

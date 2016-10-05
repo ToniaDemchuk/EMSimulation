@@ -88,6 +88,8 @@
     <Compile Include="Models\PmlBoundary.cs" />
     <Compile Include="Models\PmlCoefficient.cs" />
     <Compile Include="Models\SimulationParameters.cs" />
+    <Compile Include="Plotters\FieldPlotter.cs" />
+    <Compile Include="Plotters\PulsePlotter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

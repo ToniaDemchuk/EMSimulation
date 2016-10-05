@@ -6,7 +6,8 @@ using Simulation.Medium.Models;
 using Simulation.Models.Enums;
 using Simulation.Models.Extensions;
 using Simulation.Models.Spectrum;
-using AwokeKnowing.GnuplotCSharp;
+
+using Simulation.FDTD.Console;
 
 namespace Simulation.DDA.Console.Simulation
 {
@@ -29,9 +30,7 @@ namespace Simulation.DDA.Console.Simulation
                     x => x.Key.ToType(SpectrumUnitType.WaveLength),
                     x => x.Value.CrossSectionExtinction));
 
-            var gp = new GnuPlot();
-
-            gp.Plot(result.Values.Select(x=>x.EffectiveCrossSectionExtinction).ToArray());
+            new SpectrumPlotter().Plot(result);
         }
 
         /// <summary>
@@ -43,8 +42,8 @@ namespace Simulation.DDA.Console.Simulation
             return Calculate(
                 "ddaParameters.xml",
                 "opt_const.txt",
-                //ParameterHelper.ReadSystemConfigFromMesh(@"D:\FDSexamples\cube10.fds")
-                ParameterHelper.ReadSystemConfig("dipols.txt")
+                ParameterHelper.ReadSystemConfigFromMesh(@"D:\FDSexamples\dipole.fds")
+                //ParameterHelper.ReadSystemConfig("dipols.txt")
                 );
         }
 
