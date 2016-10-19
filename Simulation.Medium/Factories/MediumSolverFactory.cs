@@ -60,7 +60,7 @@ namespace Simulation.Medium.Factories
 
         public IMediumSolver GetMediumSolver(string type, bool isBody = false)
         {
-            var materialType = (string.IsNullOrWhiteSpace(type) ? string.Empty : type).ToLowerInvariant();
+            var materialType = (string.IsNullOrWhiteSpace(type) ? "silver" : type).ToLowerInvariant();
 
             BaseMediumFactor mediumFactor = this.mediumFactors.Get(materialType);
             
