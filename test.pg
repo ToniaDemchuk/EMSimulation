@@ -1,0 +1,7 @@
+#!/usr/bin/gnuplot
+reset
+set terminal png
+
+set samples 50
+plot [-10:10] sin(x),atan(x),cos(atan(x))
+#
