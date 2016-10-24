@@ -1,4 +1,7 @@
-﻿using Simulation.Models.Coordinates;
+﻿using System.Numerics;
+
+using Simulation.Models.Calculators;
+using Simulation.Models.Coordinates;
 
 namespace Simulation.Models.Extensions
 {
@@ -10,33 +13,32 @@ namespace Simulation.Models.Extensions
         /// <summary>
         /// Calculates the dyad product.
         /// </summary>
-        /// <typeparam name="T">The type of coordinate values.</typeparam>
         /// <param name="point1">The point1.</param>
         /// <param name="point2">The point2.</param>
         /// <returns>The result of dyad product operation.</returns>
-        public static BaseDyadCoordinate<T> DyadProduct<T>(this ICoordinate<T> point1, ICoordinate<T> point2) where T : struct
+        public static BaseDyadCoordinate<Complex, ComplexCalculator> DyadProduct(ref CartesianCoordinate point1, ref CartesianCoordinate point2)
         {
             if (point1.Equals(point2))
             {
-                return new SymmetricDyadCoordinate<T>(
-                    (dynamic)point1.X * point2.X,
-                    (dynamic)point1.X * point2.Y,
-                    (dynamic)point1.X * point2.Z,
-                    (dynamic)point1.Y * point2.Y,
-                    (dynamic)point1.Y * point2.Z,
-                    (dynamic)point1.Z * point2.Z);
+                return new SymmetricDyadCoordinate<Complex, ComplexCalculator>(
+                    point1.X * point2.X,
+                    point1.X * point2.Y,
+                    point1.X * point2.Z,
+                    point1.Y * point2.Y,
+                    point1.Y * point2.Z,
+                    point1.Z * point2.Z);
             }
 
-            return new DyadCoordinate<T>(
-                (dynamic)point1.X * point2.X,
-                (dynamic)point1.X * point2.Y,
-                (dynamic)point1.X * point2.Z,
-                (dynamic)point1.Y * point2.X,
-                (dynamic)point1.Y * point2.Y,
-                (dynamic)point1.Y * point2.Z,
-                (dynamic)point1.Z * point2.X,
-                (dynamic)point1.Z * point2.Y,
-                (dynamic)point1.Z * point2.Z);
+            return new DyadCoordinate<Complex, ComplexCalculator>(
+                point1.X * point2.X,
+                point1.X * point2.Y,
+                point1.X * point2.Z,
+                point1.Y * point2.X,
+                point1.Y * point2.Y,
+                point1.Y * point2.Z,
+                point1.Z * point2.X,
+                point1.Z * point2.Y,
+                point1.Z * point2.Z);
         }
 
         /// <summary>
