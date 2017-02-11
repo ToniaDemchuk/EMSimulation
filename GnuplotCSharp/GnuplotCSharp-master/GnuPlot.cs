@@ -37,7 +37,7 @@ namespace AwokeKnowing.GnuplotCSharp
                 FileName = filePath,
                 UseShellExecute = false,
                 RedirectStandardInput = true,
-                RedirectStandardOutput = true,
+                RedirectStandardOutput = true           
             };
 
             ExtPro = Process.Start(processStartInfo);
@@ -120,7 +120,6 @@ namespace AwokeKnowing.GnuplotCSharp
         public void Wait()
         {
             this.ExtPro.WaitForExit(600000);
-
         }
 
         public void WriteLine(string gnuplotcommands)
@@ -865,7 +864,7 @@ namespace AwokeKnowing.GnuplotCSharp
         /// </summary>
         public void Dispose()
         {
-            this.ExtPro.Close();
+            //this.ExtPro.Close();
         }
     }
 }
