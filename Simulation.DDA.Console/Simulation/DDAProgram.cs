@@ -42,8 +42,8 @@ namespace Simulation.DDA.Console.Simulation
             return Calculate(
                 "ddaParameters.xml",
                 "opt_const.txt",
-                ParameterHelper.ReadSystemConfigFromMesh(@"D:\FDSexamples\dipole.fds")
-                //ParameterHelper.ReadSystemConfig("dipols.txt")
+                //ParameterHelper.ReadSystemConfigFromMesh(@"D:\FDSexamples\dipole.fds")
+                ParameterHelper.ReadSystemConfig("dipols.txt")
                 );
         }
 

@@ -186,8 +186,8 @@ namespace Simulation.DDA
 
             result.CrossSectionExtinction = crossSectionExt;
             result.EffectiveCrossSectionExtinction =
-                crossSectionExt /
-                parameters.SystemConfig.Radius.Sum(radius => Math.PI * radius * radius); // todo
+                crossSectionExt/
+                parameters.SystemConfig.CrossSectionArea;
         }
     }
 }

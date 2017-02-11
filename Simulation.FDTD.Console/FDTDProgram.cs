@@ -138,7 +138,7 @@ namespace Simulation.FDTD.Console
             //var mesh = new VoxelReader().ReadInfo(@"D:\study\vozelizer\conf1.obj.v80.voxels");
             //var mesh = new ObjToVoxelReader().ReadInfo(@"C:\Users\akolkev\Documents\sphere444.obj");
             //var mesh = new MagicaVoxelReader().ReadInfo(@"C:\Users\akolkev\Documents\spherevox.vox");
-            var mesh = new FDSToVoxelReader().ReadInfo(@"D:\sphere.fds");
+            var mesh = new FDSToVoxelReader().ReadInfo(@"D:\dispersion_model\sphere.fds");
             return mesh;
         }
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using Simulation.Infrastructure;
 using Simulation.Models.Coordinates;
 
 namespace Simulation.DDA.Models
@@ -28,6 +28,25 @@ namespace Simulation.DDA.Models
         /// The effective radius.
         /// </value>
         public IList<double> Radius { get; protected set; }
+
+        /// <summary>
+        /// Gets the cross section area.
+        /// </summary>
+        /// <value>
+        /// The cross section area.
+        /// </value>
+        public double CrossSectionArea {
+            get
+            {
+                if (!crossSectionArea.HasValue)
+                {
+                    crossSectionArea = this.Radius.Sum(radius =>Math.PI * radius * radius); // todo: parallelize?
+                }
+                return crossSectionArea.Value;
+            }
+        }
+
+        private double? crossSectionArea;
 
         /// <summary>
         /// Gets or sets the points.
