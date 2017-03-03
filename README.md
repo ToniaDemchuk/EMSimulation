@@ -1,28 +1,48 @@
-# Simulation package #
 
-This is a software packages for electromagnetic simulations
+# Electromagnetic simulation package #
+
+This is a software packages for electromagnetic simulations.
 
 ### What is this repository for? ###
 
-* Quick summary
-* Version
+* The package includes the implementation of computational electromagnetic methods:
+ - discrete dipole approximation (DDA) 
+ - finite-difference time-domain (FDTD)
 
-### How do I get set up? ###
+* The methods calculate optical spectra of nanoparticles in the dielectric medium.
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+## Table of Contents
 
-### Contribution guidelines ###
 
-* Writing tests
-* Code review
-* Other guidelines
+- [Prerequisites](#prerequisites)
+- [Install](#install)
+- [Usage](#usage)
+- [Contribute](#contribute)
+- [License](#license)
 
-### Who do I talk to? ###
 
-* Repo owner or admin
-* Other community or team contact
+
+## Prerequisites
+The console applications use the [*gnuplot*](http://gnuplot.sourceforge.net/).
+
+[Download](http://gnuplot.sourceforge.net/download.html) the gnuplot installer  and install it with the standard steps.
+
+
+## Install
+
+```
+```
+
+## Usage
+
+```
+```
+
+## Contribute
+
+Feel free to open an issue or submit a PR.
+
+
+## License
+
+See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT).
