@@ -66,20 +66,14 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CjClutter.ObjLoader.Loader">
-      <HintPath>..\Libs\CjClutter.ObjLoader.Loader.dll</HintPath>
-    </Reference>
-    <Reference Include="GnuplotCSharp">
-      <HintPath>..\Libs\GnuplotCSharp.dll</HintPath>
+    <Reference Include="GnuplotCSharp, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\GnuplotCSharp.1.0.1\lib\net45\GnuplotCSharp.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -97,7 +91,6 @@
     <Compile Include="MathHelper.cs" />
     <Compile Include="Models\MeshInfo.cs" />
     <Compile Include="Models\Voxel.cs" />
-    <Compile Include="Readers\ObjToVoxelReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimpleFormatter.cs" />
     <Compile Include="Readers\VoxelReader.cs" />
@@ -108,6 +101,9 @@
       <Project>{866CA2C4-C878-45A2-A947-7C89B0A2AE61}</Project>
       <Name>Simulation.Models</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
