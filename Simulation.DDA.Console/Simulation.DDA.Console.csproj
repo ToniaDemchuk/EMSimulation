@@ -88,21 +88,11 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="GnuplotCSharp">
-      <HintPath>..\Libs\GnuplotCSharp.dll</HintPath>
-    </Reference>
     <Reference Include="ModernKDDA">
       <HintPath>..\Libs\ModernKDDA.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Simulation\DDAProgram.cs" />

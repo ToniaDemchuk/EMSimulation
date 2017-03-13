@@ -1,6 +1,4 @@
-﻿using System.Runtime.InteropServices;
-
-namespace Simulation.DDA
+﻿namespace Simulation.DDA
 {
     /// <summary>
     /// The ModernKDDAEntryPoint class.
