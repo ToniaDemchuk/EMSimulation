@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 
 using AwokeKnowing.GnuplotCSharp;
@@ -9,6 +10,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Simulation.Medium.Medium;
 using Simulation.Models.Enums;
+using Simulation.Models.Extensions;
 using Simulation.Models.Spectrum;
 
 namespace Simulation.DDA.Tests
@@ -19,51 +21,49 @@ namespace Simulation.DDA.Tests
     [TestClass]
     public class OpticalConstantTest
     {
-        //[TestMethod]
-        //[Ignore]
-        //public void CalculateOpticalConstants_ScilabEngine()
-        //{
-        //    // Arrange
-        //    var optConst = ParameterHelper.ReadOpticalConstants("opt_const.txt");
+        [TestMethod]
+        [TestCategory("Gnuplot")]
+        public void CalculateOpticalConstants_Drude()
+        {
+            // Arrange
+            var optConst = ParameterHelper.ReadOpticalConstants("opt_const.txt");
 
-        //    var EpsInfinity = 3.9943;
-        //    var OmegaP = 1.369e+16;
-        //    var DEps0 = 8.45e-1;
-        //    var Gamma0 = 7.292e+13;
+            var EpsInfinity = 3.9943;
+            var OmegaP = 1.369e+16;
+            var DEps0 = 8.45e-1;
+            var Gamma0 = 7.292e+13;
 
-        //    var dict = new Dictionary<double, Complex>();
-        //    foreach (var waveLength in optConst.WaveLengthList)
-        //    {
-        //        var omeg = SpectrumUnitConverter.Convert(waveLength * 1e-9, SpectrumUnitType.WaveLength, SpectrumUnitType.CycleFrequency);
-        //        var compl = EpsInfinity -
-        //                    OmegaP * OmegaP /
-        //                    (omeg * omeg -
-        //                     Complex.ImaginaryOne * Gamma0 * omeg);
-        //        dict.Add(waveLength, compl);
-        //    }
+            var funcPermitivitty = new Dictionary<double, Complex>();
+            foreach (var waveLength in optConst.WaveLengthList)
+            {
+                var omeg = SpectrumUnitConverter.Convert(waveLength / OpticalConstants.WaveLengthMultiplier,
+                    SpectrumUnitType.WaveLength, SpectrumUnitType.CycleFrequency);
+                var compl = EpsInfinity -
+                            OmegaP * OmegaP /
+                            (omeg * omeg -
+                             Complex.ImaginaryOne * Gamma0 * omeg);
+                funcPermitivitty.Add(waveLength, compl);
+            }
 
-        //    ParameterHelper.WriteOpticalConstants("opt_const_new.txt", dict);
+            ParameterHelper.WriteOpticalConstants("opt_const_new.txt", funcPermitivitty);
 
-        //    using (var engine = new ScilabEngine.Engine.ScilabEngine())
-        //    {
-        //        string waveLength = ScilabHelper.FormatToArray(dict.Select(x => x.Key));
-        //        var strReal = ScilabHelper.FormatToArray(dict.Select(x => x.Value.Real));
-        //        var strImag = ScilabHelper.FormatToArray(dict.Select(x => x.Value.Imaginary));
-        //        engine.Execute(@"plot({0}, {1}, {0}, {2})", waveLength, strReal, strImag);
+            using (var gnuplot = new GnuPlot())
+            {
+                gnuplot.HoldOn();
+                gnuplot.Plot(funcPermitivitty);
 
-        //        waveLength = ScilabHelper.FormatToArray(dict.Select(x => x.Key));
-        //        strReal = ScilabHelper.FormatToArray(optConst.PermittivityList.Select(x => x.Real));
-        //        strImag = ScilabHelper.FormatToArray(optConst.PermittivityList.Select(x => x.Imaginary));
-        //        engine.Execute(@"plot({0}, {1}, {0}, {2})", waveLength, strReal, strImag);
-        //        // engine.Wait();
-        //    }
+                var permitivittyList = getPermitivittyFunc(optConst);
 
-        //    // Act
+                gnuplot.Plot(permitivittyList);
+            }
 
-        //    // Assert
-        //}
+            // Act
+
+            // Assert
+        }
 
         [TestMethod]
+        [TestCategory("Gnuplot")]
         public void CalculateOpticalConstants_DrudeLorentz_Gnuplot()
         {
             // Arrange
@@ -72,7 +72,8 @@ namespace Simulation.DDA.Tests
             var dict = new Dictionary<double, Complex>();
             foreach (var waveLength in optConst.WaveLengthList)
             {
-                var freq = new SpectrumUnit(waveLength / OpticalConstants.WaveLengthMultiplier, SpectrumUnitType.WaveLength);
+                var freq = new SpectrumUnit(waveLength / OpticalConstants.WaveLengthMultiplier,
+                    SpectrumUnitType.WaveLength);
                 dict.Add(waveLength, drudeLorentz.GetPermittivity(freq));
             }
 
@@ -83,7 +84,7 @@ namespace Simulation.DDA.Tests
                 gp.HoldOn();
                 gp.Set("style data lines");
 
-                gp.Plot(optConst.WaveLengthList, optConst.PermittivityList);
+                gp.Plot(getPermitivittyFunc(optConst));
                 gp.Plot(dict);
 
                 gp.Wait();
@@ -91,6 +92,15 @@ namespace Simulation.DDA.Tests
             // Act
 
             // Assert
+        }
+
+        private static Dictionary<double, Complex> getPermitivittyFunc(OpticalConstants optConst)
+        {
+            var permitivittyList =
+                optConst.PermittivityList.Zip(optConst.WaveLengthList,
+                        (perm, waveLength) => new KeyValuePair<double, Complex>(waveLength, perm))
+                    .ToDictionary(x => x.Key, x => x.Value);
+            return permitivittyList;
         }
     }
 }

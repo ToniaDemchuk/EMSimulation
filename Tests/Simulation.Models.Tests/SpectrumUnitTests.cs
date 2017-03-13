@@ -43,7 +43,6 @@ namespace Simulation.Models.Tests
             // Assert
             Assert.IsTrue(result);
             Assert.IsTrue(contains);
-
         }
     }
 }

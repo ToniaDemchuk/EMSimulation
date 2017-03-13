@@ -16,6 +16,8 @@ namespace Simulation.FDTD.Tests
     public class FDTDProgramTests
     {
         [TestMethod]
+        [TestCategory("Parallel")]
+        [TestCategory("Dev")]
         public void Calculate_PerformanceMetrics()
         {
             var serialTicks = 192769194.79518071;
@@ -24,7 +26,7 @@ namespace Simulation.FDTD.Tests
             gp.Set("style data linespoints");
             gp.HoldOn();
 
-           for (int i = 256; i <= 1024; i = i * 2)
+            for (int i = 256; i <= 1024; i = i * 2)
             {
                 List<long> list = new List<long>();
                 for (int j = 0; j < 20; j++)
@@ -37,10 +39,9 @@ namespace Simulation.FDTD.Tests
                     list.Add(watch.ElapsedTicks);
                 }
                 all.Add(list.Average());
-                
             }
 
-           gp.Plot(all.Select(x => serialTicks/x));
+            gp.Plot(all.Select(x => serialTicks / x));
 
             gp.Wait();
         }
