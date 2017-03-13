@@ -70,14 +70,12 @@
       <HintPath>..\packages\GnuplotCSharp.1.0.1\lib\net45\GnuplotCSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssertHelper.cs" />
     <Compile Include="Iterators\IIterator.cs" />
     <Compile Include="Iterators\ParallelInvokeIterator.cs" />
     <Compile Include="Iterators\ParallelIterator.cs" />

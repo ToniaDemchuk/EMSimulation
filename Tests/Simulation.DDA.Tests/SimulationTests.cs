@@ -18,6 +18,7 @@ using Simulation.Medium.Models;
 using Simulation.Models.Coordinates;
 using Simulation.Models.Enums;
 using Simulation.Models.Spectrum;
+using Simulation.Tests.Common;
 
 namespace Simulation.DDA.Tests
 {

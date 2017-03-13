@@ -3,6 +3,7 @@
 using Simulation.DDA.Console.Simulation;
 using Simulation.Infrastructure;
 using Simulation.Models.Enums;
+using Simulation.Tests.Common;
 
 namespace Simulation.DDA.Tests
 {

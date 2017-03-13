@@ -107,6 +107,10 @@
       <Project>{866CA2C4-C878-45A2-A947-7C89B0A2AE61}</Project>
       <Name>Simulation.Models</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Simulation.Tests.Common\Simulation.Tests.Common.csproj">
+      <Project>{59c53a18-0290-42cd-8c7e-620b5575ea54}</Project>
+      <Name>Simulation.Tests.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
