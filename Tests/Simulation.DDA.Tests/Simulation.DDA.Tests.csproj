@@ -82,6 +82,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="OpticalConstantTest.cs" />
+    <Compile Include="DimerSimulationTests.cs" />
     <Compile Include="SimulationTests.cs" />
     <Compile Include="ProgramTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
