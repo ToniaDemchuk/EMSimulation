@@ -32,5 +32,10 @@ namespace Simulation.Infrastructure
         {
             return dictionary.Aggregate((l, r) => l.Value > r.Value ? l : r);
         }
+
+        public static KeyValuePair<double, double> MinPair(this Dictionary<double, double> dictionary)
+        {
+            return dictionary.Aggregate((l, r) => l.Value < r.Value ? l : r);
+        }
     }
 }
