@@ -39,7 +39,7 @@ namespace Simulation.DDA.Tests
             string dirAzimuthSum = "RadiusDistanceOutput_AzimuthSum";
             string dirAzimuth45 = "RadiusDistanceOutput_Azimuth45";
             var gp = new GnuPlot();
-            gp.Set("style data lines");
+            setLineStyle(gp);
 
             foreach (double radius in radiuses)
             {
@@ -84,7 +84,7 @@ namespace Simulation.DDA.Tests
             }
         }
 
-        [TestMethod]
+        [TestMethod]//todo
         public void Radius10_Azimuth_Spectrum()
         {
             // Arrange
@@ -97,10 +97,7 @@ namespace Simulation.DDA.Tests
             string dirAzimuth90 = "RadiusDistanceOutput_Azimuth90_EffectiveCrossExt";
 
             var gp = new GnuPlot();
-            gp.Set("style data lines");
-            gp.Set("xtics 25");
-            gp.Set("grid xtics ytics");
-            gp.Set("size square");
+            setLineStyle(gp);
             //Dictionary<decimal, List<double>> spectrum = this.zipToDictionary(distances, dirAzimuth45, radius);
             //string filename = Path.Combine(BasePath, this.TestContext.TestName, "Azim45.txt");
             //SimpleFormatter.WriteDictionary(filename, spectrum, distances);
@@ -152,36 +149,16 @@ this.getFileFormat(dirAzimuth90, distance, radius)).Where(x => x.Key <= 500).ToD
             radiuses.Reverse();
             foreach (double radius in radiuses)
             {
-                var peaks0 = new Dictionary<double, double>();
+                Dictionary<double, double> peaks0 = getPeaks0(distances, radius, dirAzimuth0);
+                Dictionary<double, double> peaks90 = getPeaks90(distances, radius, dirAzimuth90);
 
-                var peaks90 = new Dictionary<double, double>();
-
-                foreach (double distance in distances)
-                {
-                    Dictionary<double, double> azim0 = SimpleFormatter.Read(
-                        this.getFileFormat(dirAzimuth0, distance, radius));
-                    Dictionary<double, double> azim90 = SimpleFormatter.Read(
-                        this.getFileFormat(dirAzimuth90, distance, radius));
-
-                    peaks0.Add(distance, azim0.MaxPair().Key);
-
-                    peaks90.Add(distance, azim90.MaxPair().Key);
-                }
                 //gp.HoldOn();
                 // gp.Set(string.Format("terminal win {0}", radius));
                 gp.Plot(peaks0);
                 gp.Plot(peaks90);
                 // gp.HoldOff();
 
-                string basepath = Path.Combine(BasePath, this.TestContext.TestName);
-                string filename0 = Path.Combine(
-                    basepath,
-                    string.Format("peaks_0deg_{0}.txt", radius));
-                SimpleFormatter.Write(filename0, peaks0);
-                string filename90 = Path.Combine(
-                    basepath,
-                    string.Format("peaks_90deg_{0}.txt", radius));
-                SimpleFormatter.Write(filename90, peaks90);
+                
             }
             gp.Wait();
         }
@@ -198,7 +175,7 @@ this.getFileFormat(dirAzimuth90, distance, radius)).Where(x => x.Key <= 500).ToD
             string dirOpticalConst = "RadiusDistanceOutput_Azimuth45_EffectiveCrossExt";
             string dirDrudeLorentz = "RadiusDistanceDrudeLorentz_Azimuth45_EffectiveCrossExt";
             var gp = new GnuPlot();
-            gp.Set("style data lines");
+            setLineStyle(gp);
             gp.HoldOn();
 
             foreach (double distance in distances)
@@ -227,7 +204,7 @@ this.getFileFormat(dirAzimuth90, distance, radius)).Where(x => x.Key <= 500).ToD
             string dirOpticalConst = "RadiusDistanceOutput_Azimuth45_EffectiveCrossExt";
             string dirDrudeLorentz = "RadiusDistanceDrudeLorentz_Azimuth45_EffectiveCrossExt";
             var gp = new GnuPlot();
-            gp.Set("style data lines");
+            setLineStyle(gp);
             gp.HoldOn();
 
             foreach (double radius in radiuses)
@@ -260,10 +237,7 @@ this.getFileFormat(dirAzimuth90, distance, radius)).Where(x => x.Key <= 500).ToD
             foreach (double radius in radiuses)
             {
                 var gp = new GnuPlot();
-                gp.Set("style data lines");
-                gp.Set("xtics 25");
-                gp.Set("grid xtics ytics");
-                gp.Set("size square");
+                setLineStyle(gp);
                 gp.HoldOn();
                 Dictionary<double, double> azim45 = SimpleFormatter.Read(
                     this.getFileFormat(dirAzimuth45, distance, radius))
@@ -282,7 +256,7 @@ this.getFileFormat(dirAzimuth90, distance, radius)).Where(x => x.Key <= 500).ToD
         #endregion
 
 
-        [TestMethod]
+        [TestMethod]//todo
         public void RadiusChangeOutput_Azimuth_Spectrum()
         {
             // Arrange
@@ -298,12 +272,7 @@ this.getFileFormat(dirAzimuth90, distance, radius)).Where(x => x.Key <= 500).ToD
             //foreach (var radius1 in radiuses)
             //{
             gp = new GnuPlot();
-            //gp.Set("terminal png");
-            gp.Set("style data lines");
-
-            gp.Set("xtics 25");
-            gp.Set("grid xtics ytics");
-            gp.Set("size square");
+            setLineStyle(gp);
 
             foreach (double distance in distances)
             {
@@ -330,7 +299,7 @@ this.getFileFormat(dirAzimuth90, distance, radius)).Where(x => x.Key <= 500).ToD
                     gp.Clear();
                     Dictionary<double, double> azim = SimpleFormatter.Read(
                         this.getFileFormatOneParticle(dirAzimuthOne, radius)).Where(x => x.Key <= 500).ToDictionary(x => x.Key * 1e9, x => x.Value);
-                    gp.Plot(azim, string.Format(@"title ""single"""));
+                    gp.Plot(azim, @"title ""single""");
                 }
             }
             //}
@@ -354,12 +323,7 @@ this.getFileFormat(dirAzimuth90, distance, radius)).Where(x => x.Key <= 500).ToD
             //foreach (var radius1 in radiuses)
             //{
             gp = new GnuPlot();
-            //gp.Set("terminal png");
-            gp.Set("style data lines");
-
-            gp.Set("xtics 25");
-            gp.Set("grid xtics ytics");
-            gp.Set("size square");
+            setLineStyle(gp);
 
             //gp.Set(String.Format("title \"{0}\"", radius1));
 
@@ -370,22 +334,11 @@ this.getFileFormat(dirAzimuth90, distance, radius)).Where(x => x.Key <= 500).ToD
 
                 Dictionary<double, double> azim90 = SimpleFormatter.Read(
                     this.getFileFormatDiffRadiuses(dirAzimuth90, distance, radius1, radius)).Where(x => x.Key <= 500).ToDictionary(x => x.Key * 1e9, x => x.Value);
-                gp.Plot(azim90, string.Format(@"title ""90"""));
+                gp.Plot(azim90, @"title ""90""");
 
                 Dictionary<double, double> azim0 = SimpleFormatter.Read(
     this.getFileFormatDiffRadiuses(dirAzimuth0, distance, radius1, radius)).Where(x => x.Key <= 500).ToDictionary(x => x.Key * 1e9, x => x.Value);
-                gp.Plot(azim0, string.Format(@"title ""0"""));
-
-
-                string basepath = Path.Combine(BasePath, this.TestContext.TestName);
-                string filename0 = Path.Combine(
-                    basepath,
-                    string.Format("peaks_0deg_{0}_{1}.txt", radius1, radius));
-                SimpleFormatter.Write(filename0, azim0);
-                string filename90 = Path.Combine(
-                    basepath,
-                    string.Format("peaks_90deg_{0}_{1}.txt", radius1, radius));
-                SimpleFormatter.Write(filename90, azim90);
+                gp.Plot(azim0, @"title ""0""");
 
             }
 
@@ -405,14 +358,9 @@ this.getFileFormat(dirAzimuth90, distance, radius)).Where(x => x.Key <= 500).ToD
             //foreach (var radius1 in radiuses)
             //{
             gp = new GnuPlot();
-            //gp.Set("terminal png");
-            gp.Set("style data lines");
-            gp.Set("xtics 25");
-            gp.Set("grid xtics ytics");
-            gp.Set("size square");
-            gp.Set("palette model HSV");
+            setLineStyle(gp);
             gp.HoldOn();
-            gp.WriteLine(File.ReadAllText("colorpalette.gnuplot"));
+            setColorPalette(gp);
 
             gp.Set(String.Format("title \"{0}\"", radius1));
 
@@ -429,6 +377,15 @@ this.getFileFormat(dirAzimuth90, distance, radius)).Where(x => x.Key <= 500).ToD
             gp.Wait();
         }
 
+        private static void setColorPalette(GnuPlot gp)
+        {
+            gp.WriteLine(File.ReadAllText("colorpalette.gnuplot"));
+        }
+
+        private static void setLineStyle(GnuPlot gp)
+        {
+            gp.WriteLine(File.ReadAllText("linestyle.gnuplot"));
+        }
 
         [TestMethod]
         public void RadiusChangeOutputPeaks_Azimuth0_Azimuth90()
@@ -447,49 +404,92 @@ this.getFileFormat(dirAzimuth90, distance, radius)).Where(x => x.Key <= 500).ToD
             radiuses.Reverse();
             //foreach (var radius1 in radiuses)
             //{
-
-
                 gp.Set("style data lines");
 
-
-                //gp.Set("terminal svg");
-                //gp.Set("output 'radius" + radius1 + ".svg");
                 foreach (double radius in radiuses)
                 {
-                    var peaks0 = new Dictionary<double, double>();
+                    Dictionary<double, double> peaks0 = getPeaksDiffRad0(distances, radius1, radius, dirAzimuth0);
+                    Dictionary<double, double> peaks90 = getPeaksDiffRad90(distances, radius1, radius, dirAzimuth90);
 
-                    var peaks90 = new Dictionary<double, double>();
-
-                    foreach (double distance in distances)
-                    {
-                        Dictionary<double, double> azim0 = SimpleFormatter.Read(
-                            this.getFileFormatDiffRadiuses(dirAzimuth0, distance, radius1, radius));
-                        Dictionary<double, double> azim90 = SimpleFormatter.Read(
-                            this.getFileFormatDiffRadiuses(dirAzimuth90, distance, radius1, radius));
-
-                        peaks0.Add(distance, azim0.MaxPair().Key);
-
-                        peaks90.Add(distance, azim90.MaxPair().Key);
-                    }
                     // gp.HoldOn();
                     // gp.Set(string.Format("terminal win {0}", radius));
                     gp.Plot(peaks0, string.Format(@"smooth acsplines title ""0.{0}""", radius));
                     gp.Plot(peaks90, string.Format(@"smooth acsplines title ""90.{0}""", radius));
                     // gp.HoldOff();
-
-                    //string basepath = Path.Combine(BasePath, this.TestContext.TestName);
-                    //string filename0 = Path.Combine(
-                    //    basepath,
-                    //    string.Format("peaks_0deg_{0}.txt", radius));
-                    //SimpleFormatter.Write(filename0, peaks0);
-                    //string filename90 = Path.Combine(
-                    //    basepath,
-                    //    string.Format("peaks_90deg_{0}.txt", radius));
-                    //SimpleFormatter.Write(filename90, peaks90);
-                
-            }
+                }
+               
+            //}
             
             gp.Wait();
+        }
+
+        private Dictionary<double, double> getPeaks90(List<double> distances, double radius, string dirAzimuth90)
+        {
+            var peaksDegTxt = 90;
+
+            return getPeaks(distances, radius, dirAzimuth90, peaksDegTxt);
+        }
+
+        private Dictionary<double, double> getPeaks(List<double> distances, double radius, string dirAzimuth90, int peaksDegTxt)
+        {
+            var peaks90 = new Dictionary<double, double>();
+
+            foreach (double distance in distances)
+            {
+                Dictionary<double, double> azim90 = SimpleFormatter.Read(
+                    this.getFileFormat(dirAzimuth90, distance, radius));
+
+                peaks90.Add(distance, azim90.MaxPair().Key);
+            }
+
+            string basepath = Path.Combine(BasePath, this.TestContext.TestName);
+
+            string filename90 = Path.Combine(
+                basepath,
+                string.Format("peaks_{0}deg_{1}.txt", peaksDegTxt, radius));
+            SimpleFormatter.Write(filename90, peaks90);
+            return peaks90;
+        }
+
+        private Dictionary<double, double> getPeaks0(List<double> distances, double radius, string dirAzimuth0)
+        {
+            var peaksDegTxt = 0;
+
+            return getPeaks(distances, radius, dirAzimuth0, peaksDegTxt);
+        }
+
+        private Dictionary<double, double> getPeaksDiffRad0(List<double> distances, double radius1, double radius, string dirAzimuth0)
+        {
+            var peak = 0;
+
+            return getPeaksDifRad(distances, radius1, radius, dirAzimuth0, peak);
+        }
+
+        private Dictionary<double, double> getPeaksDiffRad90(List<double> distances, double radius1, double radius, string dirAzimuth0)
+        {
+            var peak = 90;
+
+            return getPeaksDifRad(distances, radius1, radius, dirAzimuth0, peak);
+        }
+        private Dictionary<double, double> getPeaksDifRad(List<double> distances, double radius1, double radius, string dirAzimuth0, int peak)
+        {
+            Dictionary<double, double> peaks0;
+            peaks0 = new Dictionary<double, double>();
+
+            foreach (double distance in distances)
+            {
+                Dictionary<double, double> azim0 = SimpleFormatter.Read(
+                    this.getFileFormatDiffRadiuses(dirAzimuth0, distance, radius1, radius));
+
+                peaks0.Add(distance, azim0.MaxPair().Key);
+            }
+
+            string basepath = Path.Combine(BasePath, this.TestContext.TestName);
+            string filename0 = Path.Combine(
+                basepath,
+                string.Format("peaks_{0}deg_{1}_{2}.txt", peak, radius1, radius));
+            SimpleFormatter.Write(filename0, peaks0);
+            return peaks0;
         }
 
         #region Private methods
