@@ -1,6 +1,4 @@
-﻿using Simulation.Models.Matrices;
-
-namespace Simulation.Models.Coordinates
+﻿namespace Simulation.Models.Coordinates
 {
     /// <summary>
     /// The CartesianCoordinate class.
@@ -10,9 +8,9 @@ namespace Simulation.Models.Coordinates
     {
         private readonly T[] diagonal = new T[DyadLength];
 
-        private T xy;
-        private T xz;
-        private T yz;
+        private readonly T xy;
+        private readonly T xz;
+        private readonly T yz;
 
         public SymmetricDyadCoordinate(T xx, T xy, T xz, T yy, T yz, T zz)
         {

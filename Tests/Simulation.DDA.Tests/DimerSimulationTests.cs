@@ -625,7 +625,7 @@ namespace Simulation.DDA.Tests
         }
         private string getFileFormatOneParticle(string dirPath, double radius)
         {
-            return getFileFormat(dirPath, -1, radius);
+            return this.getFileFormat(dirPath, -1, radius);
         }
 
         private string getFileFormatDiffRadiuses(string dirPath, double distance, double radius1, double radius2)

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Simulation.Infrastructure;
 using Simulation.Models.Coordinates;
 
 namespace Simulation.DDA.Models
@@ -38,11 +37,11 @@ namespace Simulation.DDA.Models
         public double CrossSectionArea {
             get
             {
-                if (!crossSectionArea.HasValue)
+                if (!this.crossSectionArea.HasValue)
                 {
-                    crossSectionArea = this.Radius.Sum(radius =>Math.PI * radius * radius); // todo: parallelize?
+                    this.crossSectionArea = this.Radius.Sum(radius =>Math.PI * radius * radius); // todo: parallelize?
                 }
-                return crossSectionArea.Value;
+                return this.crossSectionArea.Value;
             }
         }
 

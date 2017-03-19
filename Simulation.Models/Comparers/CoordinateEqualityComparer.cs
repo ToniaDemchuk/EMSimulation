@@ -1,9 +1,8 @@
+using System.Collections.Generic;
+using Simulation.Models.Coordinates;
+
 namespace Simulation.Models.Comparers
 {
-    using System.Collections.Generic;
-
-    using Simulation.Models.Coordinates;
-
     public class CoordinateEqualityComparer: EqualityComparer<CartesianCoordinate>
     {
         public override bool Equals(CartesianCoordinate x, CartesianCoordinate y)

@@ -2,8 +2,6 @@
 
 namespace Simulation.Models.Coordinates
 {
-    using Simulation.Models.Matrices;
-
     /// <summary>
     /// The CartesianCoordinate class.
     /// </summary>

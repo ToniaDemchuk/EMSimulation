@@ -149,8 +149,8 @@ this.getFileFormat(dirAzimuth90, distance, radius)).Where(x => x.Key <= 500).ToD
             radiuses.Reverse();
             foreach (double radius in radiuses)
             {
-                Dictionary<double, double> peaks0 = getPeaks0(distances, radius, dirAzimuth0);
-                Dictionary<double, double> peaks90 = getPeaks90(distances, radius, dirAzimuth90);
+                Dictionary<double, double> peaks0 = this.getPeaks0(distances, radius, dirAzimuth0);
+                Dictionary<double, double> peaks90 = this.getPeaks90(distances, radius, dirAzimuth90);
 
                 //gp.HoldOn();
                 // gp.Set(string.Format("terminal win {0}", radius));
@@ -408,8 +408,8 @@ this.getFileFormat(dirAzimuth90, distance, radius)).Where(x => x.Key <= 500).ToD
 
                 foreach (double radius in radiuses)
                 {
-                    Dictionary<double, double> peaks0 = getPeaksDiffRad0(distances, radius1, radius, dirAzimuth0);
-                    Dictionary<double, double> peaks90 = getPeaksDiffRad90(distances, radius1, radius, dirAzimuth90);
+                    Dictionary<double, double> peaks0 = this.getPeaksDiffRad0(distances, radius1, radius, dirAzimuth0);
+                    Dictionary<double, double> peaks90 = this.getPeaksDiffRad90(distances, radius1, radius, dirAzimuth90);
 
                     // gp.HoldOn();
                     // gp.Set(string.Format("terminal win {0}", radius));
@@ -427,7 +427,7 @@ this.getFileFormat(dirAzimuth90, distance, radius)).Where(x => x.Key <= 500).ToD
         {
             var peaksDegTxt = 90;
 
-            return getPeaks(distances, radius, dirAzimuth90, peaksDegTxt);
+            return this.getPeaks(distances, radius, dirAzimuth90, peaksDegTxt);
         }
 
         private Dictionary<double, double> getPeaks(List<double> distances, double radius, string dirAzimuth90, int peaksDegTxt)
@@ -455,26 +455,25 @@ this.getFileFormat(dirAzimuth90, distance, radius)).Where(x => x.Key <= 500).ToD
         {
             var peaksDegTxt = 0;
 
-            return getPeaks(distances, radius, dirAzimuth0, peaksDegTxt);
+            return this.getPeaks(distances, radius, dirAzimuth0, peaksDegTxt);
         }
 
         private Dictionary<double, double> getPeaksDiffRad0(List<double> distances, double radius1, double radius, string dirAzimuth0)
         {
             var peak = 0;
 
-            return getPeaksDifRad(distances, radius1, radius, dirAzimuth0, peak);
+            return this.getPeaksDifRad(distances, radius1, radius, dirAzimuth0, peak);
         }
 
         private Dictionary<double, double> getPeaksDiffRad90(List<double> distances, double radius1, double radius, string dirAzimuth0)
         {
             var peak = 90;
 
-            return getPeaksDifRad(distances, radius1, radius, dirAzimuth0, peak);
+            return this.getPeaksDifRad(distances, radius1, radius, dirAzimuth0, peak);
         }
         private Dictionary<double, double> getPeaksDifRad(List<double> distances, double radius1, double radius, string dirAzimuth0, int peak)
         {
-            Dictionary<double, double> peaks0;
-            peaks0 = new Dictionary<double, double>();
+            var peaks0 = new Dictionary<double, double>();
 
             foreach (double distance in distances)
             {
@@ -516,7 +515,7 @@ this.getFileFormat(dirAzimuth90, distance, radius)).Where(x => x.Key <= 500).ToD
 
         private string getFileFormatOneParticle(string dirPath, double radius)
         {
-            return getFileFormat(dirPath, -1, radius);
+            return this.getFileFormat(dirPath, -1, radius);
         }
 
         private string getFileFormatDiffRadiuses(string dirPath, double distance, double radius1, double radius2)

@@ -2,12 +2,11 @@
 
 using Simulation.DDA.Models;
 using Simulation.Infrastructure;
+using Simulation.Infrastructure.Plotters;
 using Simulation.Medium.Models;
 using Simulation.Models.Enums;
 using Simulation.Models.Extensions;
 using Simulation.Models.Spectrum;
-
-using Simulation.FDTD.Console;
 
 namespace Simulation.DDA.Console.Simulation
 {

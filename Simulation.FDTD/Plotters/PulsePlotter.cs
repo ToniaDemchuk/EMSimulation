@@ -1,8 +1,7 @@
 ﻿using AwokeKnowing.GnuplotCSharp;
-
 using Simulation.FDTD.EventArgs;
 
-namespace Simulation.FDTD.Console
+namespace Simulation.FDTD.Plotters
 {
     public class PulsePlotter
     {

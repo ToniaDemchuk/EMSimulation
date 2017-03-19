@@ -2,11 +2,10 @@
 using System.Numerics;
 
 using Simulation.Models.Coordinates;
+using Simulation.Models.Matrices;
 
 namespace Simulation.Models.Extensions
 {
-    using Simulation.Models.Matrices;
-
     /// <summary>
     /// The CoordinateExtensions class.
     /// </summary>

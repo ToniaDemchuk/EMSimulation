@@ -1,10 +1,8 @@
 ﻿using System.Linq;
-
 using AwokeKnowing.GnuplotCSharp;
-
 using Simulation.Infrastructure.Models;
 
-namespace Simulation.FDTD.Console
+namespace Simulation.Infrastructure.Plotters
 {
     /// <summary>
     /// The plotter for medium
@@ -30,12 +28,12 @@ namespace Simulation.FDTD.Console
 
             var groups = voxels.GroupBy(x => x.Material);
             int pointIndex = 0;
-            foreach (var @group in groups)
+            foreach (var group in groups)
             {
                 this.gp.SPlot(
-                @group.Select(x => (double)x.I).ToArray(),
-                @group.Select(x => (double)x.J).ToArray(),
-                @group.Select(x => (double)x.K).ToArray(),
+                group.Select(x => (double)x.I).ToArray(),
+                group.Select(x => (double)x.J).ToArray(),
+                group.Select(x => (double)x.K).ToArray(),
                 string.Format("with points pt {0}", ++pointIndex));
             }
 

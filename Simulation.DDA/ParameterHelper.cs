@@ -6,8 +6,8 @@ using System.Linq;
 using System.Numerics;
 
 using Simulation.DDA.Models;
-using Simulation.FDTD.Console;
 using Simulation.Infrastructure;
+using Simulation.Infrastructure.Plotters;
 using Simulation.Models.Coordinates;
 using Simulation.Models.Enums;
 using Simulation.Models.Extensions;

@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using AwokeKnowing.GnuplotCSharp;
-
-using Simulation.Models.Spectrum;
 using GnuplotCSharp;
-
 using Simulation.Models.Enums;
+using Simulation.Models.Spectrum;
 
-namespace Simulation.FDTD.Console
+namespace Simulation.Infrastructure.Plotters
 {
     /// <summary>
     /// The plotter for spectrum.

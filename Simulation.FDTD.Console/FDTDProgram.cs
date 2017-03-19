@@ -15,6 +15,7 @@ using Simulation.Models.Extensions;
 using Simulation.Models.Spectrum;
 using Simulation.Infrastructure.Iterators;
 using Simulation.Infrastructure.Models;
+using Simulation.Infrastructure.Plotters;
 using Simulation.Infrastructure.Readers;
 using Simulation.Medium.Factories;
 
@@ -22,7 +23,7 @@ namespace Simulation.FDTD.Console
 {
     public class FDTDProgram
     {
-        private static void Main(string[] args)
+        private static void Main()
         {
             var result = Calculate();
             SimpleFormatter.Write(
@@ -117,7 +118,7 @@ namespace Simulation.FDTD.Console
             List<Voxel> voxels,
             MediumSolverFactory fact)
         {
-            var medium = parameters.Indices.CreateArray<IMediumSolver>(
+            var medium = parameters.Indices.CreateArray(
                 (i, j, k) => fact.GetMediumSolver(string.Empty));
 
             var offset = parameters.PmlLength;

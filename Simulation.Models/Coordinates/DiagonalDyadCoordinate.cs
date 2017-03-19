@@ -1,9 +1,5 @@
-﻿using System.Numerics;
-
-namespace Simulation.Models.Coordinates
+﻿namespace Simulation.Models.Coordinates
 {
-    using Simulation.Models.Matrices;
-
     /// <summary>
     /// The CartesianCoordinate class.
     /// </summary>
