@@ -87,7 +87,7 @@ namespace Simulation.FDTD.Models
         /// <value>
         /// The wave function.
         /// </value>
-        public Func<int, double> WaveFunc { get; set; }
+        public Func<int, CartesianCoordinate> WaveFunc { get; set; }
 
         public bool IsSpectrumCalculated { get; set; }
 

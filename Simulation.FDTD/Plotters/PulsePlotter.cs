@@ -1,5 +1,7 @@
 ﻿using AwokeKnowing.GnuplotCSharp;
 using Simulation.FDTD.EventArgs;
+using Simulation.Models.Coordinates;
+using System.Linq;
 
 namespace Simulation.FDTD.Plotters
 {
@@ -14,7 +16,7 @@ namespace Simulation.FDTD.Plotters
 
         public void Plot(object sender, TimeStepCalculatedEventArgs args)
         {
-            this.gp.Plot(args.Pulse.E);
+            this.gp.Plot(args.Pulse.E.Select(coord => coord.Z).ToArray());
         }
     }
 }

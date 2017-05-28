@@ -56,7 +56,15 @@ namespace Simulation.FDTD.Models
         /// <value>
         /// The fourier series of the field.
         /// </value>
-        public FourierSeriesCoordinate[,,] FourierField { get; set; }
+        public FourierSeriesCoordinate[,,] FourierE { get; set; }
+
+        /// <summary>
+        /// Gets or sets the fourier series of the field.
+        /// </summary>
+        /// <value>
+        /// The fourier series of the field.
+        /// </value>
+        public FourierSeriesCoordinate[,,] FourierH{ get; set; }
 
         private readonly IndexStore indices;
 
@@ -75,7 +83,9 @@ namespace Simulation.FDTD.Models
             this.indices = parameters.Indices;
             this.iterator = iterator;
             if (this.isSpectrumCalculated) {
-                this.FourierField = this.indices.CreateArray(
+                this.FourierE = this.indices.CreateArray(
+                    (i, j, k) => parameters.Medium[i, j, k].IsBody ? new FourierSeriesCoordinate() : null);
+                this.FourierH = this.indices.CreateArray(
                     (i, j, k) => parameters.Medium[i, j, k].IsBody ? new FourierSeriesCoordinate() : null);
             }
 
@@ -98,10 +108,16 @@ namespace Simulation.FDTD.Models
             this.iterator.For(this.indices,
                 (i, j, k) =>
                 {
-                    var fourierSeries = this.FourierField[i, j, k];
+                    var fourierSeries = this.FourierE[i, j, k];
                     if (fourierSeries != null)
                     {
                         fourierSeries.Add(this.E[i, j, k]);
+                    }
+
+                    var fourierSeriesH = this.FourierH[i, j, k];
+                    if (fourierSeriesH != null)
+                    {
+                        fourierSeriesH.Add(this.H[i, j, k]);
                     }
                 });
         }

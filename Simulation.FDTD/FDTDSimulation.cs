@@ -59,8 +59,8 @@ namespace Simulation.FDTD
         {
             if (parameters.IsSpectrumCalculated)
             {
-            return parameters.Spectrum.ToSimulationResult(x => this.calculateExtinction(x, parameters));
-        }
+                return parameters.Spectrum.ToSimulationResult(x => this.calculateExtinction(x, parameters));
+            }
             return new SimulationResultDictionary();
         }
 
@@ -84,10 +84,9 @@ namespace Simulation.FDTD
             this.iterator.For(parameters.Indices.ShiftLower(1).ShiftUpper(1),
                 (i, j, k) => { this.fields.E[i, j, k] = parameters.Medium[i, j, k].Solve(this.fields.D[i, j, k]); });
 
-            this.fields.DoFourierField();
-            this.pulse.DoFourierPulse();
-
             this.calculateHField(parameters, pulseIndex);
+
+            this.fields.DoFourierField();
         }
 
         private void calculateHField(SimulationParameters param, IndexStore pulseIndex)
@@ -118,7 +117,7 @@ namespace Simulation.FDTD
                 pulseIndex,
                 (j, k) =>
                 {
-                    var cartesian = CartesianCoordinate.YOrth * (courantNumber * this.pulse.E[j]);
+                    var cartesian = CartesianCoordinate.YOrth * (courantNumber * this.pulse.E[j].Z);
                     this.fields.H[pulseIndex.Lower - 1, j, k] -= cartesian;
                     this.fields.H[pulseIndex.ILength, j, k] += cartesian;
                 });
@@ -127,9 +126,9 @@ namespace Simulation.FDTD
         private void addPulseToH1(IndexStore pulseIndex, double courantNumber)
         {
             var cartesianCoordinate = CartesianCoordinate.XOrth *
-                                      (courantNumber * this.pulse.E[pulseIndex.Lower]);
+                                      (courantNumber * this.pulse.E[pulseIndex.Lower].Z);
             var cartesianCoordinate2 = CartesianCoordinate.XOrth *
-                          (courantNumber * this.pulse.E[pulseIndex.JLength]);
+                          (courantNumber * this.pulse.E[pulseIndex.JLength].Z);
             this.iterator.ForExceptJ(
                 pulseIndex,
                 (i, k) =>
@@ -168,7 +167,7 @@ namespace Simulation.FDTD
                 (i, j) =>
                 {
                     var cartesianCoordinate = CartesianCoordinate.YOrth * 
-                        (courantNumber * this.pulse.H[j]);
+                        (courantNumber * this.pulse.H[j].X);
                     this.fields.D[i, j, pulseIndex.Lower] -= cartesianCoordinate;
                     this.fields.D[i, j, pulseIndex.KLength + 1] += cartesianCoordinate;
                 });
@@ -177,9 +176,9 @@ namespace Simulation.FDTD
         private void addPulseToD2(IndexStore pulseIndex, double courantNumber)
         {
             var cart1 = CartesianCoordinate.ZOrth * 
-                (courantNumber * this.pulse.H[pulseIndex.Lower - 1]);
+                courantNumber * this.pulse.H[pulseIndex.Lower - 1].X;
             var cart2 = CartesianCoordinate.ZOrth * 
-                (courantNumber * this.pulse.H[pulseIndex.JLength]);
+                (courantNumber * this.pulse.H[pulseIndex.JLength].X);
             this.iterator.ForExceptJ(
                 pulseIndex,
                 (i, k) => {
@@ -190,7 +189,9 @@ namespace Simulation.FDTD
 
         private SimulationResult calculateExtinction(SpectrumUnit freq, SimulationParameters parameters)
         {
-            var pulseFourier = this.pulse.FourierPulse.Select(x => x.Transform(freq, parameters.TimeStep).Magnitude).ToArray();
+            var pulseFourier = this.pulse.FourierE.Select(x => x.Transform(freq, parameters.TimeStep)).ToArray();
+            var pulseFourierH = this.pulse.FourierH.Select(x => x.Transform(freq, parameters.TimeStep)).ToArray();
+            
             double extinction = this.iterator.Sum(parameters.Indices,
                 (i, j, k) =>
                 {
@@ -200,11 +201,18 @@ namespace Simulation.FDTD
                         return 0;
                     }
                     Complex eps = medium.Permittivity.GetPermittivity(freq);
-                    
-                    double pulseMultiplier = 1 / pulseFourier[j];
-                    var complex = eps.Imaginary *
-                                  pulseMultiplier * this.fields.FourierField[i, j, k].Transform(freq, parameters.TimeStep).Norm;
-                    return complex;
+
+                    Complex clausiusMosottiPolar = (eps - 1.0 ) / (eps + 2.0 );
+                    Complex multiplier = Complex.Reciprocal(clausiusMosottiPolar);
+                    var mult = 1;//(eps.Imaginary) ;
+
+                    var fourierE = this.fields.FourierE[i, j, k].Transform(freq, parameters.TimeStep);
+                    var fourierH = this.fields.FourierH[i, j, k].Transform(freq, parameters.TimeStep);
+                    double pulseMultiplier = Complex.Reciprocal(pulseFourier[j].ScalarProduct(pulseFourierH[j])).Magnitude;
+                    var complex = (clausiusMosottiPolar) * (fourierE).ScalarProduct(fourierE);
+                                  //pulseMultiplier * 
+                                  //(fourierE.VectorProduct(fourierH).Z);
+                    return complex.Imaginary;
                 });
 
             double area = this.calculateArea(parameters);

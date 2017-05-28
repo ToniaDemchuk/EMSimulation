@@ -2,6 +2,8 @@
 
 using Simulation.Models.Extensions;
 using Simulation.Models.Spectrum;
+using Simulation.Models.Coordinates;
+using System.Numerics;
 
 namespace Simulation.FDTD.Models
 {
@@ -14,15 +16,15 @@ namespace Simulation.FDTD.Models
 
         private readonly int medLength; // length of 1D medium
 
-        private readonly Func<int, double> pulseFunc;
+        private readonly Func<int, CartesianCoordinate> pulseFunc;
 
-        private double eMh1;
+        private CartesianCoordinate eMh1;
 
-        private double eMh2;
+        private CartesianCoordinate eMh2;
 
-        private double eMl1;
+        private CartesianCoordinate eMl1;
 
-        private double eMl2;
+        private CartesianCoordinate eMl2;
 
         readonly bool isSpectrumCalculated;
         /// <summary>
@@ -34,18 +36,20 @@ namespace Simulation.FDTD.Models
             this.isSpectrumCalculated = parameters.IsSpectrumCalculated;
             this.courantNumber = parameters.CourantNumber;
             this.medLength = 2 * parameters.Indices.JLength;
-            this.E = new double[this.medLength]; // electric field
-            this.H = new double[this.medLength]; // magnetic field
+            this.E = new CartesianCoordinate[this.medLength]; // electric field
+            this.H = new CartesianCoordinate[this.medLength]; // magnetic field
 
-            this.eMh2 = this.eMh1 = 0.0;
-            this.eMl2 = this.eMl1 = 0.0;
+            this.eMh2 = this.eMh1 = CartesianCoordinate.Zero;
+            this.eMl2 = this.eMl1 = CartesianCoordinate.Zero;
 
             this.pulseFunc = parameters.WaveFunc;
 
             if (this.isSpectrumCalculated)
             {
-                this.FourierPulse = new FourierSeries[this.medLength];
-                this.FourierPulse.For(i => new FourierSeries());
+                this.FourierE = new FourierSeriesCoordinate[this.medLength];
+                this.FourierE.For(i => new FourierSeriesCoordinate());
+                this.FourierH = new FourierSeriesCoordinate[this.medLength];
+                this.FourierH.For(i => new FourierSeriesCoordinate());
             }
 
         }
@@ -56,7 +60,7 @@ namespace Simulation.FDTD.Models
         /// <value>
         /// The electric component of pulse.
         /// </value>
-        public double[] E { get; set; }
+        public CartesianCoordinate[] E { get; set; }
 
         /// <summary>
         /// Gets or sets the magnetized component of pulse.
@@ -64,7 +68,7 @@ namespace Simulation.FDTD.Models
         /// <value>
         /// The magnetized component of pulse.
         /// </value>
-        public double[] H { get; set; }
+        public CartesianCoordinate[] H { get; set; }
 
         /// <summary>
         /// Gets or sets the fourier series of pulse.
@@ -72,7 +76,15 @@ namespace Simulation.FDTD.Models
         /// <value>
         /// The fourier series of pulse.
         /// </value>
-        public FourierSeries[] FourierPulse { get; set; }
+        public FourierSeriesCoordinate[] FourierE { get; set; }
+
+        /// <summary>
+        /// Gets or sets the fourier series of pulse.
+        /// </summary>
+        /// <value>
+        /// The fourier series of pulse.
+        /// </value>
+        public FourierSeriesCoordinate[] FourierH { get; set; }
 
         /// <summary>
         /// Calculate the electric field step.
@@ -83,10 +95,11 @@ namespace Simulation.FDTD.Models
             // E-field calculation
             for (int i = 1; i < this.medLength; i++)
             {
-                this.E[i] += this.courantNumber * (this.H[i - 1] - this.H[i]);
+                this.E[i] += CartesianCoordinate.ZOrth * this.courantNumber * (this.H[i - 1] - this.H[i]).X;
+                this.E[i] += CartesianCoordinate.XOrth * this.courantNumber * (this.H[i] - this.H[i-1]).Z;
             }
 
-            double pulse = this.pulseFunc(time);
+            CartesianCoordinate pulse = this.pulseFunc(time);
 
             this.E[2] = pulse;
 
@@ -114,6 +127,8 @@ namespace Simulation.FDTD.Models
             //        this.H[i] = 0.0;
             //    }
             //}
+
+            DoFourierPulseE();
         }
 
         /// <summary>
@@ -124,21 +139,39 @@ namespace Simulation.FDTD.Models
             // H-field calculation
             for (int i = 0; i < this.medLength - 1; i++)
             {
-                this.H[i] += this.courantNumber * (this.E[i] - this.E[i + 1]);
+                this.H[i] += CartesianCoordinate.XOrth * this.courantNumber * (this.E[i] - this.E[i + 1]).Z;
+                this.H[i] += CartesianCoordinate.ZOrth * this.courantNumber * (this.E[i + 1] - this.E[i]).X;
             }
+
+            DoFourierPulseH();
         }
 
         /// <summary>
         /// Does the fourier pulse.
         /// </summary>
-        public void DoFourierPulse()
+        public void DoFourierPulseE()
         {
             if (!this.isSpectrumCalculated) {
                 return;
             }
             for (int m = 0; m < this.medLength; m++)
             {
-                this.FourierPulse[m].Add(this.E[m]);
+                this.FourierE[m].Add(this.E[m]);
+            }
+        }
+
+        /// <summary>
+        /// Does the fourier pulse.
+        /// </summary>
+        public void DoFourierPulseH()
+        {
+            if (!this.isSpectrumCalculated)
+            {
+                return;
+            }
+            for (int m = 0; m < this.medLength; m++)
+            {
+                this.FourierH[m].Add(this.H[m]);
             }
         }
     }

@@ -60,11 +60,11 @@ namespace Simulation.FDTD.Console
                     new OpticalSpectrum(new LinearDiscreteCollection(200e-9, 500e-9, 100), SpectrumUnitType.WaveLength),
                 CourantNumber = 0.5,
                 PmlLength = pmlLength,
-                NumSteps = 150,
-                WaveFunc = time => Math.Exp(-0.5 * Math.Pow((30 - time) / 5.0, 2.0)),
+                NumSteps = 300,
+                WaveFunc = time => (new SphericalCoordinate(1, 45, 0, UnitOfMeasurement.Degree).ConvertToCartesian()) * Math.Exp(-0.5 * Math.Pow((30 - time) / 5.0, 2.0)),
                 IsSpectrumCalculated = true
             };
-
+            
             setMedium(parameters, mesh);
 
             ext.TimeStepCalculated += fieldPlotter.Plot;
@@ -119,7 +119,7 @@ namespace Simulation.FDTD.Console
             MediumSolverFactory fact)
         {
             var medium = parameters.Indices.CreateArray(
-                (i, j, k) => fact.GetMediumSolver(string.Empty));
+                (i, j, k) => fact.GetMediumSolver("vacuum"));
 
             var offset = parameters.PmlLength;
             foreach (var voxel in voxels)
@@ -139,7 +139,7 @@ namespace Simulation.FDTD.Console
             //var mesh = new VoxelReader().ReadInfo(@"D:\study\vozelizer\conf1.obj.v80.voxels");
             //var mesh = new ObjToVoxelReader().ReadInfo(@"C:\Users\akolkev\Documents\sphere444.obj");
             //var mesh = new MagicaVoxelReader().ReadInfo(@"C:\Users\akolkev\Documents\spherevox.vox");
-            var mesh = new FDSToVoxelReader().ReadInfo(@"D:\dispersion_model\sphere.fds");
+            var mesh = new FDSToVoxelReader().ReadInfo(@"E:\dispersion_model\sphereone.fds");
             return mesh;
         }
 
