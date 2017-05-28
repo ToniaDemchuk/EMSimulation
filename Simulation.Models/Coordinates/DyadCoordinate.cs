@@ -1,4 +1,4 @@
-﻿using System.Numerics;
+﻿using Simulation.Models.Calculators;
 
 namespace Simulation.Models.Coordinates
 {
@@ -6,8 +6,14 @@ namespace Simulation.Models.Coordinates
     /// The CartesianCoordinate class.
     /// </summary>
     /// <typeparam name="T">The type of underlying value.</typeparam>
-    public class DyadCoordinate<T>: BaseDyadCoordinate<T> where T : struct
+    /// <typeparam name="TC">Calculator for type.</typeparam>
+    /// <seealso cref="Coordinates.BaseDyadCoordinate{T, TC}" />
+    public class DyadCoordinate<T, TC>: BaseDyadCoordinate<T, TC>
+        where T : struct
+        where TC : ICalculator<T>, new()
     {
+        private static readonly TC Calculator = new TC();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CartesianCoordinate" /> class.
         /// </summary>
@@ -31,7 +37,7 @@ namespace Simulation.Models.Coordinates
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DyadCoordinate{T}"/> class.
+        /// Initializes a new instance of the <see cref="DyadCoordinate{T, TC}"/> class.
         /// </summary>
         /// <param name="initValue">The value on the main diagonal of identity matrix.</param>
         public DyadCoordinate(T initValue)
@@ -45,7 +51,7 @@ namespace Simulation.Models.Coordinates
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DyadCoordinate{T}"/> class.
+        /// Initializes a new instance of the <see cref="DyadCoordinate{T, TC}"/> class.
         /// </summary>
         /// <param name="dyad">The dyad matrix.</param>
         public DyadCoordinate(T[,] dyad)
@@ -69,8 +75,8 @@ namespace Simulation.Models.Coordinates
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static DyadCoordinate<T> operator *(
-            DyadCoordinate<T> point1,
+        public static DyadCoordinate<T, TC> operator *(
+            DyadCoordinate<T, TC> point1,
             T num)
         {
             var newDyad =
@@ -80,11 +86,11 @@ namespace Simulation.Models.Coordinates
             {
                 for (int j = 0; j < DyadLength; j++)
                 {
-                    newDyad[i, j] = (dynamic) point1.Dyad[i, j] * num;
+                    newDyad[i, j] = Calculator.Multiply(ref point1.Dyad[i, j], ref num);
                 }
             }
 
-            return new DyadCoordinate<T>(newDyad);
+            return new DyadCoordinate<T, TC>(newDyad);
         }
 
         /// <summary>
@@ -95,9 +101,9 @@ namespace Simulation.Models.Coordinates
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static DyadCoordinate<T> operator *(
+        public static DyadCoordinate<T, TC> operator *(
             T num,
-            DyadCoordinate<T> point1)
+            DyadCoordinate<T, TC> point1)
         {
             return point1 * num;
         }
@@ -110,9 +116,9 @@ namespace Simulation.Models.Coordinates
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static DyadCoordinate<T> operator -(
-            DyadCoordinate<T> point1,
-            DyadCoordinate<T> point2)
+        public static DyadCoordinate<T, TC> operator -(
+            DyadCoordinate<T, TC> point1,
+            DyadCoordinate<T, TC> point2)
         {
             var newDyad =
                 new T[DyadLength, DyadLength];
@@ -121,11 +127,11 @@ namespace Simulation.Models.Coordinates
             {
                 for (int j = 0; j < DyadLength; j++)
                 {
-                    newDyad[i, j] = (dynamic) point1.Dyad[i, j] - point2.Dyad[i, j];
+                    newDyad[i, j] = Calculator.Substract(ref point1.Dyad[i, j], ref point2.Dyad[i, j]);
                 }
             }
 
-            return new DyadCoordinate<T>(newDyad);
+            return new DyadCoordinate<T, TC>(newDyad);
         }
 
         /// <summary>
@@ -136,9 +142,9 @@ namespace Simulation.Models.Coordinates
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static DyadCoordinate<T> operator +(
-            DyadCoordinate<T> point1,
-            DyadCoordinate<T> point2)
+        public static DyadCoordinate<T, TC> operator +(
+            DyadCoordinate<T, TC> point1,
+            DyadCoordinate<T, TC> point2)
         {
             var newDyad =
                 new T[DyadLength, DyadLength];
@@ -147,33 +153,11 @@ namespace Simulation.Models.Coordinates
             {
                 for (int j = 0; j < DyadLength; j++)
                 {
-                    newDyad[i, j] = (dynamic) point1.Dyad[i, j] + point2.Dyad[i, j];
+                    newDyad[i, j] = Calculator.Add(ref point1.Dyad[i, j], ref point2.Dyad[i, j]);
                 }
             }
 
-            return new DyadCoordinate<T>(newDyad);
-        }
-
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="DyadCoordinate{T}"/> to <see cref="DyadCoordinate{Complex}"/>.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>
-        /// The result of the conversion.
-        /// </returns>
-        public static implicit operator DyadCoordinate<Complex>(DyadCoordinate<T> value)
-        {
-            var newDyad = new Complex[DyadLength, DyadLength];
-
-            for (int i = 0; i < DyadLength; i++)
-            {
-                for (int j = 0; j < DyadLength; j++)
-                {
-                    newDyad[i, j] = (dynamic) value.Dyad[i, j];
-                }
-            }
-
-            return new DyadCoordinate<Complex>(newDyad);
+            return new DyadCoordinate<T, TC>(newDyad);
         }
 
         public override T this[int i, int j]

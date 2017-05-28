@@ -73,6 +73,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Calculators\ComplexCalculator.cs" />
+    <Compile Include="Calculators\DoubleCalculator.cs" />
+    <Compile Include="Calculators\ICalculator.cs" />
     <Compile Include="Common\MemoDictionary.cs" />
     <Compile Include="Common\FuncDictionary.cs" />
     <Compile Include="Comparers\CoordinateEqualityComparer.cs" />

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Numerics;
 
+using Simulation.Models.Calculators;
 using Simulation.Models.Coordinates;
 using Simulation.Models.Matrices;
 
@@ -40,7 +41,7 @@ namespace Simulation.Models.Extensions
         public static double[] ConvertToPlainArrayMatrix(IMatrix<IMatrix<Complex>> coordinate)
         {
             var size = coordinate.Length;
-            var dyadSize = DyadCoordinate<Complex>.DyadLength;
+            var dyadSize = DyadCoordinate<Complex, ComplexCalculator>.DyadLength;
 
             double[] array = new double[size * size * ComplexMultiplier * dyadSize];
             for (int i = 0; i < size; i++)
@@ -68,10 +69,10 @@ namespace Simulation.Models.Extensions
         /// </summary>
         /// <param name="coordinate">The coordinate.</param>
         /// <returns>The double type array.</returns>
-        public static double[] ConvertToPlainArray(DyadCoordinate<Complex>[,] coordinate)
+        public static double[] ConvertToPlainArray(DyadCoordinate<Complex, ComplexCalculator>[,] coordinate)
         {
             var size = coordinate.GetLength(0);
-            var dyadSize = DyadCoordinate<Complex>.DyadLength;
+            var dyadSize = DyadCoordinate<Complex, ComplexCalculator>.DyadLength;
 
             double[] array = new double[size * size * ComplexMultiplier * dyadSize];
             for (int i = 0; i < size; i++)

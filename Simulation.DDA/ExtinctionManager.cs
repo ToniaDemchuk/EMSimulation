@@ -4,7 +4,7 @@ using System.Numerics;
 
 using Simulation.DDA.Models;
 using Simulation.Medium.Models;
-
+using Simulation.Models.Calculators;
 using Simulation.Models.Comparers;
 using Simulation.Models.Coordinates;
 using Simulation.Models.Extensions;
@@ -106,7 +106,7 @@ namespace Simulation.DDA
         {
             double medRef = dispersion.MediumRefractiveIndex * dispersion.MediumRefractiveIndex;
             var e = new ComplexCoordinate[system.Size];
-            
+
             for (int j = 0; j < system.Size; j++)
             {
                 CartesianCoordinate point = system.GetPoint(j);
@@ -124,8 +124,8 @@ namespace Simulation.DDA
             this.polarization = Enumerable.Repeat<double>(0, sizeAdbl).ToArray();
         }
 
-        private BaseDyadCoordinate<Complex> setNonDiagonalElements(
-            DispersionParameter dispersion, 
+        private BaseDyadCoordinate<Complex, ComplexCalculator> setNonDiagonalElements(
+            DispersionParameter dispersion,
             CartesianCoordinate displacement)
         {
             double rmod = displacement.Norm;
@@ -135,13 +135,13 @@ namespace Simulation.DDA
             double kmod = dispersion.WaveVector.Norm;
             double kr = kmod * rmod;
 
-            BaseDyadCoordinate<Complex> dyadProduct = displacement.DyadProduct(displacement);
+            BaseDyadCoordinate<Complex, ComplexCalculator> dyadProduct = CoordinateEntensions.DyadProduct(ref displacement, ref displacement);
 
-            var initDyad = new DiagonalDyadCoordinate<Complex>(rmod2);
+            var initDyad = new DiagonalDyadCoordinate<Complex, ComplexCalculator>(rmod2);
 
-            BaseDyadCoordinate<Complex> firstMember = (kmod * kmod) * (dyadProduct - initDyad);
+            BaseDyadCoordinate<Complex, ComplexCalculator> firstMember = (kmod * kmod) * (dyadProduct - initDyad);
 
-            BaseDyadCoordinate<Complex> secondMember = (1 / rmod2) * (Complex.ImaginaryOne * kr - 1) *
+            BaseDyadCoordinate<Complex, ComplexCalculator> secondMember = (1 / rmod2) * (Complex.ImaginaryOne * kr - 1) *
                                                    (3 * dyadProduct - initDyad);
 
             Complex multiplier = Complex.FromPolarCoordinates(1 / rmod3, kr);
@@ -149,8 +149,8 @@ namespace Simulation.DDA
             return multiplier * (firstMember + secondMember);
         }
 
-        private DyadCoordinate<Complex> setDiagonalElements(
-            DispersionParameter dispersion, 
+        private DyadCoordinate<Complex, ComplexCalculator> setDiagonalElements(
+            DispersionParameter dispersion,
             double radius)
         {
             double medRef = dispersion.MediumRefractiveIndex * dispersion.MediumRefractiveIndex;
@@ -163,11 +163,11 @@ namespace Simulation.DDA
 
             double volumeFactorInverted = 1 / (radius * radius * radius);
 
-            var complex = new DyadCoordinate<Complex>(multiplier * volumeFactorInverted);
+            var complex = new DyadCoordinate<Complex, ComplexCalculator>(multiplier * volumeFactorInverted);
 
             double kmod = dispersion.WaveVector.Norm;
             double radiation = 2.0 / 3.0 * kmod * kmod * kmod; // доданок, що відповідає за релаксаційне випромінювання.
-            var radiativeReaction = new DyadCoordinate<Complex>(Complex.ImaginaryOne * radiation);
+            var radiativeReaction = new DyadCoordinate<Complex, ComplexCalculator>(Complex.ImaginaryOne * radiation);
 
             return complex - radiativeReaction;
         }
