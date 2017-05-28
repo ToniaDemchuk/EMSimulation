@@ -18,7 +18,12 @@ namespace Simulation.Models.Comparers
 
         public override int GetHashCode(CartesianCoordinate obj)
         {
-            return Math.Abs(obj.X + obj.Y + obj.Z).GetHashCode();
+            int hash = 17;
+            // Suitable nullity checks etc, of course :)
+            hash = (hash * 397) ^ Math.Abs(obj.X).GetHashCode();
+            hash = (hash * 397) ^ Math.Abs(obj.Y).GetHashCode();
+            hash = (hash * 397) ^ Math.Abs(obj.Z).GetHashCode();
+            return hash;
         }
     }
 }
