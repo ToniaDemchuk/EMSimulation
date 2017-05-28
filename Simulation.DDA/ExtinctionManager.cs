@@ -10,6 +10,8 @@ using Simulation.Models.Coordinates;
 using Simulation.Models.Extensions;
 using Simulation.Models.Matrices;
 using Simulation.Models.Spectrum;
+using System.Threading.Tasks;
+using System.Collections.Concurrent;
 
 namespace Simulation.DDA
 {
@@ -19,8 +21,6 @@ namespace Simulation.DDA
     public class ExtinctionManager
     {
         private readonly MediumManager mediumManager;
-
-        private double[] polarization;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExtinctionManager"/> class.
@@ -38,10 +38,35 @@ namespace Simulation.DDA
         /// <returns>The simulation results.</returns>
         public SimulationResultDictionary CalculateCrossExtinction(SimulationParameters parameters)
         {
-            this.initPolarization(parameters);
-            return parameters.Spectrum
-                             .ToSimulationResult(
-                                 x => this.CalculateSingleDDA(x, parameters));
+            var result = new SimulationResultDictionary();
+
+            var partitions = Partitioner.Create(parameters.Spectrum).GetPartitions(Environment.ProcessorCount);
+
+            var concurent = new ConcurrentDictionary<SpectrumUnit, SimulationResult>();
+
+            var tasks = partitions
+                .Select(partition => Task.Run(() =>
+                {
+                    using (partition)
+                    {
+                        var polarization = this.initPolarization(parameters);
+
+                        while (partition.MoveNext())
+                        {
+                            concurent.TryAdd(partition.Current, this.CalculateSingleDDA(partition.Current, parameters, polarization));
+                        }
+                    }
+                }))
+                .ToArray();
+
+            Task.WaitAll(tasks);
+
+            foreach (var keyvalue in concurent.OrderBy(pair => pair.Key))
+            {
+                result.Add(keyvalue.Key, keyvalue.Value);
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -52,7 +77,8 @@ namespace Simulation.DDA
         /// <returns>The single simulation result.</returns>
         public SimulationResult CalculateSingleDDA(
             SpectrumUnit waveLength,
-            SimulationParameters parameters)
+            SimulationParameters parameters,
+            double[] polarization)
         {
             Console.WriteLine("start wave" + waveLength.ToType(Simulation.Models.Enums.SpectrumUnitType.WaveLength));
 
@@ -71,14 +97,14 @@ namespace Simulation.DDA
                 dispersion);
 
             ModernKDDAEntryPoint.OpenMPCGMethod(
-                this.polarization.Length,
+                polarization.Length,
                 CoordinateHelper.ConvertToPlainArrayMatrix(a),
-                this.polarization,
+                polarization,
                 CoordinateHelper.ConvertToPlainArray(e));
 
             var result = new SimulationResult
             {
-                Polarization = CoordinateHelper.ConvertFromPlainArray(this.polarization),
+                Polarization = CoordinateHelper.ConvertFromPlainArray(polarization),
                 ElectricField = e
             };
             this.calculateCrossSectionExtinction(
@@ -117,11 +143,11 @@ namespace Simulation.DDA
             return e;
         }
 
-        private void initPolarization(SimulationParameters parameters)
+        private double[] initPolarization(SimulationParameters parameters)
         {
             int sizeAdbl = parameters.SystemConfig.Size * CoordinateHelper.ComplexMultiplier;
             // розмірність матриці А, Р, Е представлена в дійсних числах
-            this.polarization = Enumerable.Repeat<double>(0, sizeAdbl).ToArray();
+            return Enumerable.Repeat<double>(0, sizeAdbl).ToArray();
         }
 
         private BaseDyadCoordinate<Complex, ComplexCalculator> setNonDiagonalElements(

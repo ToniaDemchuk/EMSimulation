@@ -1,12 +1,13 @@
 ﻿using Simulation.Models.Enums;
 using Simulation.Models.Extensions;
+using System;
 
 namespace Simulation.Models.Spectrum
 {
     /// <summary>
     /// The SpectrumParameter class.
     /// </summary>
-    public class SpectrumUnit
+    public class SpectrumUnit : IComparable
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SpectrumUnit"/> class.
@@ -61,6 +62,13 @@ namespace Simulation.Models.Spectrum
             {
                 return ((int) this.type * 397) ^ this.value.GetHashCode();
             }
+        }
+
+        public int CompareTo(object obj)
+        {
+            var other = (SpectrumUnit)obj;
+
+            return value.CompareTo(other.value);
         }
     }
 }
