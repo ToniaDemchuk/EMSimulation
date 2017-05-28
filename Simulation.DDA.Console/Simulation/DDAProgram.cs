@@ -7,6 +7,7 @@ using Simulation.Medium.Models;
 using Simulation.Models.Enums;
 using Simulation.Models.Extensions;
 using Simulation.Models.Spectrum;
+using Simulation.Medium.Medium;
 
 namespace Simulation.DDA.Console.Simulation
 {
@@ -30,6 +31,7 @@ namespace Simulation.DDA.Console.Simulation
                     x => x.Value.CrossSectionExtinction));
 
             new SpectrumPlotter().Plot(result);
+            new IncidentPlotter().Plot(result);
         }
 
         /// <summary>
@@ -41,7 +43,8 @@ namespace Simulation.DDA.Console.Simulation
             return Calculate(
                 "ddaParameters.xml",
                 "opt_const.txt",
-                //ParameterHelper.ReadSystemConfigFromMesh(@"D:\FDSexamples\dipole.fds")
+                //ParameterHelper.ReadSystemConfigFromMesh(@"E:\Dropbox\DDA_Blender_issue\blender_models\sphere.fds")
+                //ParameterHelper.ReadSystemConfigFromMesh(@"E:\dispersion_model\dimer3ort.fds")
                 ParameterHelper.ReadSystemConfig("dipols.txt")
                 );
         }
@@ -58,7 +61,10 @@ namespace Simulation.DDA.Console.Simulation
             var ddaConfig =
                 XmlSerializerHelper.DeserializeObject<DDAParameters>(ddaConfigFilename);
 
-            return Calculate(ddaConfig, systemConfig, ParameterHelper.ReadOpticalConstants(optConstTxt));
+            return Calculate(ddaConfig, systemConfig,
+                //new DrudeLorentz()
+                ParameterHelper.ReadOpticalConstants(optConstTxt)
+                );
         }
 
         /// <summary>

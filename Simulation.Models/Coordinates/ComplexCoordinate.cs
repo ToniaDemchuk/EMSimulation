@@ -221,20 +221,6 @@ namespace Simulation.Models.Coordinates
             return new ComplexCoordinate(x, y, z);
         }
 
-        /// <summary>
-        /// Implements the operator * (Scalar product).
-        /// </summary>
-        /// <param name="point1">The point1.</param>
-        /// <param name="point2">The point2.</param>
-        /// <returns>
-        /// The result of the operator.
-        /// </returns>
-        public static Complex operator *(ComplexCoordinate point1, ComplexCoordinate point2)
-        {
-            return point1.X * Complex.Conjugate(point2.X) + point1.Y * Complex.Conjugate(point2.Y) +
-                   point1.Z * Complex.Conjugate(point2.Z);
-        }
-
         #endregion
 
         /// <summary>

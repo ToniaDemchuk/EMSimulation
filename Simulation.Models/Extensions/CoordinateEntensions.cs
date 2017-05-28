@@ -1,4 +1,5 @@
 ﻿using Simulation.Models.Coordinates;
+using System.Numerics;
 
 namespace Simulation.Models.Extensions
 {
@@ -40,6 +41,34 @@ namespace Simulation.Models.Extensions
         }
 
         /// <summary>
+        /// Implements Scalar product.
+        /// </summary>
+        /// <param name="point1">The point1.</param>
+        /// <param name="point2">The point2.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
+        public static double ScalarProduct(this CartesianCoordinate point1, CartesianCoordinate point2)
+        {
+            return point1.X * point2.X + point1.Y * point2.Y + point1.Z * point2.Z;
+        }
+
+
+        /// <summary>
+        /// Implements Scalar product.
+        /// </summary>
+        /// <param name="point1">The point1.</param>
+        /// <param name="point2">The point2.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
+        public static Complex ScalarProduct(this ComplexCoordinate point1, ComplexCoordinate point2)
+        {
+            return point1.X * Complex.Conjugate(point2.X) + point1.Y * Complex.Conjugate(point2.Y) +
+                   point1.Z * Complex.Conjugate(point2.Z);
+        }
+
+        /// <summary>
         /// Calculates the vector product.
         /// </summary>
         /// <param name="point1">The point1.</param>
@@ -51,6 +80,20 @@ namespace Simulation.Models.Extensions
                 point1.Y * point2.Z - point1.Z * point2.Y,
                 point1.Z * point2.X - point1.X * point2.Z,
                 point1.X * point2.Y - point1.Y * point2.X);
+        }
+
+        /// <summary>
+        /// Calculates the vector product.
+        /// </summary>
+        /// <param name="point1">The point1.</param>
+        /// <param name="point2">The point2.</param>
+        /// <returns>The result of vector product operation.</returns>
+        public static ComplexCoordinate VectorProduct(this ComplexCoordinate point1, ComplexCoordinate point2)
+        {
+            return new ComplexCoordinate(
+                point1.Y * Complex.Conjugate(point2.Z) - point1.Z * Complex.Conjugate(point2.Y),
+                point1.Z * Complex.Conjugate(point2.X) - point1.X * Complex.Conjugate(point2.Z),
+                point1.X * Complex.Conjugate(point2.Y) - Complex.Conjugate(point1.Y * point2.X));
         }
 
         /// <summary>

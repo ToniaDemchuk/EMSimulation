@@ -54,6 +54,8 @@ namespace Simulation.DDA
             SpectrumUnit waveLength,
             SimulationParameters parameters)
         {
+            Console.WriteLine("start wave" + waveLength.ToType(Simulation.Models.Enums.SpectrumUnitType.WaveLength));
+
             DispersionParameter dispersion =
                 this.mediumManager.GetDispersionParameters(
                     waveLength,
@@ -79,12 +81,11 @@ namespace Simulation.DDA
                 Polarization = CoordinateHelper.ConvertFromPlainArray(this.polarization),
                 ElectricField = e
             };
-
             this.calculateCrossSectionExtinction(
                 result,
                 parameters,
                 dispersion);
-
+            Console.WriteLine("finish wave"+ waveLength.ToType(Simulation.Models.Enums.SpectrumUnitType.WaveLength));
             return result;
         }
 
@@ -93,7 +94,7 @@ namespace Simulation.DDA
             return new LazyDiagonalMatrix<CartesianCoordinate, IMatrix<Complex>>(
                 system.Size,
                 system.GetDistanceUniform,
-                (i, j) => this.setNonDiagonalElements(dispersion, system.GetPoint(i) - system.GetPoint(j)),
+                (i, j) => this.setNonDiagonalElements(dispersion, system.GetDistance(i, j)),
                 i => this.setDiagonalElements(dispersion, system.Radius[i]),
                 new CoordinateEqualityComparer());
         }
@@ -109,7 +110,7 @@ namespace Simulation.DDA
             for (int j = 0; j < system.Size; j++)
             {
                 CartesianCoordinate point = system.GetPoint(j);
-                double kr = dispersion.WaveVector * point;
+                double kr = dispersion.WaveVector.ScalarProduct(point);
                 e[j] = ComplexCoordinate.FromPolarCoordinates(exyz * medRef, kr);
             }
 
@@ -120,7 +121,7 @@ namespace Simulation.DDA
         {
             int sizeAdbl = parameters.SystemConfig.Size * CoordinateHelper.ComplexMultiplier;
             // розмірність матриці А, Р, Е представлена в дійсних числах
-            this.polarization = new double[sizeAdbl];
+            this.polarization = Enumerable.Repeat<double>(0, sizeAdbl).ToArray();
         }
 
         private BaseDyadCoordinate<Complex> setNonDiagonalElements(
@@ -180,7 +181,7 @@ namespace Simulation.DDA
             double exyzMod = parameters.IncidentMagnitude.Norm;
             double factorCext = 4.0 * Math.PI * dispersion.WaveVector.Norm / (exyzMod * exyzMod * epsM);
 
-            double crossExt = result.ElectricField.Select((eInc, j) => (eInc * result.Polarization[j]).Imaginary).Sum();
+            double crossExt = result.ElectricField.Select((eInc, j) => (eInc.ScalarProduct(result.Polarization[j])).Imaginary).Sum();
 
             double crossSectionExt = crossExt * factorCext;
 

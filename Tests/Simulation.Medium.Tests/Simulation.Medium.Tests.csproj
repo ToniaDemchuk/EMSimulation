@@ -53,8 +53,8 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="GnuplotCSharp">
-      <HintPath>..\packages\GnuplotCSharp.1.0.1\lib\net45\GnuplotCSharp.dll</HintPath>
+    <Reference Include="GnuplotCSharp, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\GnuplotCSharp.1.0.1\lib\net45\GnuplotCSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Numerics" />
@@ -79,9 +79,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\Simulation.Medium\Simulation.Medium.csproj">
       <Project>{38F1FA9E-F687-4F27-9147-88222766FE3A}</Project>
       <Name>Simulation.Medium</Name>
@@ -90,6 +87,9 @@
       <Project>{866CA2C4-C878-45A2-A947-7C89B0A2AE61}</Project>
       <Name>Simulation.Models</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

@@ -12,9 +12,9 @@ namespace Simulation.Infrastructure.Models
 
         public Voxel(CartesianCoordinate point)
         {
-            this.I = (int) Math.Round(point.X);
-            this.J = (int) Math.Round(point.Y);
-            this.K = (int) Math.Round(point.Z);
+            this.I = (int) Math.Floor(point.X);
+            this.J = (int) Math.Floor(point.Y);
+            this.K = (int) Math.Floor(point.Z);
         }
 
         public int I { get; set; }

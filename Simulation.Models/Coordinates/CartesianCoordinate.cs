@@ -221,19 +221,6 @@ namespace Simulation.Models.Coordinates
             return new CartesianCoordinate(x, y, z);
         }
 
-        /// <summary>
-        /// Implements the operator * (Scalar product).
-        /// </summary>
-        /// <param name="point1">The point1.</param>
-        /// <param name="point2">The point2.</param>
-        /// <returns>
-        /// The result of the operator.
-        /// </returns>
-        public static double operator *(CartesianCoordinate point1, CartesianCoordinate point2)
-        {
-            return point1.X * point2.X + point1.Y * point2.Y + point1.Z * point2.Z;
-        }
-
         #endregion
 
         /// <summary>

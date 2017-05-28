@@ -39,7 +39,7 @@ namespace Simulation.DDA.Models
             {
                 if (!this.crossSectionArea.HasValue)
                 {
-                    this.crossSectionArea = this.Radius.Sum(radius =>Math.PI * radius * radius); // todo: parallelize?
+                    this.crossSectionArea = this.Radius.Sum(radius => Math.PI * radius * radius); // todo: parallelize?
                 }
                 return this.crossSectionArea.Value;
             }
@@ -69,7 +69,7 @@ namespace Simulation.DDA.Models
 
             this.Size = radius.Count;
             
-            this.Radius = radius.Select(r => r * NanoMeters).ToList().AsReadOnly();
+            this.Radius = radius.Select(rad => rad * NanoMeters).ToList().AsReadOnly();
             this.Points = points.AsReadOnly();
         }
 
@@ -81,6 +81,11 @@ namespace Simulation.DDA.Models
         public CartesianCoordinate GetDistanceUniform(int i, int j)
         {
             return this.Points[i] - this.Points[j];
+        }
+
+        public CartesianCoordinate GetDistance(int i, int j)
+        {
+            return (this.Points[i] - this.Points[j]) * NanoMeters;
         }
     }
 }

@@ -47,6 +47,8 @@ namespace Simulation.Medium.Factories
                     var silver = new DrudeLorentz();
                     return new DrudeLorentzFactor(silver, this.timeStep);
                 });
+
+            this.mediumFactors.Add("vacuum", () => null);
         }
 
         private void initSolvers()
