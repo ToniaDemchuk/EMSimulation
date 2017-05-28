@@ -7,6 +7,8 @@ using Simulation.Medium.Models;
 using Simulation.Models.Enums;
 using Simulation.Models.Extensions;
 using Simulation.Models.Spectrum;
+using System.Collections.Generic;
+using System;
 
 namespace Simulation.DDA.Console.Simulation
 {
@@ -23,14 +25,40 @@ namespace Simulation.DDA.Console.Simulation
         {
             var result = Calculate();
 
+            Dictionary<SpectrumUnit, double> secondDer = GetSecondDerivative(result, x => x.EffectiveCrossSectionExtinction);
+
             SimpleFormatter.Write(
                 "rezult_ext.txt",
                 result.ToDictionary(
                     x => x.Key.ToType(SpectrumUnitType.WaveLength),
                     x => x.Value.CrossSectionExtinction));
 
+            new DerivativePlotter().Plot(secondDer);
             new SpectrumPlotter().Plot(result);
             new IncidentPlotter().Plot(result);
+        }
+
+        private static Dictionary<SpectrumUnit, double> GetSecondDerivative<TValue>(IDictionary<SpectrumUnit, TValue> result, Func<TValue, double> valueSelector)
+        {
+            var secondDer = new Dictionary<SpectrumUnit, double>();
+
+            KeyValuePair<SpectrumUnit, TValue>? prev1 = null;
+            KeyValuePair<SpectrumUnit, TValue>? prev2 = null;
+            foreach (var res in result)
+            {
+                if (prev1.HasValue && prev2.HasValue)
+                {
+                    var keyDiff1 = res.Key.ToType(SpectrumUnitType.WaveLength) - prev2.Value.Key.ToType(SpectrumUnitType.WaveLength);
+                    var keyDiff2 = prev2.Value.Key.ToType(SpectrumUnitType.WaveLength) - prev1.Value.Key.ToType(SpectrumUnitType.WaveLength);
+                    var valDiff = valueSelector(res.Value) - 2 * valueSelector(prev2.Value.Value) + valueSelector(prev1.Value.Value);
+                    secondDer.Add(prev2.Value.Key, (valDiff) / (keyDiff1 * keyDiff2));
+
+                }
+                prev1 = prev2;
+                prev2 = res;
+            }
+
+            return secondDer;
         }
 
         /// <summary>

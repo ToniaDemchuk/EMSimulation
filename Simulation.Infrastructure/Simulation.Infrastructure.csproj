@@ -81,6 +81,7 @@
     <Compile Include="Iterators\ParallelIterator.cs" />
     <Compile Include="Iterators\SequentialIterator.cs" />
     <Compile Include="Models\FDSTokens.cs" />
+    <Compile Include="Plotters\DerivativePlotter.cs" />
     <Compile Include="Plotters\MediumPlotter.cs" />
     <Compile Include="Plotters\IncidentPlotter.cs" />
     <Compile Include="Plotters\SpectrumPlotter.cs" />
