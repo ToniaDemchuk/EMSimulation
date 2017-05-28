@@ -13,6 +13,7 @@ using Simulation.Models.Enums;
 using Simulation.Models.Extensions;
 using Simulation.Models.Spectrum;
 using Simulation.Infrastructure.Readers;
+using System.Diagnostics.Contracts;
 
 namespace Simulation.DDA
 {
@@ -61,12 +62,27 @@ namespace Simulation.DDA
 
             var pointList = mesh.Voxels.Select(voxel => new CartesianCoordinate(voxel.I, voxel.J, voxel.K)).ToList();
 
+
+            var distinct = pointList.Distinct(new CartEqualComparer()).ToList() ;
+
+            Contract.Assert(pointList.Count == distinct.Count);
             //var radiusList = Enumerable.Repeat(Math.Pow(3 / (4 * Math.PI), 1.0 / 3.0), pointList.Count).ToList();
             var radiusList = Enumerable.Repeat(0.5, pointList.Count).ToList();
 
             return new SystemConfig(radiusList, pointList);
         }
+        private class CartEqualComparer : IEqualityComparer<CartesianCoordinate>
+        {
+            public bool Equals(CartesianCoordinate x, CartesianCoordinate y)
+            {
+                return x.X == y.X && x.Y == y.Y && x.Z == y.Z;
+            }
 
+            public int GetHashCode(CartesianCoordinate obj)
+            {
+                return obj.X.GetHashCode();
+            }
+        }
         /// <summary>
         /// Reads the optical constants.
         /// </summary>

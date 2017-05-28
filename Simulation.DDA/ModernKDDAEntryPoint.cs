@@ -26,6 +26,7 @@ namespace Simulation.DDA
             {
                 return 1;
             }
+
             int systd2 = syst / 2;
             double sum_b = 0.0;
 
@@ -36,7 +37,6 @@ namespace Simulation.DDA
 
             if (Math.Abs(sum_b) < eps)
             {
-
                 return 1;
             }
             //    test end
@@ -57,11 +57,10 @@ namespace Simulation.DDA
                     Ax[i] = Ax[i + 1] = 0.0;
                     var num = systd2 * i;
 
-                    for (int j = 0; j < syst; j += 2)
+                    for (int j = 0; j < syst; j += 2, num +=2)
                     {
                         Ax[i] += A[num] * x[j] + A[num + 1] * x[j + 1];
                         Ax[i + 1] += A[num] * x[j + 1] - A[num + 1] * x[j];
-                        num += 2;
                     }
 
                     r[i] = b[i] - Ax[i];
@@ -73,11 +72,10 @@ namespace Simulation.DDA
                     Atr[i] = Atr[i + 1] = 0.0;
                     var num = systd2 * i;
 
-                    for (int j = 0; j < syst; j += 2)
+                    for (int j = 0; j < syst; j += 2, num +=2)
                     {
                         Atr[i] += A[num] * r[j] - A[num + 1] * r[j + 1];
                         Atr[i + 1] += A[num + 1] * r[j] + A[num] * r[j + 1];
-                        num += 2;
                     }
 
                     p[i] = Atr[i];
@@ -114,11 +112,10 @@ namespace Simulation.DDA
                         Ap[i] = Ap[i + 1] = 0.0;
                         var num = systd2 * i;
 
-                        for (int j = 0; j < syst; j += 2)
+                        for (int j = 0; j < syst; j += 2, num += 2)
                         {
                             Ap[i] += A[num] * p[j] + A[num + 1] * p[j + 1];
                             Ap[i + 1] += A[num] * p[j + 1] - A[num + 1] * p[j];
-                            num += 2;
                         }
 
                         ApAp += Ap[i] * Ap[i] + Ap[i + 1] * Ap[i + 1];
@@ -145,11 +142,10 @@ namespace Simulation.DDA
                         Atr_1[i] = Atr_1[i + 1] = 0.0;
                         var num = systd2 * i;
 
-                        for (int j = 0; j < syst; j += 2)
+                        for (int j = 0; j < syst; j += 2, num += 2)
                         {
                             Atr_1[i] += A[num] * r[j] - A[num + 1] * r[j + 1];
                             Atr_1[i + 1] += A[num + 1] * r[j] + A[num] * r[j + 1];
-                            num += 2;
                         }
 
                         Atr1Atr1 += Atr_1[i] * Atr_1[i] + Atr_1[i + 1] * Atr_1[i + 1];
