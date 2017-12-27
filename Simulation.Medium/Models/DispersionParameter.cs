@@ -41,5 +41,13 @@ namespace Simulation.Medium.Models
         /// The wave vector.
         /// </value>
         public CartesianCoordinate WaveVector { get; set; }
+
+        /// <summary>
+        /// Gets or sets the index of the substrate refractive.
+        /// </summary>
+        /// <value>
+        /// The index of the substrate refractive.
+        /// </value>
+        public double SubstrateRefractiveIndex { get; set; }
     }
 }

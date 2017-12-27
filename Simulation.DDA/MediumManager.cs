@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 
 using Simulation.Medium.Models;
 using Simulation.Models.Coordinates;
@@ -40,7 +41,8 @@ namespace Simulation.DDA
             {
                 SpectrumParameter = parameter,
                 MediumRefractiveIndex = this.getMediumCoeficient(parameter),
-                Permittivity = this.medium.GetPermittivity(parameter)
+                Permittivity = this.medium.GetPermittivity(parameter),
+                SubstrateRefractiveIndex = this.getSubstrateCoefficient(parameter)
             };
 
             CartesianCoordinate waveVector = this.getWaveVector(
@@ -50,6 +52,11 @@ namespace Simulation.DDA
 
             parameters.WaveVector = waveVector;
             return parameters;
+        }
+
+        private double getSubstrateCoefficient(SpectrumUnit parameter)
+        {
+            return 0;
         }
 
         private double getMediumCoeficient(SpectrumUnit waveLength)

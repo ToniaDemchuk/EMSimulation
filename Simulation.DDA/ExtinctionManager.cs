@@ -12,6 +12,7 @@ using Simulation.Models.Matrices;
 using Simulation.Models.Spectrum;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
+using Simulation.Models.Constants;
 
 namespace Simulation.DDA
 {
@@ -121,7 +122,7 @@ namespace Simulation.DDA
                 system.Size,
                 system.GetDistanceUniform,
                 (i, j) => this.setNonDiagonalElements(dispersion, system.GetDistance(i, j)),
-                i => this.setDiagonalElements(dispersion, system.Radius[i]),
+                i => this.setDiagonalElements(dispersion, system.Radius[i], system.GetPoint(i)),
                 new CoordinateEqualityComparer());
         }
 
@@ -137,6 +138,7 @@ namespace Simulation.DDA
             {
                 CartesianCoordinate point = system.GetPoint(j);
                 double kr = dispersion.WaveVector.ScalarProduct(point);
+
                 e[j] = ComplexCoordinate.FromPolarCoordinates(exyz * medRef, kr);
             }
 
@@ -161,11 +163,14 @@ namespace Simulation.DDA
             double kmod = dispersion.WaveVector.Norm;
             double kr = kmod * rmod;
 
-            BaseDyadCoordinate<Complex, ComplexCalculator> dyadProduct = CoordinateEntensions.DyadProduct(ref displacement, ref displacement);
+            BaseDyadCoordinate<Complex, ComplexCalculator> dyadProduct =
+                CoordinateEntensions.DyadProduct(ref displacement, ref displacement);
 
-            var initDyad = new DiagonalDyadCoordinate<Complex, ComplexCalculator>(rmod2);
+            var initDyad = 
+                new DiagonalDyadCoordinate<Complex, ComplexCalculator>(rmod2);
 
             BaseDyadCoordinate<Complex, ComplexCalculator> firstMember = (kmod * kmod) * (dyadProduct - initDyad);
+
 
             BaseDyadCoordinate<Complex, ComplexCalculator> secondMember = (1 / rmod2) * (Complex.ImaginaryOne * kr - 1) *
                                                    (3 * dyadProduct - initDyad);
@@ -175,9 +180,10 @@ namespace Simulation.DDA
             return multiplier * (firstMember + secondMember);
         }
 
-        private DyadCoordinate<Complex, ComplexCalculator> setDiagonalElements(
+        private BaseDyadCoordinate<Complex, ComplexCalculator> setDiagonalElements(
             DispersionParameter dispersion,
-            double radius)
+            double radius,
+            CartesianCoordinate exyz)
         {
             double medRef = dispersion.MediumRefractiveIndex * dispersion.MediumRefractiveIndex;
 
@@ -188,14 +194,30 @@ namespace Simulation.DDA
             Complex multiplier = Complex.Reciprocal(clausiusMosottiPolar);
 
             double volumeFactorInverted = 1 / (radius * radius * radius);
-
-            var complex = new DyadCoordinate<Complex, ComplexCalculator>(multiplier * volumeFactorInverted);
+            var complex =
+                new DyadCoordinate<Complex, ComplexCalculator>(multiplier * volumeFactorInverted);
 
             double kmod = dispersion.WaveVector.Norm;
             double radiation = 2.0 / 3.0 * kmod * kmod * kmod; // доданок, що відповідає за релаксаційне випромінювання.
-            var radiativeReaction = new DyadCoordinate<Complex, ComplexCalculator>(Complex.ImaginaryOne * radiation);
 
-            return complex - radiativeReaction;
+            var radiativeReaction =
+                new DyadCoordinate<Complex, ComplexCalculator>(Complex.ImaginaryOne * radiation);
+
+            BaseDyadCoordinate<Complex, ComplexCalculator> a = SurfaceInteractionCoeff(dispersion, exyz);
+
+            return complex - radiativeReaction + a;
+        }
+
+        private BaseDyadCoordinate<Complex, ComplexCalculator> SurfaceInteractionCoeff(DispersionParameter dispersion, CartesianCoordinate position)
+        {
+            if (dispersion.SubstrateRefractiveIndex == 0)
+            {
+                return new DiagonalDyadCoordinate<Complex, ComplexCalculator>(0);
+            }
+            var medRef = Math.Pow(dispersion.MediumRefractiveIndex, 2);
+            var subsRef = Math.Pow(dispersion.SubstrateRefractiveIndex, 2);
+            var reflMult = ((subsRef - medRef) / (subsRef + medRef));
+            return (reflMult) * setNonDiagonalElements(dispersion, new CartesianCoordinate(0, 0, 2 * position.Z));
         }
 
         private void calculateCrossSectionExtinction(
