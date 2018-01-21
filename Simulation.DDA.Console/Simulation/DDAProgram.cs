@@ -9,6 +9,7 @@ using Simulation.Models.Extensions;
 using Simulation.Models.Spectrum;
 using System.Collections.Generic;
 using System;
+using Simulation.Medium.Medium;
 
 namespace Simulation.DDA.Console.Simulation
 {
@@ -31,7 +32,7 @@ namespace Simulation.DDA.Console.Simulation
                 "rezult_ext.txt",
                 result.ToDictionary(
                     x => x.Key.ToType(SpectrumUnitType.WaveLength),
-                    x => x.Value.CrossSectionExtinction));
+                    x => x.Value.EffectiveCrossSectionExtinction));
 
             new DerivativePlotter().Plot(secondDer);
             new SpectrumPlotter().Plot(result);
@@ -70,9 +71,10 @@ namespace Simulation.DDA.Console.Simulation
             return Calculate(
                 "ddaParameters.xml",
                 "opt_const.txt",
-                ParameterHelper.ReadSystemConfigFromMesh(@"E:\Dropbox\DDA_Blender_issue\blender_models\sphere.fds")
+                //ParameterHelper.ReadSystemConfigFromMesh(@"E:\Dropbox\DDA_Blender_issue\blender_models\sphere.fds")
                 //ParameterHelper.ReadSystemConfigFromMesh(@"E:\dispersion_model\dimer3ort.fds")
-                //ParameterHelper.ReadSystemConfig("dipols.txt")
+                ParameterHelper.ReadSystemConfig("dipols.txt")
+                //ParameterHelper.ReadSystemArray(6, 10)
                 );
         }
 
@@ -87,7 +89,6 @@ namespace Simulation.DDA.Console.Simulation
         {
             var ddaConfig =
                 XmlSerializerHelper.DeserializeObject<DDAParameters>(ddaConfigFilename);
-
             return Calculate(ddaConfig, systemConfig,
                 //new DrudeLorentz()
                 ParameterHelper.ReadOpticalConstants(optConstTxt)

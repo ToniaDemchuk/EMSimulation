@@ -54,7 +54,26 @@ namespace Simulation.DDA
             }
         }
 
-        public static SystemConfig ReadSystemConfigFromMesh(string fileName)
+        /// <summary>
+        /// Reads the system configuration.
+        /// </summary>
+        /// <param name="fileName">Name of the file.</param>
+        /// <returns>The dipole locations.</returns>
+        public static SystemConfig ReadSystemArray(double radius, int size)
+        {
+            var radiusList = new List<double>();
+            var pointList = new List<CartesianCoordinate>();
+            for (int i = 0; i < size; i++)
+                for (int j = 0; j < size; j++)
+                {
+                    radiusList.Add(radius);
+                    pointList.Add(new CartesianCoordinate(i*2* radius,j*2*radius,0));
+                }
+
+                return new SystemConfig(radiusList, pointList);
+            }
+
+            public static SystemConfig ReadSystemConfigFromMesh(string fileName)
         {
             var mesh = new FDSToVoxelReader().ReadInfo(fileName);
 

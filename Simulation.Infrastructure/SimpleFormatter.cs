@@ -26,7 +26,7 @@ namespace Simulation.Infrastructure
                 {
                     sw.WriteLine(
                         string.Format(
-                            CultureInfo.InvariantCulture,
+                            CultureInfo.CurrentCulture,
                             "{0} {1}",
                             pair.Key,
                             pair.Value));
