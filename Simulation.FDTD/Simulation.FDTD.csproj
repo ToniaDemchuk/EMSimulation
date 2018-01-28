@@ -79,6 +79,7 @@
   <ItemGroup>
     <Compile Include="EventArgs\TimeStepCalculatedEventArgs.cs" />
     <Compile Include="FDTDSimulation.cs" />
+    <Compile Include="HotSpotPlotter.cs" />
     <Compile Include="Models\FDTDField.cs" />
     <Compile Include="Models\FDTDPulse.cs" />
     <Compile Include="Models\PmlBoundary.cs" />
