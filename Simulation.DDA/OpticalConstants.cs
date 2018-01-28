@@ -5,6 +5,7 @@ using System.Numerics;
 using Simulation.Medium.Models;
 using Simulation.Models.Enums;
 using Simulation.Models.Spectrum;
+using System.Linq;
 
 namespace Simulation.DDA
 {
@@ -53,6 +54,12 @@ namespace Simulation.DDA
 
         private Tuple<int, int> getNearestIndexes(double waveLength)
         {
+            var first = this.WaveLengthList.First();
+            var last = this.WaveLengthList.Last();
+            if (waveLength < first || waveLength > last)
+            {
+                throw new ArgumentOutOfRangeException($"Cannot find the permitivity for the wavelength {waveLength}. The wavelength must be between {first} and {last}");
+            }
             int i;
             for (i = 0; i < this.WaveLengthList.Count - 1; i++)
             {
