@@ -18,6 +18,8 @@ namespace Simulation.Medium.Medium
         /// </summary>
         public DrudeLorentz()
         {
+            //this.EpsilonInfinity = 1;
+            //this.PlasmaTerm.StrengthFactor = 1;
             this.OscillatorTerms = new List<ResonanceTerm>();
 
             this.OscillatorTerms.Add(new ResonanceTerm
@@ -27,33 +29,33 @@ namespace Simulation.Medium.Medium
                 StrengthFactor = 6.5e-2
             });
 
-            this.OscillatorTerms.Add(new ResonanceTerm
-            {
-                ResonanceFrequency = new SpectrumUnit(6.808e+15, SpectrumUnitType.CycleFrequency),
-                CollisionFrequency = new SpectrumUnit(6.867e+14, SpectrumUnitType.CycleFrequency),
-                StrengthFactor = 1.24e-1
-            });
+            //this.OscillatorTerms.Add(new ResonanceTerm
+            //{
+            //    ResonanceFrequency = new SpectrumUnit(6.808e+15, SpectrumUnitType.CycleFrequency),
+            //    CollisionFrequency = new SpectrumUnit(6.867e+14, SpectrumUnitType.CycleFrequency),
+            //    StrengthFactor = 1.24e-1
+            //});
 
-            this.OscillatorTerms.Add(new ResonanceTerm
-            {
-                ResonanceFrequency = new SpectrumUnit(1.244e+16, SpectrumUnitType.CycleFrequency),
-                CollisionFrequency = new SpectrumUnit(9.875e+13, SpectrumUnitType.CycleFrequency),
-                StrengthFactor = 1.1e-2
-            });
+            //this.OscillatorTerms.Add(new ResonanceTerm
+            //{
+            //    ResonanceFrequency = new SpectrumUnit(1.244e+16, SpectrumUnitType.CycleFrequency),
+            //    CollisionFrequency = new SpectrumUnit(9.875e+13, SpectrumUnitType.CycleFrequency),
+            //    StrengthFactor = 1.1e-2
+            //});
 
-            this.OscillatorTerms.Add(new ResonanceTerm
-            {
-                ResonanceFrequency = new SpectrumUnit(1.38e+16, SpectrumUnitType.CycleFrequency),
-                CollisionFrequency = new SpectrumUnit(1.392e+15, SpectrumUnitType.CycleFrequency),
-                StrengthFactor = 8.4e-1
-            });
+            //this.OscillatorTerms.Add(new ResonanceTerm
+            //{
+            //    ResonanceFrequency = new SpectrumUnit(1.38e+16, SpectrumUnitType.CycleFrequency),
+            //    CollisionFrequency = new SpectrumUnit(1.392e+15, SpectrumUnitType.CycleFrequency),
+            //    StrengthFactor = 8.4e-1
+            //});
 
-            this.OscillatorTerms.Add(new ResonanceTerm
-            {
-                ResonanceFrequency = new SpectrumUnit(3.083e+16, SpectrumUnitType.CycleFrequency),
-                CollisionFrequency = new SpectrumUnit(3.675e+15, SpectrumUnitType.CycleFrequency),
-                StrengthFactor = 5.646 //todo
-            });
+            //this.OscillatorTerms.Add(new ResonanceTerm
+            //{
+            //    ResonanceFrequency = new SpectrumUnit(3.083e+16, SpectrumUnitType.CycleFrequency),
+            //    CollisionFrequency = new SpectrumUnit(3.675e+15, SpectrumUnitType.CycleFrequency),
+            //    StrengthFactor = 5.646 //todo
+            //});
 
             //this.OscillatorTerms.Add(new ResonanceTerm
             //{
