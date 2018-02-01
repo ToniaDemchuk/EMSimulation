@@ -1,6 +1,8 @@
 
 # Electromagnetic simulation package #
 
+[![Build Status](https://travis-ci.org/ToniaDemchuk/EMSimulation.svg?branch=master)](https://travis-ci.org/ToniaDemchuk/EMSimulation)
+
 This is a software packages for electromagnetic simulations.
 
 ### What is this repository for? ###

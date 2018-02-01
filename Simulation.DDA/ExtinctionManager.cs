@@ -164,7 +164,7 @@ namespace Simulation.DDA
             double kr = kmod * rmod;
 
             BaseDyadCoordinate<Complex, ComplexCalculator> dyadProduct =
-                CoordinateEntensions.DyadProduct(ref displacement, ref displacement);
+                CoordinateExtensions.DyadProduct(ref displacement, ref displacement);
 
             var initDyad = 
                 new DiagonalDyadCoordinate<Complex, ComplexCalculator>(rmod2);
