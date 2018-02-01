@@ -101,7 +101,7 @@ namespace Simulation.FDTD.Models
 
             CartesianCoordinate pulse = this.pulseFunc(time);
 
-            this.E[2] = pulse;
+            this.E[3] = pulse;
 
             /*граничні умови*/
             this.E[this.medLength - 1] = this.eMh2;

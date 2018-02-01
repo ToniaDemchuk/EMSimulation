@@ -30,7 +30,7 @@ namespace Simulation.FDTD.Console
                 "rezult_ext.txt",
                 result.ToDictionary(
                     x => x.Key.ToType(SpectrumUnitType.WaveLength),
-                    x => new List<double>() { x.Value.CrossSectionAbsorption, x.Value.EffectiveCrossSectionAbsorption }));
+                    x => new List<double> { x.Value.CrossSectionAbsorption, x.Value.EffectiveCrossSectionAbsorption }));
             SimpleFormatter.Write(
                 "rezult_ext.txt",
                 result.ToDictionary(
@@ -57,11 +57,11 @@ namespace Simulation.FDTD.Console
                 Indices = getIndexStore(pmlLength, mesh.Resolution),
                 CellSize = 1e-9,
                 Spectrum =
-                    new OpticalSpectrum(new LinearDiscreteCollection(200e-9, 500e-9, 100), SpectrumUnitType.WaveLength),
+                    new OpticalSpectrum(new LinearDiscreteCollection(100e-9, 800e-9, 100), SpectrumUnitType.WaveLength),
                 CourantNumber = 0.5,
                 PmlLength = pmlLength,
-                NumSteps = 300,
-                WaveFunc = time => (new SphericalCoordinate(1, 45, 0, UnitOfMeasurement.Degree).ConvertToCartesian()) * Math.Exp(-0.5 * Math.Pow((30 - time) / 5.0, 2.0)),
+                NumSteps = 150,
+                WaveFunc = time => /*(new SphericalCoordinate(1, 45, 0, UnitOfMeasurement.Degree).ConvertToCartesian())*/ CartesianCoordinate.ZOrth * Math.Exp(-0.5 * Math.Pow((30 - time) / 5.0, 2.0)),
                 IsSpectrumCalculated = true
             };
             
@@ -87,7 +87,7 @@ namespace Simulation.FDTD.Console
         private static void setMedium(SimulationParameters parameters, MeshInfo meshInfo)
         {
             var factory = new MediumSolverFactory(parameters.TimeStep);
-            //parameters.Medium = setSphere(parameters, silver, drudeLorentzParam, vacuum); 
+            //parameters.Medium = setSphere(parameters, new DrudeLorentzFactor(new Medium.Medium.DrudeLorentz(), parameters.TimeStep), VacuumSolver.Default); 
             parameters.Medium = setObject(parameters, meshInfo.Voxels, factory);
         }
 
@@ -139,7 +139,7 @@ namespace Simulation.FDTD.Console
             //var mesh = new VoxelReader().ReadInfo(@"D:\study\vozelizer\conf1.obj.v80.voxels");
             //var mesh = new ObjToVoxelReader().ReadInfo(@"C:\Users\akolkev\Documents\sphere444.obj");
             //var mesh = new MagicaVoxelReader().ReadInfo(@"C:\Users\akolkev\Documents\spherevox.vox");
-            var mesh = new FDSToVoxelReader().ReadInfo(@"E:\dispersion_model\sphereone.fds");
+            var mesh = new FDSToVoxelReader().ReadInfo(@"E:\dispersion_model\dimerclose.fds");
             return mesh;
         }
 

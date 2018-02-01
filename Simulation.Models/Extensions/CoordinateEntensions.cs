@@ -43,6 +43,48 @@ namespace Simulation.Models.Extensions
         }
 
         /// <summary>
+        /// Calculates the dyad product.
+        /// </summary>
+        /// <param name="point1">The point1.</param>
+        /// <param name="point2">The point2.</param>
+        /// <returns>The result of dyad product operation.</returns>
+        public static BaseDyadCoordinate<Complex, ComplexCalculator> InitialDyad(ref ComplexCoordinate point1)
+        {
+            return new DyadCoordinate<Complex, ComplexCalculator>(
+                point1.X,
+                0,
+                0,
+                0,
+                point1.Y,
+                0,
+                0,
+                0,
+                point1.Z);
+        }
+
+        /// <summary>
+        /// Calculates the dyad product.
+        /// </summary>
+        /// <param name="point1">The point1.</param>
+        /// <param name="point2">The point2.</param>
+        /// <returns>The result of dyad product operation.</returns>
+        public static BaseDyadCoordinate<Complex, ComplexCalculator> MultDyad(ref BaseDyadCoordinate<Complex, ComplexCalculator> diadic, ref ComplexCoordinate point1)
+        {
+            var conj = point1.Conjugate();
+
+            return new DyadCoordinate<Complex, ComplexCalculator>(
+                diadic[0, 0] * conj.X,
+                diadic[0, 1] * conj.Y,
+                diadic[0, 2] * conj.Z,
+                diadic[1, 0] * conj.X,
+                diadic[1, 1] * conj.Y,
+                diadic[1, 2] * conj.Z,
+                diadic[2, 0] * conj.X,
+                diadic[2, 1] * conj.Y,
+                diadic[2, 2] * conj.Z);
+        }
+
+        /// <summary>
         /// Implements Scalar product.
         /// </summary>
         /// <param name="point1">The point1.</param>
@@ -95,7 +137,7 @@ namespace Simulation.Models.Extensions
             return new ComplexCoordinate(
                 point1.Y * Complex.Conjugate(point2.Z) - point1.Z * Complex.Conjugate(point2.Y),
                 point1.Z * Complex.Conjugate(point2.X) - point1.X * Complex.Conjugate(point2.Z),
-                point1.X * Complex.Conjugate(point2.Y) - Complex.Conjugate(point1.Y * point2.X));
+                point1.X * Complex.Conjugate(point2.Y) - point1.Y * Complex.Conjugate(point2.X));
         }
 
         /// <summary>
@@ -133,6 +175,34 @@ namespace Simulation.Models.Extensions
                 point1.X * point2.X,
                 point1.Y * point2.Y,
                 point1.Z * point2.Z);
+        }
+
+        /// <summary>
+        /// Calculate the component-wise product.
+        /// </summary>
+        /// <param name="point1">The point1.</param>
+        /// <param name="point2">The point2.</param>
+        /// <returns>The result of component-wise multiplication.</returns>
+        public static ComplexCoordinate Real(this ComplexCoordinate point1)
+        {
+            return new ComplexCoordinate(
+                point1.X.Real,
+                point1.Y.Real,
+                point1.Z.Real);
+        }
+
+        /// <summary>
+        /// Calculate the component-wise product.
+        /// </summary>
+        /// <param name="point1">The point1.</param>
+        /// <param name="point2">The point2.</param>
+        /// <returns>The result of component-wise multiplication.</returns>
+        public static ComplexCoordinate Conjugate(this ComplexCoordinate point1)
+        {
+            return new ComplexCoordinate(
+                Complex.Conjugate(point1.X),
+                Complex.Conjugate(point1.Y),
+                Complex.Conjugate(point1.Z));
         }
     }
 }

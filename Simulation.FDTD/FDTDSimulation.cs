@@ -11,6 +11,8 @@ using Simulation.Infrastructure.Iterators;
 using System;
 
 using Simulation.FDTD.EventArgs;
+using Simulation.FDTD.Plotters;
+using Simulation.Models.Constants;
 
 namespace Simulation.FDTD
 {
@@ -59,7 +61,10 @@ namespace Simulation.FDTD
         {
             if (parameters.IsSpectrumCalculated)
             {
+                //new HotSpotPlotter().Plot(this, new TimeStepCalculatedEventArgs() { Parameters = parameters, Fields = this.fields, Pulse = this.pulse });
                 return parameters.Spectrum.ToSimulationResult(x => this.calculateExtinction(x, parameters));
+
+
             }
             return new SimulationResultDictionary();
         }
@@ -91,6 +96,9 @@ namespace Simulation.FDTD
 
         private void calculateHField(SimulationParameters param, IndexStore pulseIndex)
         {
+
+            this.pulse.MagneticFieldStepCalc();
+
             this.iterator.For(param.Indices.ShiftUpper(1),
                 (i, j, k) =>
                 {
@@ -104,7 +112,6 @@ namespace Simulation.FDTD
                             curlE + coefs.IntegralFactor(this.fields.IntegralH[i, j, k]));
                 });
 
-            this.pulse.MagneticFieldStepCalc();
 
             this.addPulseToH1(pulseIndex, param.CourantNumber);
 
@@ -140,6 +147,9 @@ namespace Simulation.FDTD
 
         private void calculateDField(SimulationParameters param, IndexStore pulseIndex, int time)
         {
+
+            this.pulse.ElectricFieldStepCalc(time);
+
             this.iterator.For(param.Indices.ShiftLower(1),
                 (i, j, k) =>
                 {
@@ -153,7 +163,6 @@ namespace Simulation.FDTD
                             curlH + pmlCoefs.IntegralFactor(this.fields.IntegralD[i, j, k]));
                 });
 
-            this.pulse.ElectricFieldStepCalc(time);
 
             this.addPulseToD1(pulseIndex, param.CourantNumber);
 
@@ -178,7 +187,7 @@ namespace Simulation.FDTD
             var cart1 = CartesianCoordinate.ZOrth * 
                 courantNumber * this.pulse.H[pulseIndex.Lower - 1].X;
             var cart2 = CartesianCoordinate.ZOrth * 
-                (courantNumber * this.pulse.H[pulseIndex.JLength].X);
+                (courantNumber * this.pulse.H[pulseIndex.KLength].X);
             this.iterator.ForExceptJ(
                 pulseIndex,
                 (i, k) => {
@@ -201,18 +210,16 @@ namespace Simulation.FDTD
                         return 0;
                     }
                     Complex eps = medium.Permittivity.GetPermittivity(freq);
-
-                    Complex clausiusMosottiPolar = (eps - 1.0 ) / (eps + 2.0 );
-                    Complex multiplier = Complex.Reciprocal(clausiusMosottiPolar);
-                    var mult = 1;//(eps.Imaginary) ;
-
+                    //var clausiusmosotti = ( eps);
+                    //var clausiusmosotti = (1 + eps)/(1 + 2*eps);
                     var fourierE = this.fields.FourierE[i, j, k].Transform(freq, parameters.TimeStep);
                     var fourierH = this.fields.FourierH[i, j, k].Transform(freq, parameters.TimeStep);
                     double pulseMultiplier = Complex.Reciprocal(pulseFourier[j].ScalarProduct(pulseFourierH[j])).Magnitude;
-                    var complex = (clausiusMosottiPolar) * (fourierE).ScalarProduct(fourierE);
+                    var complex = //clausiusmosotti.Imaginary *
+                                    (fourierE).VectorProduct(fourierH).ScalarProduct(ComplexCoordinate.One);
                                   //pulseMultiplier * 
-                                  //(fourierE.VectorProduct(fourierH).Z);
-                    return complex.Imaginary;
+                                  //(0.5*fourierE.VectorProduct(fourierH).Real());
+                    return complex.Real;
                 });
 
             double area = this.calculateArea(parameters);

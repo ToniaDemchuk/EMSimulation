@@ -21,7 +21,7 @@ namespace Simulation.Medium.Factors
             double collisionFreq = medium.PlasmaTerm.CollisionFrequency.ToType(SpectrumUnitType.Frequency);
             double plasmaFreq = medium.PlasmaTerm.ResonanceFrequency.ToType(SpectrumUnitType.CycleFrequency);
             double epsvc = collisionFreq * timeStep;
-            double exp = Math.Exp(epsvc);
+            double exp = Math.Exp(-epsvc);
 
             this.SampledTimeShift1 = 1.0 + exp;
             this.SampledTimeShift2 = exp;
