@@ -1,4 +1,6 @@
-﻿namespace Simulation.Models
+﻿using Simulation.Models.Coordinates;
+
+namespace Simulation.Models
 {
     public class SystemConfig
     {
