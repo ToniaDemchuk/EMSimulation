@@ -68,13 +68,13 @@ namespace Simulation.DDA
             //// + 0.99808*exp(-(WaveLength-59.0737)/42.78953) + 0.56471*exp(-(WaveLength-59.0737)/36297.71849); // Waher
             refractiveIndex = 1; ////air
 
-            //// n_med = 1.39; //water
+            //refractiveIndex = 1.39; //water
 
-            //// n_med = 1.51; // Glass 1.51
+            refractiveIndex = 1.51; // Glass 1.51
 
             //// n_med = 1.65; // Casein has a refractive index of 1.51-1.65
 
-            refractiveIndex = this.solid ? 1.0 : refractiveIndex;
+            //refractiveIndex = this.solid ? 1.0 : refractiveIndex;
 
             return refractiveIndex;
         }
