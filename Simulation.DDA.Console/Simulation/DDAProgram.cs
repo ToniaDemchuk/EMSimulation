@@ -34,9 +34,9 @@ namespace Simulation.DDA.Console.Simulation
                     x => x.Key.ToType(SpectrumUnitType.WaveLength),
                     x => x.Value.EffectiveCrossSectionExtinction));
 
-            new DerivativePlotter().Plot(secondDer);
-            new SpectrumPlotter().Plot(result);
-            new IncidentPlotter().Plot(result);
+            //new DerivativePlotter().Plot(secondDer);
+            //new SpectrumPlotter().Plot(result);
+            //new IncidentPlotter().Plot(result);
         }
 
         private static Dictionary<SpectrumUnit, double> GetSecondDerivative<TValue>(IDictionary<SpectrumUnit, TValue> result, Func<TValue, double> valueSelector)
@@ -73,8 +73,9 @@ namespace Simulation.DDA.Console.Simulation
                 "opt_const.txt",
                 //ParameterHelper.ReadSystemConfigFromMesh(@"E:\Dropbox\DDA_Blender_issue\blender_models\sphere.fds")
                 //ParameterHelper.ReadSystemConfigFromMesh(@"E:\dispersion_model\dimer3ort.fds")
-                ParameterHelper.ReadSystemConfig("dipols.txt")
+                //ParameterHelper.ReadSystemConfig("dipols.txt")
                 //ParameterHelper.ReadSystemArray(6, 10)
+				ParameterHelper.ReadSystemCube(radius: 5, size: 10)
                 );
         }
 

@@ -42,7 +42,7 @@ namespace Simulation.DDA
                         break;
                     }
                     var split = str.Split(
-                        new[] { '\t' },
+                        new[] { '\t', ' ' },
                         StringSplitOptions.RemoveEmptyEntries)
                         .Select(x => double.Parse(x, CultureInfo.InvariantCulture)).ToArray();
 
@@ -63,17 +63,38 @@ namespace Simulation.DDA
         {
             var radiusList = new List<double>();
             var pointList = new List<CartesianCoordinate>();
-            for (int i = 0; i < size; i++)
-                for (int j = 0; j < size; j++)
-                {
-                    radiusList.Add(radius);
-                    pointList.Add(new CartesianCoordinate(i*2* radius,j*2*radius,0));
-                }
+			for (int i = 0; i < size; i++)
+			{
+				for (int j = 0; j < size; j++)
+				{
+					radiusList.Add(radius);
+					pointList.Add(new CartesianCoordinate(i * 2 * radius, j * 2 * radius, 0));
+				}
+			}
 
-                return new SystemConfig(radiusList, pointList);
-            }
+            return new SystemConfig(radiusList, pointList);
+        }
 
-            public static SystemConfig ReadSystemConfigFromMesh(string fileName)
+		public static SystemConfig ReadSystemCube(double radius, int size)
+		{
+			var radiusList = new List<double>();
+			var pointList = new List<CartesianCoordinate>();
+			for (int i = 0; i < size; i++)
+			{
+				for (int j = 0; j < size; j++)
+				{
+					for (int z = 0; z < size; z++)
+					{
+						radiusList.Add(radius);
+						pointList.Add(new CartesianCoordinate(i * 2 * radius, j * 2 * radius, z * 2 * radius));
+					}
+				}
+			}
+
+			return new SystemConfig(radiusList, pointList);
+		}
+
+		public static SystemConfig ReadSystemConfigFromMesh(string fileName)
         {
             var mesh = new FDSToVoxelReader().ReadInfo(fileName);
 

@@ -11,4 +11,13 @@
     <ProjectReference Include="..\Simulation.Models\Simulation.Models.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="ddaParameters.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="opt_const.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
