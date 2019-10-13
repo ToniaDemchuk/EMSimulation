@@ -70,7 +70,7 @@ namespace Simulation.DDA
 
             //refractiveIndex = 1.39; //water
 
-            refractiveIndex = 1.51; // Glass 1.51
+            //refractiveIndex = 1.51; // Glass 1.51
 
             //// n_med = 1.65; // Casein has a refractive index of 1.51-1.65
 
@@ -94,7 +94,7 @@ namespace Simulation.DDA
             double wp = 9.2; // [eV] Ag.
             double gamma0 = 0.02; ////[eV]
             double vf = 0.915; ////2.6;//0.915; // [eV*nm] Зміна оптичних констант зі зміною радіуса частинки
-            const double Aparam = 0.75;
+            const double Aparam = 0.75; // todo: вплив розмірного параметра
 
             // todo: check validity of parameters to modify permittivity
             return param.Permittivity;

@@ -17,7 +17,7 @@ namespace Simulation.Infrastructure.Plotters
 
         public SpectrumPlotter()
         {
-            this.gp = new GnuPlot();
+            this.gp = new GnuPlot(@"C:\Program Files\gnuplot\bin\gnuplot.exe");
         }
 
         /// <summary>
@@ -33,8 +33,8 @@ namespace Simulation.Infrastructure.Plotters
 
             this.gp.Set("style data lines");
             this.gp.HoldOn();
-            this.gp.Plot(waveLengths, values.Select(x => x.CrossSectionAbsorption), "title 'abs'");
-            this.gp.Plot(waveLengths, values.Select(x => x.EffectiveCrossSectionAbsorption), "title 'eff abs'");
+            //this.gp.Plot(waveLengths, values.Select(x => x.CrossSectionAbsorption), "title 'abs'");
+            //this.gp.Plot(waveLengths, values.Select(x => x.EffectiveCrossSectionAbsorption), "title 'eff abs'");
             this.gp.Plot(waveLengths, values.Select(x => x.CrossSectionExtinction), "title 'ext'");
             this.gp.Plot(waveLengths, values.Select(x => x.EffectiveCrossSectionExtinction), "title 'eff ext'");
 

@@ -11,7 +11,7 @@ namespace Simulation.FDTD.Plotters
 
         public PulsePlotter()
         {
-            this.gp = new GnuPlot();
+            this.gp = new GnuPlot(@"C:\Program Files\gnuplot\bin\gnuplot.exe");
         }
 
         public void Plot(object sender, TimeStepCalculatedEventArgs args)

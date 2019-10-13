@@ -17,7 +17,7 @@ namespace Simulation.Infrastructure.Plotters
 
         public DerivativePlotter()
         {
-            this.gp = new GnuPlot();
+            this.gp = new GnuPlot(@"C:\Program Files\gnuplot\bin\gnuplot.exe");
         }
 
         /// <summary>

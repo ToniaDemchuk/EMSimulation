@@ -17,7 +17,7 @@ namespace Simulation.Infrastructure.Plotters
 
         public IncidentPlotter()
         {
-            this.gp = new GnuPlot();
+            this.gp = new GnuPlot(@"C:\Program Files\gnuplot\bin\gnuplot.exe");
         }
 
         /// <summary>

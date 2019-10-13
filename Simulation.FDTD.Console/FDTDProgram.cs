@@ -60,7 +60,7 @@ namespace Simulation.FDTD.Console
                     new OpticalSpectrum(new LinearDiscreteCollection(200e-9, 500e-9, 100), SpectrumUnitType.WaveLength),
                 CourantNumber = 0.5,
                 PmlLength = pmlLength,
-                NumSteps = 300,
+                NumSteps = 100,
                 WaveFunc = time => (new SphericalCoordinate(1, 45, 0, UnitOfMeasurement.Degree).ConvertToCartesian()) * Math.Exp(-0.5 * Math.Pow((30 - time) / 5.0, 2.0)),
                 IsSpectrumCalculated = true
             };

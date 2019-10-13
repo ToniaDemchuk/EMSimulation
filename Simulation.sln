@@ -5,31 +5,34 @@ VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{926848A5-E1B8-42FE-9434-67955621934B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulation.DDA", "Simulation.DDA\Simulation.DDA.csproj", "{AF1C7B85-D2C9-423E-9FCE-666238D979A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simulation.DDA", "Simulation.DDA\Simulation.DDA.csproj", "{AF1C7B85-D2C9-423E-9FCE-666238D979A0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulation.DDA.Console", "Simulation.DDA.Console\Simulation.DDA.Console.csproj", "{319EA2DE-BF4F-4D7C-919B-C52497161035}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simulation.DDA.Console", "Simulation.DDA.Console\Simulation.DDA.Console.csproj", "{319EA2DE-BF4F-4D7C-919B-C52497161035}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulation.FDTD", "Simulation.FDTD\Simulation.FDTD.csproj", "{E363F9FF-678B-4870-9342-9608032ACDE2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simulation.FDTD", "Simulation.FDTD\Simulation.FDTD.csproj", "{E363F9FF-678B-4870-9342-9608032ACDE2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulation.FDTD.Console", "Simulation.FDTD.Console\Simulation.FDTD.Console.csproj", "{1EFEA450-955A-41D7-8218-5E38917D593B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simulation.FDTD.Console", "Simulation.FDTD.Console\Simulation.FDTD.Console.csproj", "{1EFEA450-955A-41D7-8218-5E38917D593B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulation.Infrastructure", "Simulation.Infrastructure\Simulation.Infrastructure.csproj", "{84981EAC-7F9D-4916-9922-0E37DCA0A5A7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simulation.Infrastructure", "Simulation.Infrastructure\Simulation.Infrastructure.csproj", "{84981EAC-7F9D-4916-9922-0E37DCA0A5A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulation.Medium", "Simulation.Medium\Simulation.Medium.csproj", "{7366B915-8C24-478C-B482-DCC0F4B5E260}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simulation.Medium", "Simulation.Medium\Simulation.Medium.csproj", "{7366B915-8C24-478C-B482-DCC0F4B5E260}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulation.Models", "Simulation.Models\Simulation.Models.csproj", "{C83CE184-F725-4EBB-B894-A4AE445F6F2E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simulation.Models", "Simulation.Models\Simulation.Models.csproj", "{C83CE184-F725-4EBB-B894-A4AE445F6F2E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulation.DDA.Tests", "Tests\Simulation.DDA.Tests\Simulation.DDA.Tests.csproj", "{BD32F8A8-B2EC-47A7-B988-8B9180C1038C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simulation.DDA.Tests", "Tests\Simulation.DDA.Tests\Simulation.DDA.Tests.csproj", "{BD32F8A8-B2EC-47A7-B988-8B9180C1038C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulation.FDTD.Tests", "Tests\Simulation.FDTD.Tests\Simulation.FDTD.Tests.csproj", "{603B4EEB-C466-45F1-B166-BA83DB59260E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simulation.FDTD.Tests", "Tests\Simulation.FDTD.Tests\Simulation.FDTD.Tests.csproj", "{603B4EEB-C466-45F1-B166-BA83DB59260E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulation.Medium.Tests", "Tests\Simulation.Medium.Tests\Simulation.Medium.Tests.csproj", "{62440618-350D-42B6-8951-18649828A241}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simulation.Medium.Tests", "Tests\Simulation.Medium.Tests\Simulation.Medium.Tests.csproj", "{62440618-350D-42B6-8951-18649828A241}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulation.Models.Tests", "Tests\Simulation.Models.Tests\Simulation.Models.Tests.csproj", "{51D79CCF-C175-4E41-A86D-B705CDB599EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simulation.Models.Tests", "Tests\Simulation.Models.Tests\Simulation.Models.Tests.csproj", "{51D79CCF-C175-4E41-A86D-B705CDB599EC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulation.Tests.Common", "Simulation.Tests.Common\Simulation.Tests.Common.csproj", "{964891B8-B4FD-4E7A-9D6D-2B37B80ECE98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simulation.Tests.Common", "Simulation.Tests.Common\Simulation.Tests.Common.csproj", "{964891B8-B4FD-4E7A-9D6D-2B37B80ECE98}"
 EndProject
 Global
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -196,5 +199,11 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2F0EA3D2-0E37-4131-AEBF-4F17004466BD}
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal
