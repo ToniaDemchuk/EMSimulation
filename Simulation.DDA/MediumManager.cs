@@ -70,9 +70,9 @@ namespace Simulation.DDA
 
             //refractiveIndex = 1.39; //water
 
-            //refractiveIndex = 1.51; // Glass 1.51
+			//refractiveIndex = 1.51; // Glass 1.51
 
-            //// n_med = 1.65; // Casein has a refractive index of 1.51-1.65
+			//refractiveIndex = 1.65; // Casein has a refractive index of 1.51-1.65
 
             //refractiveIndex = this.solid ? 1.0 : refractiveIndex;
 
