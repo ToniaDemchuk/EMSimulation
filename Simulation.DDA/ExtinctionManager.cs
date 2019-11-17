@@ -131,7 +131,7 @@ namespace Simulation.DDA
             CartesianCoordinate exyz,
             DispersionParameter dispersion)
         {
-            double medRef = dispersion.MediumRefractiveIndex * dispersion.MediumRefractiveIndex;
+            double medRef = dispersion.MediumRefractiveIndex * dispersion.MediumRefractiveIndex;//this is correct
             var e = new ComplexCoordinate[system.Size];
 
             for (int j = 0; j < system.Size; j++)
@@ -185,7 +185,7 @@ namespace Simulation.DDA
             double radius,
             CartesianCoordinate exyz)
         {
-            double medRef = dispersion.MediumRefractiveIndex * dispersion.MediumRefractiveIndex;
+            double medRef = dispersion.MediumRefractiveIndex * dispersion.MediumRefractiveIndex;//this is correct
 
             Complex eps = this.mediumManager.GetEpsilon(dispersion, radius);
 
@@ -203,9 +203,9 @@ namespace Simulation.DDA
             var radiativeReaction =
                 new DyadCoordinate<Complex, ComplexCalculator>(Complex.ImaginaryOne * radiation);
 
-            BaseDyadCoordinate<Complex, ComplexCalculator> a = SurfaceInteractionCoeff(dispersion, exyz);
+            BaseDyadCoordinate<Complex, ComplexCalculator> surfaceInteraction = SurfaceInteractionCoeff(dispersion, exyz);
 
-            return complex - radiativeReaction + a;
+            return complex - radiativeReaction + surfaceInteraction;
         }
 
         private BaseDyadCoordinate<Complex, ComplexCalculator> SurfaceInteractionCoeff(DispersionParameter dispersion, CartesianCoordinate position)
@@ -225,7 +225,7 @@ namespace Simulation.DDA
             SimulationParameters parameters,
             DispersionParameter dispersion)
         {
-            double epsM = dispersion.MediumRefractiveIndex * dispersion.MediumRefractiveIndex;
+            double epsM = dispersion.MediumRefractiveIndex * dispersion.MediumRefractiveIndex;//this is correct
             double exyzMod = parameters.IncidentMagnitude.Norm;
             double factorCext = 4.0 * Math.PI * dispersion.WaveVector.Norm / (exyzMod * exyzMod * epsM);
 
