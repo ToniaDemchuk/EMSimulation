@@ -75,7 +75,7 @@ namespace Simulation.DDA.Console.Simulation
                 //ParameterHelper.ReadSystemConfigFromMesh(@"E:\dispersion_model\dimer3ort.fds")
                 //ParameterHelper.ReadSystemConfig("dipols.txt")
                 //ParameterHelper.ReadSystemArray(6, 10)
-				ParameterHelper.ReadSystemCube(radius: 5, size: 10)
+				ParameterHelper.ReadSystemCube(radius: 5, size: 12)
                 );
         }
 
