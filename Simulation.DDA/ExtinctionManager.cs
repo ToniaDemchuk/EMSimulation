@@ -121,8 +121,17 @@ namespace Simulation.DDA
             return new LazyDiagonalMatrix<CartesianCoordinate, IMatrix<Complex>>(
                 system.Size,
                 system.GetDistanceUniform,
-                (i, j) => this.setNonDiagonalElements(dispersion, system.GetDistance(i, j)),
-                i => this.setDiagonalElements(dispersion, system.Radius[i], system.GetPoint(i)),
+                (i, j) => {
+					var nondiagonalelement = this.setNonDiagonalElements(dispersion, system.GetDistance(i, j));
+					var surfaceInteraction = SurfaceInteractionCoeff(dispersion, system.GetPoint(i), system.GetImagePoint(j));
+					return nondiagonalelement + surfaceInteraction;
+				},
+                i => {
+					var point = system.GetPoint(i);
+					var surfaceInteraction = SurfaceInteractionCoeff(dispersion, point, system.GetImagePoint(i));
+					var diagonalElement = this.setDiagonalElements(dispersion, system.Radius[i], point);
+					return diagonalElement + surfaceInteraction;
+				},
                 new CoordinateEqualityComparer());
         }
 
@@ -139,8 +148,15 @@ namespace Simulation.DDA
                 CartesianCoordinate point = system.GetPoint(j);
                 double kr = dispersion.WaveVector.ScalarProduct(point);
 
-                e[j] = ComplexCoordinate.FromPolarCoordinates(exyz * medRef, kr);
-            }
+				var inc = ComplexCoordinate.FromPolarCoordinates(exyz * medRef, kr);
+
+				var surfaceReflectionCoef = SurfaceReflectionCoeff(dispersion);
+
+				double krrefl = dispersion.WaveVector.ComponentProduct(new CartesianCoordinate(1, 1, -1)).ScalarProduct(point);
+				var refl = ComplexCoordinate.FromPolarCoordinates(exyz * medRef, krrefl);
+
+				e[j] = inc + refl;
+			}
 
             return e;
         }
@@ -202,25 +218,33 @@ namespace Simulation.DDA
 
             var radiativeReaction =
                 new DyadCoordinate<Complex, ComplexCalculator>(Complex.ImaginaryOne * radiation);
-
-            BaseDyadCoordinate<Complex, ComplexCalculator> surfaceInteraction = SurfaceInteractionCoeff(dispersion, exyz);
-
-            return complex - radiativeReaction + surfaceInteraction;
+       
+			return complex - radiativeReaction;
         }
 
-        private BaseDyadCoordinate<Complex, ComplexCalculator> SurfaceInteractionCoeff(DispersionParameter dispersion, CartesianCoordinate position)
+        private BaseDyadCoordinate<Complex, ComplexCalculator> SurfaceInteractionCoeff(DispersionParameter dispersion, CartesianCoordinate point, CartesianCoordinate image)
         {
-            if (dispersion.SubstrateRefractiveIndex == 0)
-            {
-                return new DiagonalDyadCoordinate<Complex, ComplexCalculator>(0);
-            }
-            var medRef = Math.Pow(dispersion.MediumRefractiveIndex, 2);
-            var subsRef = Math.Pow(dispersion.SubstrateRefractiveIndex, 2);
-            var reflMult = ((subsRef - medRef) / (subsRef + medRef));
-            return (reflMult) * setNonDiagonalElements(dispersion, new CartesianCoordinate(0, 0, 2 * position.Z));
+			var surfaceReflectionCoef = SurfaceReflectionCoeff(dispersion);
+
+			var displacement = point - image;
+            return surfaceReflectionCoef * setNonDiagonalElements(dispersion, displacement);
         }
 
-        private void calculateCrossSectionExtinction(
+		private double SurfaceReflectionCoeff(DispersionParameter dispersion)
+		{
+			if (dispersion.SubstrateRefractiveIndex == 0)
+			{
+				return 1;
+			}
+
+			var medRef = Math.Pow(dispersion.MediumRefractiveIndex, 2);
+			var subsRef = Math.Pow(dispersion.SubstrateRefractiveIndex, 2);
+			var reflMult = (subsRef - medRef) / (subsRef + medRef);
+
+			return reflMult;
+		}
+
+		private void calculateCrossSectionExtinction(
             SimulationResult result,
             SimulationParameters parameters,
             DispersionParameter dispersion)

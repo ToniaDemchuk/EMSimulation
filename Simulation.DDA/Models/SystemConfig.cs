@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Simulation.Models.Coordinates;
+using Simulation.Models.Extensions;
 
 namespace Simulation.DDA.Models
 {
@@ -78,7 +79,12 @@ namespace Simulation.DDA.Models
             return this.Points[index] * NanoMeters;
         }
 
-        public CartesianCoordinate GetDistanceUniform(int i, int j)
+		public CartesianCoordinate GetImagePoint(int index)
+		{
+			return this.Points[index].ComponentProduct(new CartesianCoordinate(1, 1, -1)) * NanoMeters;
+		}
+
+		public CartesianCoordinate GetDistanceUniform(int i, int j)
         {
             return this.Points[i] - this.Points[j];
         }
@@ -87,5 +93,5 @@ namespace Simulation.DDA.Models
         {
             return (this.Points[i] - this.Points[j]) * NanoMeters;
         }
-    }
+	}
 }
