@@ -149,11 +149,16 @@ namespace Simulation.DDA
                 double kr = dispersion.WaveVector.ScalarProduct(point);
 
 				var inc = ComplexCoordinate.FromPolarCoordinates(exyz * medRef, kr);
+				ComplexCoordinate refl = ComplexCoordinate.Zero;
+				if (dispersion.SubstrateRefractiveIndex > 0)
+				{
+					var surfaceReflectionCoef = FrenselReflectCoef(dispersion);
 
-				var surfaceReflectionCoef = SurfaceReflectionCoeff(dispersion);
-
-				double krrefl = dispersion.WaveVector.ComponentProduct(new CartesianCoordinate(1, 1, -1)).ScalarProduct(point);
-				var refl = ComplexCoordinate.FromPolarCoordinates(exyz * medRef, krrefl);
+					double krrefl = dispersion.WaveVector.ComponentProduct(new CartesianCoordinate(1, 1, -1))
+						.ScalarProduct(point);
+					refl = ComplexCoordinate.FromPolarCoordinates(exyz * medRef * surfaceReflectionCoef, krrefl);
+				}
+				
 
 				e[j] = inc + refl;
 			}
@@ -239,9 +244,23 @@ namespace Simulation.DDA
 
 			var medRef = Math.Pow(dispersion.MediumRefractiveIndex, 2);
 			var subsRef = Math.Pow(dispersion.SubstrateRefractiveIndex, 2);
-			var reflMult = (subsRef - medRef) / (subsRef + medRef);
+			var reflMult = (medRef - subsRef) / (medRef + subsRef);
 
 			return reflMult;
+		}
+
+		private double FrenselReflectCoef(DispersionParameter dispersion)
+		{
+			if (dispersion.SubstrateRefractiveIndex == 0)
+			{
+				return 0;
+			}
+
+			var medRef = dispersion.MediumRefractiveIndex;
+			var subsRef = dispersion.SubstrateRefractiveIndex;
+			var reflMult = (medRef - subsRef) / (medRef + subsRef);
+
+			return reflMult * reflMult;
 		}
 
 		private void calculateCrossSectionExtinction(
@@ -251,7 +270,14 @@ namespace Simulation.DDA
         {
             double epsM = dispersion.MediumRefractiveIndex * dispersion.MediumRefractiveIndex;//this is correct
             double exyzMod = parameters.IncidentMagnitude.Norm;
-            double factorCext = 4.0 * Math.PI * dispersion.WaveVector.Norm / (exyzMod * exyzMod * epsM);
+
+			if (dispersion.SubstrateRefractiveIndex > 0)
+			{
+				var surfaceReflectionCoef = FrenselReflectCoef(dispersion);
+				exyzMod *= (1 + surfaceReflectionCoef);
+			}
+
+			double factorCext = 4.0 * Math.PI * dispersion.WaveVector.Norm / (exyzMod * exyzMod * epsM);
 
             double crossExt = result.ElectricField.Select((eInc, j) => (eInc.ScalarProduct(result.Polarization[j])).Imaginary).Sum();
 

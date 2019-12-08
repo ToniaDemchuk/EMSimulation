@@ -7,6 +7,6 @@
 
   <WavePropagation polar="180" azimuth="0" units="Degree"/>
   
-  <WaveLengthConfig lower="320.0e-9" upper="600e-9" count="100"/>
+  <WaveLengthConfig lower="340.0e-9" upper="370e-9" count="200"/>
   
 </DDAParameters>

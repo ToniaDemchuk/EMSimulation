@@ -56,7 +56,7 @@ namespace Simulation.DDA
 
         private double getSubstrateCoefficient(SpectrumUnit parameter)
         {
-            return 0;
+			return 1.65;
         }
 
         private double getMediumCoeficient(SpectrumUnit waveLength)
