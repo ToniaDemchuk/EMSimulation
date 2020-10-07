@@ -15,7 +15,11 @@ namespace Simulation.Infrastructure.Readers
         public MeshInfo ReadInfo(string fileName)
         {
             var lines = File.ReadAllLines(fileName);
+            return ReadInfo(lines);
+        }
 
+        public MeshInfo ReadInfo(string[] lines)
+        {
             var instr = this.parseObjects(lines);
 
             var meshObj = instr[FDSTokens.Mesh].FirstOrDefault();
@@ -66,7 +70,7 @@ namespace Simulation.Infrastructure.Readers
 
             var objects = list.SplitOn(FDSTokens.IsStartSeparator, FDSTokens.IsEndSeparator);
 
-            return objects.ToLookup(x => x.First().Substring(1, 4)); // e.g. &OBST 
+            return objects.ToLookup(x => x.First().Substring(1, 4)); // e.g. &OBST
         }
 
         private static Tuple<CartesianCoordinate, CartesianCoordinate, string> getBox(IEnumerable<string> meshObj)

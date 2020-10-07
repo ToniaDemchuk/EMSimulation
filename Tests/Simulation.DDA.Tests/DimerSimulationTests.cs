@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -492,7 +493,7 @@ namespace Simulation.DDA.Tests
             return distances;
         }
 
-        private void calculateOneParticle(
+        private async Task calculateOneParticle(
             double radius,
             Func<SimulationResult, double> valueSelector)
         {
@@ -508,7 +509,7 @@ namespace Simulation.DDA.Tests
                     firstPoint
                 });
 
-            SimulationResultDictionary result = DDAProgram.Calculate(this.ddaConfig, systConfig, this.opticalConstants);
+            SimulationResultDictionary result = await DDAProgram.Calculate(this.ddaConfig, systConfig, this.opticalConstants);
 
             string filename = this.getFileFormatOneParticle(this.TestContext.TestName, radius);
 
@@ -517,7 +518,7 @@ namespace Simulation.DDA.Tests
                 result.ToDictionary(x => x.ToType(SpectrumUnitType.WaveLength), valueSelector));
         }
 
-        private void calculateOneStep(
+        private async Task calculateOneStep(
             double radius,
             double distance,
             double maxRadius,
@@ -540,7 +541,7 @@ namespace Simulation.DDA.Tests
                     secondPoint
                 });
 
-            SimulationResultDictionary result = DDAProgram.Calculate(this.ddaConfig, systConfig, this.opticalConstants);
+            SimulationResultDictionary result = await DDAProgram.Calculate(this.ddaConfig, systConfig, this.opticalConstants);
 
             string filename = this.getFileFormat(this.TestContext.TestName, distance, radius);
 
@@ -549,7 +550,7 @@ namespace Simulation.DDA.Tests
                 result.ToDictionary(x => x.ToType(SpectrumUnitType.WaveLength), valueSelector));
         }
 
-        private void calculateOneStepDiffRadius(
+        private async Task calculateOneStepDiffRadius(
             double radius1,
             double radius2,
             double distance,
@@ -573,7 +574,7 @@ namespace Simulation.DDA.Tests
                     secondPoint
                 });
 
-            SimulationResultDictionary result = DDAProgram.Calculate(this.ddaConfig, systConfig, this.opticalConstants);
+            SimulationResultDictionary result = await DDAProgram.Calculate(this.ddaConfig, systConfig, this.opticalConstants);
 
             string filename = this.getFileFormatDiffRadiuses(this.TestContext.TestName, distance, radius1, radius2);
 
@@ -582,7 +583,7 @@ namespace Simulation.DDA.Tests
                 result.ToDictionary(x => x.ToType(SpectrumUnitType.WaveLength), valueSelector));
         }
 
-        private void calculateOneStepDiffRadiusDistance(
+        private async Task calculateOneStepDiffRadiusDistance(
             double radius1,
             double radius2,
             double distance,
@@ -606,7 +607,7 @@ namespace Simulation.DDA.Tests
                     secondPoint
                 });
 
-            SimulationResultDictionary result = DDAProgram.Calculate(this.ddaConfig, systConfig, this.opticalConstants);
+            SimulationResultDictionary result = await DDAProgram.Calculate(this.ddaConfig, systConfig, this.opticalConstants);
 
             string filename = this.getFileFormatDiffRadiuses(this.TestContext.TestName, distance, radius1, radius2);
 

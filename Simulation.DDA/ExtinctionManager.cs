@@ -37,16 +37,16 @@ namespace Simulation.DDA
         /// </summary>
         /// <param name="parameters">The parameters.</param>
         /// <returns>The simulation results.</returns>
-        public SimulationResultDictionary CalculateCrossExtinction(SimulationParameters parameters)
+        public async Task<SimulationResultDictionary> CalculateCrossExtinction(SimulationParameters parameters, Func<SpectrumUnit, Task> callback = null)
         {
             var result = new SimulationResultDictionary();
 
-            var partitions = Partitioner.Create(parameters.Spectrum).GetPartitions(Environment.ProcessorCount);
+            var partitions = Partitioner.Create(parameters.Spectrum).GetPartitions(Environment.ProcessorCount / 2);
 
             var concurent = new ConcurrentDictionary<SpectrumUnit, SimulationResult>();
 
             var tasks = partitions
-                .Select(partition => Task.Run(() =>
+                .Select(partition => Task.Run(async () =>
                 {
                     using (partition)
                     {
@@ -55,12 +55,13 @@ namespace Simulation.DDA
                         while (partition.MoveNext())
                         {
                             concurent.TryAdd(partition.Current, this.CalculateSingleDDA(partition.Current, parameters, polarization));
+                            await callback?.Invoke(partition.Current);
                         }
                     }
                 }))
-                .ToArray();
+                .ToList();
 
-            Task.WaitAll(tasks);
+            await Task.WhenAll(tasks);
 
             foreach (var keyvalue in concurent.OrderBy(pair => pair.Key))
             {
@@ -166,7 +167,7 @@ namespace Simulation.DDA
             BaseDyadCoordinate<Complex, ComplexCalculator> dyadProduct =
                 CoordinateExtensions.DyadProduct(ref displacement, ref displacement);
 
-            var initDyad = 
+            var initDyad =
                 new DiagonalDyadCoordinate<Complex, ComplexCalculator>(rmod2);
 
             BaseDyadCoordinate<Complex, ComplexCalculator> firstMember = (kmod * kmod) * (dyadProduct - initDyad);

@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-
 using Simulation.DDA.Models;
 using Simulation.Infrastructure;
 using Simulation.Infrastructure.Plotters;
@@ -9,7 +8,7 @@ using Simulation.Models.Extensions;
 using Simulation.Models.Spectrum;
 using System.Collections.Generic;
 using System;
-using Simulation.Medium.Medium;
+using System.Threading.Tasks;
 
 namespace Simulation.DDA.Console.Simulation
 {
@@ -22,9 +21,9 @@ namespace Simulation.DDA.Console.Simulation
         /// Mains the specified arguments.
         /// </summary>
         /// <param name="args">The arguments.</param>
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            var result = Calculate();
+            var result = await Calculate();
 
             Dictionary<SpectrumUnit, double> secondDer = GetSecondDerivative(result, x => x.EffectiveCrossSectionExtinction);
 
@@ -66,7 +65,7 @@ namespace Simulation.DDA.Console.Simulation
         /// Calculate extinction using DDA method.
         /// </summary>
         /// <returns>The simulation result.</returns>
-        public static SimulationResultDictionary Calculate()
+        public static Task<SimulationResultDictionary> Calculate()
         {
             return Calculate(
                 "ddaParameters.xml",
@@ -85,7 +84,7 @@ namespace Simulation.DDA.Console.Simulation
         /// <param name="optConstTxt">The optical constants filename.</param>
         /// <param name="systemConfig">The dipole system configuration.</param>
         /// <returns>The simulation result.</returns>
-        public static SimulationResultDictionary Calculate(string ddaConfigFilename, string optConstTxt, SystemConfig systemConfig)
+        public static Task<SimulationResultDictionary> Calculate(string ddaConfigFilename, string optConstTxt, SystemConfig systemConfig)
         {
             var ddaConfig =
                 XmlSerializerHelper.DeserializeObject<DDAParameters>(ddaConfigFilename);
@@ -102,7 +101,7 @@ namespace Simulation.DDA.Console.Simulation
         /// <param name="systemConfig">The dipole system configuration.</param>
         /// <param name="medium">The medium of the dipoles.</param>
         /// <returns>The simulation result.</returns>
-        public static SimulationResultDictionary Calculate(DDAParameters ddaConfig, SystemConfig systemConfig, BaseMedium medium)
+        public static Task<SimulationResultDictionary> Calculate(DDAParameters ddaConfig, SystemConfig systemConfig, BaseMedium medium)
         {
             var manager = new MediumManager(medium, ddaConfig.IsSolidMaterial);
             var ext = new ExtinctionManager(manager);
