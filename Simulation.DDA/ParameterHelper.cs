@@ -73,7 +73,7 @@ namespace Simulation.DDA
                 return new SystemConfig(radiusList, pointList);
             }
 
-            public static SystemConfig ReadSystemConfigFromMesh(string fileName)
+        public static SystemConfig ReadSystemConfigFromMesh(string fileName)
         {
             var mesh = new FDSToVoxelReader().ReadInfo(fileName);
 
@@ -82,7 +82,7 @@ namespace Simulation.DDA
             var pointList = mesh.Voxels.Select(voxel => new CartesianCoordinate(voxel.I, voxel.J, voxel.K)).ToList();
 
 
-            var distinct = pointList.Distinct(new CartEqualComparer()).ToList() ;
+            var distinct = pointList.Distinct(new CartEqualComparer()).ToList();
 
             Contract.Assert(pointList.Count == distinct.Count);
             //var radiusList = Enumerable.Repeat(Math.Pow(3 / (4 * Math.PI), 1.0 / 3.0), pointList.Count).ToList();
@@ -90,6 +90,7 @@ namespace Simulation.DDA
 
             return new SystemConfig(radiusList, pointList);
         }
+
         private class CartEqualComparer : IEqualityComparer<CartesianCoordinate>
         {
             public bool Equals(CartesianCoordinate x, CartesianCoordinate y)

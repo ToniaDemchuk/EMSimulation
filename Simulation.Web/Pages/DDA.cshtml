@@ -1,0 +1,183 @@
+@page
+
+<div>
+	<div id="app">
+		<form>
+			<fieldset :disabled="!signalrStarted || inProgress">
+				<div class="form-group">
+					<div class="custom-file">
+						<label for="meshInput" class="custom-file-label">Mesh</label>
+						<input type="file" class="custom-file-input" accept=".fds" @@change="meshSelected" id="meshInput">
+					</div>
+				</div>
+
+				<h6>Config:</h6>
+				<div class="form-row">
+					<div class="form-group col-4">
+						<label for="config-lower">Lower:</label>
+						<input v-model.number="config.lower" class="form-control" id="config-lower" />
+					</div>
+					<div class="form-group col-4">
+						<label for="config-upper">Upper:</label>
+						<input v-model.number="config.upper" class="form-control" id="config-upper" />
+					</div>
+					<div class="form-group col-4">
+						<label for="config-count">Count:</label>
+						<input v-model.number="config.count" type="number" class="form-control" />
+					</div>
+				</div>
+				<input type="submit" :disabled="!mesh" value="Calculate" @@click.prevent="startCalculation">
+			</fieldset>
+		</form>
+
+		<template v-if="inProgress">
+			<h6>Progress:</h6>
+			<progress-chart :chart-data="chartData" :options="options" :height="10" style="border: 2px solid green;"></progress-chart>
+		</template>
+
+		<template v-if="result">
+			<h6>Result:</h6>
+			<result-chart :chart-data="resultChartData" :options="resultOptions"></result-chart>
+		</template>
+	</div>
+</div>
+
+<script src="https://unpkg.com/chart.js@2.9.3/dist/Chart.js"></script>
+<script src="https://unpkg.com/vue@2.6.12/dist/vue.js"></script>
+<script src="https://unpkg.com/vue-chartjs@3.5.1/dist/vue-chartjs.js"></script>
+<script src="https://unpkg.com/@@microsoft/signalr@3.1.8/dist/browser/signalr.js"></script>
+
+<script type="application/javascript">
+	const ProgressChart = {
+		extends: VueChartJs.Bar,
+		mixins: [VueChartJs.mixins.reactiveProp],
+		props: ['options'],
+		mounted () {
+			this.renderChart(this.chartData, this.options)
+		}
+	}
+
+	const ResultChart = {
+		extends: VueChartJs.Line,
+		mixins: [VueChartJs.mixins.reactiveProp],
+		props: ['options'],
+		mounted () {
+			this.renderChart(this.chartData, this.options)
+		}
+	}
+	const app = new Vue({
+		el: '#app',
+		components: {
+			ProgressChart,
+			ResultChart
+		},
+		data () {
+			return  {
+				signalrStarted: false,
+				inProgress: false,
+				mesh: null,
+				config: {
+					lower: 300.0e-9,
+					upper: 440.0e-9,
+					count: 211
+				},
+				progress: [],
+				result: null
+			}
+		},
+		created () {
+			this.connection = new signalR.HubConnectionBuilder()
+				.withUrl('/ddaHub')
+				.configureLogging(signalR.LogLevel.Trace)
+				.build()
+
+			this.connection.start()
+				.then(() => {
+					 this.signalrStarted = true
+				})
+		},
+		computed: {
+			step () {
+				return (this.config.upper - this.config.lower) / this.config.count
+			},
+			options () {
+				return {
+					legend: {
+						display: false
+					},
+					scales: {
+						yAxes: [{
+							display: false
+						}],
+						xAxes: [{
+							display: false
+						}]
+					}
+				}
+			},
+			chartData () {
+				return {
+					labels: new Array(this.config.count).fill(0).map((_, i) => this.config.lower + this.step * i),
+					datasets: [{
+						label: 'test',
+						barPercentage: 1.0,
+						backgroundColor: 'green',
+						borderWidth: 0,
+						data: new Array(this.config.count)
+							.fill(0)
+							.map((_, i) => {
+								const x = this.config.lower + this.step * i
+								return { x, y: this.progress.some(wave => Math.abs(wave - x) < this.step / 1.5) ? 1 : 0 }
+							})
+					}]
+				}
+			},
+			resultOptions () {
+				return {
+				}
+			},
+			resultChartData () {
+				return {
+					labels: Object.keys(this.result),
+					datasets: [{
+						label: 'extinction',
+						data: Object
+							.entries(this.result)
+							.map(([key, value]) => ({ x: key, y: value.crossSectionExtinction }))
+					}, {
+						label: 'effective extinction',
+						data: Object
+							.entries(this.result)
+							.map(([key, value]) => ({ x: key, y: value.effectiveCrossSectionExtinction}))
+					}]
+				}
+			}
+		},
+		methods: {
+			async meshSelected (e) {
+				this.mesh = await e.target.files[0].text()
+			},
+			async startCalculation () {
+				this.inProgress = true
+
+				this.connection.on('Progress', (wave) => {
+					this.progress.push(wave)
+				});
+
+				this.result = await this.connection.invoke(
+					'StartCalculation',
+					this.mesh,
+					{
+						radius: 1,
+						polar: 90,
+						azimuth: 0
+					},
+					{
+						polar: 0,
+						azimuth: 0
+					},
+					this.config);
+			}
+		}
+	})
+</script>

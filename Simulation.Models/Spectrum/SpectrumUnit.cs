@@ -16,13 +16,13 @@ namespace Simulation.Models.Spectrum
         /// <param name="type">The underlying type.</param>
         public SpectrumUnit(double value, SpectrumUnitType type)
         {
-            this.value = value;
-            this.type = type;
+            this.Value = value;
+            this.Type = type;
         }
 
-        private readonly SpectrumUnitType type;
+        public SpectrumUnitType Type { get; set; }
 
-        private readonly double value;
+        public double Value { get; set; }
 
         /// <summary>
         /// Converts value to specified type.
@@ -31,12 +31,12 @@ namespace Simulation.Models.Spectrum
         /// <returns>The value of spectrum parameter type.</returns>
         public double ToType(SpectrumUnitType toType)
         {
-            return SpectrumUnitConverter.Convert(this.value, this.type, toType);
+            return SpectrumUnitConverter.Convert(this.Value, this.Type, toType);
         }
 
         protected bool Equals(SpectrumUnit other)
         {
-            return this.type == other.type && this.value.Equals(other.value);
+            return this.Type == other.Type && this.Value.Equals(other.Value);
         }
 
         public override bool Equals(object obj)
@@ -60,7 +60,7 @@ namespace Simulation.Models.Spectrum
         {
             unchecked
             {
-                return ((int) this.type * 397) ^ this.value.GetHashCode();
+                return ((int) this.Type * 397) ^ this.Value.GetHashCode();
             }
         }
 
@@ -68,7 +68,7 @@ namespace Simulation.Models.Spectrum
         {
             var other = (SpectrumUnit)obj;
 
-            return value.CompareTo(other.value);
+            return Value.CompareTo(other.Value);
         }
     }
 }

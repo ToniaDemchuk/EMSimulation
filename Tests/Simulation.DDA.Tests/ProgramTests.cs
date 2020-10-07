@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Simulation.DDA.Console.Simulation;
 using Simulation.Infrastructure;
@@ -17,7 +18,7 @@ namespace Simulation.DDA.Tests
         /// Tests Calculate_: calculate_ - success.
         /// </summary>
         [TestMethod]
-        public void Calculate_Success()
+        public async Task Calculate_Success()
         {
             // Arrange
             var filename = "../../rezult_ext.txt";
@@ -25,7 +26,7 @@ namespace Simulation.DDA.Tests
             var dict = SimpleFormatter.Read(filename);
 
             // Act
-            var result = DDAProgram.Calculate().ToDictionary(x => x.ToType(SpectrumUnitType.WaveLength), x => x.CrossSectionExtinction);
+            var result = (await DDAProgram.Calculate()).ToDictionary(x => x.ToType(SpectrumUnitType.WaveLength), x => x.CrossSectionExtinction);
 
             // Assert
             AssertHelper.DictionaryAreClose(dict, result, 0.01);

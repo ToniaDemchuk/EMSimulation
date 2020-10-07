@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  web:
+    build:
+      context: .
+      target: web
+    environment:
+      - ASPNETCORE_URLS=https://0.0.0.0:5001
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/app/https/localhost.pfx
+    ports:
+      - "443:5001"
+    links:
+      - dda-grpc
+  dda-grpc:
+    build:
+      context: .
+      target: dda-grpc
+    environment:
+      - ASPNETCORE_URLS=https://dda-grpc:3000
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/app/https/dda-grpc.pfx
