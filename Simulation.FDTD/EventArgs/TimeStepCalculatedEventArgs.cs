@@ -8,5 +8,7 @@ namespace Simulation.FDTD.EventArgs
 
         public FDTDPulse Pulse { get; set; }
         public SimulationParameters Parameters { get; set; }
+
+        public int Time { get; set; }
     }
 }

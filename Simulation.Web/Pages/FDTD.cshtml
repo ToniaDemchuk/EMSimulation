@@ -1,12 +1,12 @@
 @page
 
 @{
-	ViewData["Title"] = "DDA";
+	ViewData["Title"] = "FDTD";
 }
 
 <div>
 	<div id="app">
-		<h3>DDA</h3>
+		<h3>FDTD</h3>
 
 		<form>
 			<fieldset :disabled="!signalrStarted || inProgress">
@@ -18,6 +18,10 @@
 				</div>
 
 				<h6>Config:</h6>
+				<div class="form-group">
+					<label for="num-steps">NumSteps:</label>
+					<input v-model.number="numSteps" class="form-control" id="num-steps" />
+				</div>
 				<div class="form-row">
 					<div class="form-group col-4">
 						<label for="config-lower">Lower:</label>
@@ -49,7 +53,7 @@
 					</div>
 				</div>
 
-				<input type="submit" class="btn btn-success" :disabled="!meshFile" value="Calculate" @@click.prevent="startCalculation">
+				<input type="submit" class="btn btn-success"  :disabled="!meshFile" value="Calculate" @@click.prevent="startCalculation">
 			</fieldset>
 		</form>
 
@@ -105,22 +109,23 @@
 				meshFileName: null,
 				meshFile: null,
 				config: {
-					lower: 300.0e-9,
-					upper: 440.0e-9,
-					count: 211
+					lower: 100.0e-9,
+					upper: 400.0e-9,
+					count: 311
 				},
 				wave: {
 					radius: 1,
 					polar: 90,
 					azimuth: 0
 				},
+				numSteps: 300,
 				progress: [],
 				result: null
 			}
 		},
 		created () {
 			this.connection = new signalR.HubConnectionBuilder()
-				.withUrl('/ddaHub')
+				.withUrl('/fdtdHub')
 				.configureLogging(signalR.LogLevel.Trace)
 				.build()
 
@@ -130,9 +135,6 @@
 				})
 		},
 		computed: {
-			step () {
-				return (this.config.upper - this.config.lower) / this.config.count
-			},
 			options () {
 				return {
 					legend: {
@@ -150,7 +152,7 @@
 			},
 			chartData () {
 				return {
-					labels: new Array(this.config.count).fill(0).map((_, i) => this.config.lower + this.step * i),
+					labels: new Array(this.numSteps).fill(0).map((_, i) => i),
 					datasets: [{
 						label: 'test',
 						barPercentage: 1.0,
@@ -159,8 +161,8 @@
 						data: new Array(this.config.count)
 							.fill(0)
 							.map((_, i) => {
-								const x = this.config.lower + this.step * i
-								return { x, y: this.progress.some(wave => Math.abs(wave - x) < this.step / 1.5) ? 1 : 0 }
+								const x = i
+								return { x, y: this.progress.some(time => time === x) ? 1 : 0 }
 							})
 					}]
 				}
@@ -173,15 +175,15 @@
 				return {
 					labels: Object.keys(this.result),
 					datasets: [{
-						label: 'extinction',
+						label: 'absorption',
 						data: Object
 							.entries(this.result)
-							.map(([key, value]) => ({ x: key, y: value.crossSectionExtinction }))
+							.map(([key, value]) => ({ x: key, y: value.crossSectionAbsorption }))
 					}, {
-						label: 'effective extinction',
+						label: 'effective absorption',
 						data: Object
 							.entries(this.result)
-							.map(([key, value]) => ({ x: key, y: value.effectiveCrossSectionExtinction}))
+							.map(([key, value]) => ({ x: key, y: value.effectiveCrossSectionAbsorption }))
 					}]
 				}
 			}
@@ -194,18 +196,15 @@
 			async startCalculation () {
 				this.inProgress = true
 
-				this.connection.on('Progress', (wave) => {
-					this.progress.push(wave)
+				this.connection.on('Progress', (time) => {
+					this.progress.push(time)
 				});
 
 				this.result = await this.connection.invoke(
 					'StartCalculation',
 					this.meshFile,
+					this.numSteps,
 					this.wave,
-					{
-						polar: 0,
-						azimuth: 0
-					},
 					this.config);
 
 				this.inProgress = false
@@ -214,13 +213,13 @@
 				const element = document.createElement('a');
 				const data = Object
 					.entries(this.result)
-					.map(([key, value]) => [key, value.crossSectionExtinction, value.effectiveCrossSectionExtinction].join(', '))
+					.map(([key, value]) => [key, value.crossSectionAbsorption, value.effectiveCrossSectionAbsorption].join(', '))
 					.join('\n')
 
-				const file = 'wave, crossSectionExtinction, effectiveCrossSectionExtinction\n' + data
+				const file = 'wave, crossSectionAbsorption, effectiveCrossSectionAbsorption\n' + data
 
 				element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(file))
-				element.setAttribute('download', 'dda-result.csv');
+				element.setAttribute('download', 'fdtd-result.csv');
 
 				element.style.display = 'none';
 				document.body.appendChild(element);

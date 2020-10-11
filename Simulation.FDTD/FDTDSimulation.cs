@@ -9,7 +9,7 @@ using Simulation.Models.Spectrum;
 using Simulation.Infrastructure.Iterators;
 
 using System;
-
+using System.Threading.Tasks;
 using Simulation.FDTD.EventArgs;
 
 namespace Simulation.FDTD
@@ -20,7 +20,7 @@ namespace Simulation.FDTD
     public class FDTDSimulation
     {
         private readonly IIterator iterator;
-        
+
         public FDTDSimulation(IIterator iterator)
         {
             this.iterator = iterator;
@@ -42,11 +42,17 @@ namespace Simulation.FDTD
             for (var time = 0; time < parameters.NumSteps; time++)
             {
                 this.calcFields(time, parameters);
-                this.OnTimeStepCalculated(new TimeStepCalculatedEventArgs() {Parameters = parameters,Fields = this.fields, Pulse = this.pulse});
+                this.OnTimeStepCalculated(new TimeStepCalculatedEventArgs
+                {
+                    Parameters = parameters,
+                    Fields = this.fields,
+                    Pulse = this.pulse,
+                    Time = time
+                });
             }
-            
+
             var result = this.CalcExtinction(parameters);
-           
+
             return result;
         }
 
@@ -166,7 +172,7 @@ namespace Simulation.FDTD
                 pulseIndex,
                 (i, j) =>
                 {
-                    var cartesianCoordinate = CartesianCoordinate.YOrth * 
+                    var cartesianCoordinate = CartesianCoordinate.YOrth *
                         (courantNumber * this.pulse.H[j].X);
                     this.fields.D[i, j, pulseIndex.Lower] -= cartesianCoordinate;
                     this.fields.D[i, j, pulseIndex.KLength + 1] += cartesianCoordinate;
@@ -175,9 +181,9 @@ namespace Simulation.FDTD
 
         private void addPulseToD2(IndexStore pulseIndex, double courantNumber)
         {
-            var cart1 = CartesianCoordinate.ZOrth * 
+            var cart1 = CartesianCoordinate.ZOrth *
                 courantNumber * this.pulse.H[pulseIndex.Lower - 1].X;
-            var cart2 = CartesianCoordinate.ZOrth * 
+            var cart2 = CartesianCoordinate.ZOrth *
                 (courantNumber * this.pulse.H[pulseIndex.JLength].X);
             this.iterator.ForExceptJ(
                 pulseIndex,
@@ -191,7 +197,7 @@ namespace Simulation.FDTD
         {
             var pulseFourier = this.pulse.FourierE.Select(x => x.Transform(freq, parameters.TimeStep)).ToArray();
             var pulseFourierH = this.pulse.FourierH.Select(x => x.Transform(freq, parameters.TimeStep)).ToArray();
-            
+
             double extinction = this.iterator.Sum(parameters.Indices,
                 (i, j, k) =>
                 {
@@ -210,7 +216,7 @@ namespace Simulation.FDTD
                     var fourierH = this.fields.FourierH[i, j, k].Transform(freq, parameters.TimeStep);
                     double pulseMultiplier = Complex.Reciprocal(pulseFourier[j].ScalarProduct(pulseFourierH[j])).Magnitude;
                     var complex = (clausiusMosottiPolar) * (fourierE).ScalarProduct(fourierE);
-                                  //pulseMultiplier * 
+                                  //pulseMultiplier *
                                   //(fourierE.VectorProduct(fourierH).Z);
                     return complex.Imaginary;
                 });
@@ -240,7 +246,7 @@ namespace Simulation.FDTD
             int area = 0;
 
             this.iterator.ForExceptJ(
-                parameters.Indices,            
+                parameters.Indices,
                 (i, k) =>
                 {
                     Interlocked.Add(
@@ -260,10 +266,7 @@ namespace Simulation.FDTD
         protected virtual void OnTimeStepCalculated(TimeStepCalculatedEventArgs e)
         {
             EventHandler<TimeStepCalculatedEventArgs> handler = this.TimeStepCalculated;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
+            handler?.Invoke(this, e);
         }
 
         #endregion

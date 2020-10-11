@@ -12,10 +12,22 @@ services:
       - "443:5001"
     links:
       - dda-grpc
+      - fdtd-grpc
   dda-grpc:
     build:
       context: .
       target: dda-grpc
+    ports:
+      - "3001:3001"
     environment:
-      - ASPNETCORE_URLS=https://dda-grpc:3000
+      - ASPNETCORE_URLS=https://dda-grpc:3001
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/app/https/dda-grpc.pfx
+  fdtd-grpc:
+    build:
+      context: .
+      target: fdtd-grpc
+    ports:
+      - "3002:3002"
+    environment:
+      - ASPNETCORE_URLS=https://fdtd-grpc:3002
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/app/https/fdtd-grpc.pfx

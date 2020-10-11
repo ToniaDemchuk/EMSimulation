@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace Simulation.DDA.Grpc
+namespace Simulation.FDTD.Grpc
 {
     public class Program
     {
