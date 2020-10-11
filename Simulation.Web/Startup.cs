@@ -12,6 +12,8 @@ using Microsoft.Extensions.Hosting;
 using Simulation.DDA.Grpc;
 using Simulation.FDTD.Grpc;
 using Simulation.Models.Spectrum;
+using Simulation.Infrastructure.Readers;
+using Simulation.Infrastructure.Models;
 
 namespace Simulation.Web
 {
@@ -32,18 +34,17 @@ namespace Simulation.Web
                 options.ChannelOptionsActions.Add(channel => {
                     channel.MaxReceiveMessageSize = null;
                 });
-                options.Address = new Uri("https://dda-grpc:3001");
+                options.Address = new Uri("https://localhost:3001");
             });
             services.AddGrpcClient<FDTDCalculator.FDTDCalculatorClient>(options =>
             {
                 options.ChannelOptionsActions.Add(channel => {
                     channel.MaxReceiveMessageSize = null;
                 });
-                options.Address = new Uri("https://fdtd-grpc:3002");
+                options.Address = new Uri("https://localhost:3002");
             });
             services
-                .AddRazorPages()
-                .AddRazorRuntimeCompilation();
+                .AddRazorPages().AddRazorRuntimeCompilation();
             services.AddSignalR(options =>
                 {
                     options.EnableDetailedErrors = true;
@@ -157,6 +158,13 @@ namespace Simulation.Web
             }
 
             return null;
+        }
+
+        public async Task<List<Voxel>> GetMesh(string meshContent)
+        {
+           var mesh = new FDSToVoxelReader().ReadInfo(meshContent.Split('\n'));
+
+            return mesh.Voxels;
         }
     }
 

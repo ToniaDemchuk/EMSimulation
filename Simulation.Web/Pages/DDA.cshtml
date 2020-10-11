@@ -17,6 +17,8 @@
 					</div>
 				</div>
 
+ 				<div id="mygraph"></div>
+
 				<h6>Config:</h6>
 				<div class="form-row">
 					<div class="form-group col-4">
@@ -40,12 +42,12 @@
 						<input v-model.number="wave.radius" class="form-control" id="wave-radius" />
 					</div>
 					<div class="form-group col-4">
-						<label for="wave-polar">Polar:</label>
-						<input v-model.number="wave.radius" class="form-control" id="wave-radius" />
+						<label for="wave-polar">Polar:</label>{{ wave.polar }}
+						<input v-model.number="wave.polar" type="range" class="form-control-range" min="0" max="180" id="wave-polar" />
 					</div>
 					<div class="form-group col-4">
-						<label for="wave-azimuth">Azimuth:</label>
-						<input v-model.number="wave.azimuth" type="number" class="form-control" id="wave-azimuth" />
+						<label for="wave-azimuth">Azimuth:</label>{{ wave.azimuth }}
+						<input v-model.number="wave.azimuth" type="range" class="form-control-range"  min="-180" max="180" id="wave-azimuth" />
 					</div>
 				</div>
 
@@ -115,7 +117,8 @@
 					azimuth: 0
 				},
 				progress: [],
-				result: null
+				result: null,
+				objMesh: null
 			}
 		},
 		created () {
@@ -190,6 +193,57 @@
 			async meshSelected (e) {
 				this.meshFileName = e.target.files[0].name
 				this.meshFile = await e.target.files[0].text()
+
+				this.objMesh = await this.connection.invoke(
+					'GetMesh',
+					this.meshFile
+				);
+
+				var data = new vis.DataSet();
+				var maxx = 0
+				var minx = 1000000
+				this.objMesh.forEach(v => {
+					if (v.i > maxx) {
+						maxx = v.i;
+					}
+					if (v.i < minx) {
+						minx = v.i;
+					}
+				});
+
+				this.objMesh.forEach(v => {
+					data.add({
+						x: v.i,
+						y: v.j,
+						z: v.k,
+						style: 1
+					});
+				});
+
+				// specify options
+			var options = {
+					width:  '600px',
+					height: '600px',
+					style: 'dot-size',
+					showPerspective: false,
+					showGrid: true,
+					showLegend: false,
+					keepAspectRatio: true,
+					verticalRatio: 1.0,
+					cameraPosition: {
+						horizontal: -0.54,
+						vertical: 0.5,
+						distance: 1.6
+					},
+					dotSizeRatio: 0.7/(maxx-minx),
+					dotSizeMinFraction: 0.75,
+					dotSizeMaxFraction: 1
+				};
+
+				// create a graph3d
+				var container = document.getElementById('mygraph');
+				graph3d = new vis.Graph3d(container, data, options);
+
 			},
 			async startCalculation () {
 				this.inProgress = true
