@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Simulation.Models\Simulation.Models.csproj" />
+    <ProjectReference Include="..\Simulation.Infrastructure\Simulation.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
