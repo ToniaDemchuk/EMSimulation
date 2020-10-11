@@ -1,13 +1,11 @@
 syntax = "proto3";
 
-option csharp_namespace = "Simulation.DDA.Grpc";
-
-package calculate;
+option csharp_namespace = "Simulation.FDTD.Grpc";
 
 // The calculate service definition.
-service Calculator {
-  // Calculates DDA
-  rpc Calculate (DDARequest) returns (stream DDAReply);
+service FDTDCalculator {
+  // Calculates FDTD
+  rpc CalculateFDTD (FDTDRequest) returns (stream FDTDReply);
 }
 
 message SphericalCoordinate {
@@ -22,18 +20,18 @@ message WaveLengthConfig {
   int32 count = 3;
 }
 
-// The request message containing DDA parameters.
+// The request message containing FDTD parameters.
 // <SolidMaterial>false</SolidMaterial>
-message DDARequest {
+message FDTDRequest {
   string mesh = 1;
   SphericalCoordinate incident_magnitude = 2;
-  SphericalCoordinate wave_propagation = 3;
+  int32 num_steps = 3;
   WaveLengthConfig wavelength_config = 4;
 }
 
 // The response message containing progress or result of calculation.
-message DDAReply {
+message FDTDReply {
   bool done = 1;
-  double wave = 2;
+  int32 time = 2;
   string result = 3;
 }

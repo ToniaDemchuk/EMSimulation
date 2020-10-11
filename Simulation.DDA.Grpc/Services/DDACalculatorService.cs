@@ -12,16 +12,16 @@ using Simulation.Models.Extensions;
 
 namespace Simulation.DDA.Grpc
 {
-    public class CalculatorService : Calculator.CalculatorBase
+    public class DDACalculatorService : DDACalculator.DDACalculatorBase
     {
-        private readonly ILogger<CalculatorService> _logger;
+        private readonly ILogger<DDACalculatorService> _logger;
 
-        public CalculatorService(ILogger<CalculatorService> logger)
+        public DDACalculatorService(ILogger<DDACalculatorService> logger)
         {
             _logger = logger;
         }
 
-        public override async Task Calculate(DDARequest request, IServerStreamWriter<DDAReply> responseStream, ServerCallContext context)
+        public override async Task CalculateDDA(DDARequest request, IServerStreamWriter<DDAReply> responseStream, ServerCallContext context)
         {
             var ddaConfig = new DDAParameters
             {

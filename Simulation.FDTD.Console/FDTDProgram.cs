@@ -64,7 +64,7 @@ namespace Simulation.FDTD.Console
                 WaveFunc = time => (new SphericalCoordinate(1, 45, 0, UnitOfMeasurement.Degree).ConvertToCartesian()) * Math.Exp(-0.5 * Math.Pow((30 - time) / 5.0, 2.0)),
                 IsSpectrumCalculated = true
             };
-            
+
             setMedium(parameters, mesh);
 
             ext.TimeStepCalculated += fieldPlotter.Plot;
@@ -87,7 +87,7 @@ namespace Simulation.FDTD.Console
         private static void setMedium(SimulationParameters parameters, MeshInfo meshInfo)
         {
             var factory = new MediumSolverFactory(parameters.TimeStep);
-            //parameters.Medium = setSphere(parameters, silver, drudeLorentzParam, vacuum); 
+            //parameters.Medium = setSphere(parameters, silver, drudeLorentzParam, vacuum);
             parameters.Medium = setObject(parameters, meshInfo.Voxels, factory);
         }
 

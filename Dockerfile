@@ -8,6 +8,7 @@ COPY ./Simulation.DDA/Simulation.DDA.csproj ./Simulation.DDA/
 COPY ./Simulation.DDA.Grpc/Simulation.DDA.Grpc.csproj ./Simulation.DDA.Grpc/
 COPY ./Simulation.DDA.Console/Simulation.DDA.Console.csproj ./Simulation.DDA.Console/
 COPY ./Simulation.FDTD/Simulation.FDTD.csproj ./Simulation.FDTD/
+COPY ./Simulation.FDTD.Grpc/Simulation.FDTD.Grpc.csproj ./Simulation.FDTD.Grpc/
 COPY ./Simulation.FDTD.Console/Simulation.FDTD.Console.csproj ./Simulation.FDTD.Console/
 COPY ./Simulation.Tests.Common/Simulation.Tests.Common.csproj ./Simulation.Tests.Common/
 COPY ./Tests/Simulation.DDA.Tests/Simulation.DDA.Tests.csproj ./Tests/Simulation.DDA.Tests/
@@ -38,3 +39,6 @@ ENTRYPOINT ["dotnet", "Simulation.Web.dll"]
 
 FROM runtime as dda-grpc
 ENTRYPOINT ["dotnet", "Simulation.DDA.Grpc.dll"]
+
+FROM runtime as fdtd-grpc
+ENTRYPOINT ["dotnet", "Simulation.FDTD.Grpc.dll"]

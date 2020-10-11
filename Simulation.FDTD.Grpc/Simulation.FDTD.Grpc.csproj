@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protos\calculate-dda.proto" GrpcServices="Server" />
+    <Protobuf Include="Protos\calculate-fdtd.proto" GrpcServices="Server" />
   </ItemGroup>
 
   <ItemGroup>
@@ -15,11 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Simulation.DDA\Simulation.DDA.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="opt_const.txt" CopyToOutputDirectory="PreserveNewest" />
+    <ProjectReference Include="..\Simulation.FDTD\Simulation.FDTD.csproj" />
   </ItemGroup>
 
 </Project>

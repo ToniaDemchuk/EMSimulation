@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+option csharp_namespace = "Simulation.DDA.Grpc";
+
+// The calculate service definition.
+service DDACalculator {
+  // Calculates DDA
+  rpc CalculateDDA (DDARequest) returns (stream DDAReply);
+}
+
+message SphericalCoordinate {
+  double radius = 1;
+  double polar = 2;
+  double azimuth = 3;
+}
+
+message WaveLengthConfig {
+  double lower = 1;
+  double upper = 2;
+  int32 count = 3;
+}
+
+// The request message containing DDA parameters.
+// <SolidMaterial>false</SolidMaterial>
+message DDARequest {
+  string mesh = 1;
+  SphericalCoordinate incident_magnitude = 2;
+  SphericalCoordinate wave_propagation = 3;
+  WaveLengthConfig wavelength_config = 4;
+}
+
+// The response message containing progress or result of calculation.
+message DDAReply {
+  bool done = 1;
+  double wave = 2;
+  string result = 3;
+}

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Simulation.DDA.Grpc;
+using Simulation.FDTD.Grpc;
 using Simulation.Models.Spectrum;
 
 namespace Simulation.Web
@@ -26,17 +27,27 @@ namespace Simulation.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddGrpcClient<Calculator.CalculatorClient>(options =>
+            services.AddGrpcClient<DDACalculator.DDACalculatorClient>(options =>
             {
                 options.ChannelOptionsActions.Add(channel => {
                     channel.MaxReceiveMessageSize = null;
                 });
-                options.Address = new Uri("https://dda-grpc:3000");
+                options.Address = new Uri("https://dda-grpc:3001");
+            });
+            services.AddGrpcClient<FDTDCalculator.FDTDCalculatorClient>(options =>
+            {
+                options.ChannelOptionsActions.Add(channel => {
+                    channel.MaxReceiveMessageSize = null;
+                });
+                options.Address = new Uri("https://fdtd-grpc:3002");
             });
             services
                 .AddRazorPages()
                 .AddRazorRuntimeCompilation();
-            services.AddSignalR()
+            services.AddSignalR(options =>
+                {
+                    options.EnableDetailedErrors = true;
+                })
                 .AddNewtonsoftJsonProtocol();
         }
 
@@ -66,26 +77,66 @@ namespace Simulation.Web
                 endpoints.MapRazorPages();
 
                 endpoints.MapHub<DDAHub>("/ddahub");
+                endpoints.MapHub<FDTDHub>("/fdtdhub");
             });
         }
     }
 
-    public class DDAHub : Hub<DDAHubClient>
+    public class FDTDHub : Hub<ProgressHubClient>
     {
-        private readonly Calculator.CalculatorClient calculatorClient;
+        private readonly FDTDCalculator.FDTDCalculatorClient calculatorClient;
 
-        public DDAHub(Calculator.CalculatorClient calculatorClient)
+        public FDTDHub(FDTDCalculator.FDTDCalculatorClient calculatorClient)
         {
             this.calculatorClient = calculatorClient;
         }
 
-        public async Task<object> StartCalculation(
+        public async Task<Dictionary<double, SimulationResult>> StartCalculation(
             string mesh,
-            SphericalCoordinate incidentMagnitude,
-            SphericalCoordinate wavePropagation,
-            WaveLengthConfig config)
+            int numSteps,
+            Simulation.FDTD.Grpc.SphericalCoordinate incidentMagnitude,
+            Simulation.FDTD.Grpc.WaveLengthConfig config)
         {
-            var call = calculatorClient.Calculate(new DDARequest
+            var call = calculatorClient.CalculateFDTD(new FDTDRequest
+            {
+                Mesh = mesh,
+                NumSteps = numSteps,
+                IncidentMagnitude = incidentMagnitude,
+                WavelengthConfig = config
+            });
+
+            await foreach (var reply in call.ResponseStream.ReadAllAsync())
+            {
+                if (reply.Done)
+                {
+                    return JsonConvert.DeserializeObject<Dictionary<double, SimulationResult>>(reply.Result);
+                }
+                else
+                {
+                    await this.Clients.Caller.Progress(reply.Time);
+                }
+            }
+
+            return null;
+        }
+    }
+
+    public class DDAHub : Hub<ProgressHubClient>
+    {
+        private readonly DDACalculator.DDACalculatorClient calculatorClient;
+
+        public DDAHub(DDACalculator.DDACalculatorClient calculatorClient)
+        {
+            this.calculatorClient = calculatorClient;
+        }
+
+        public async Task<Dictionary<double, SimulationResult>> StartCalculation(
+            string mesh,
+            Simulation.DDA.Grpc.SphericalCoordinate incidentMagnitude,
+            Simulation.DDA.Grpc.SphericalCoordinate wavePropagation,
+            Simulation.DDA.Grpc.WaveLengthConfig config)
+        {
+            var call = calculatorClient.CalculateDDA(new DDARequest
             {
                 Mesh = mesh,
                 IncidentMagnitude = incidentMagnitude,
@@ -109,7 +160,7 @@ namespace Simulation.Web
         }
     }
 
-    public interface DDAHubClient
+    public interface ProgressHubClient
     {
         Task Progress(double replyWave);
     }

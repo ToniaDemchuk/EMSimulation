@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Simulation.DDA.Grpc
+namespace Simulation.FDTD.Grpc
 {
     public class Startup
     {
@@ -29,7 +29,7 @@ namespace Simulation.DDA.Grpc
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<DDACalculatorService>();
+                endpoints.MapGrpcService<FDTDCalculatorService>();
 
                 endpoints.MapGet("/",
                     async context =>
