@@ -9,6 +9,7 @@ using Simulation.Models.Common;
 using Simulation.Models.Coordinates;
 using Simulation.Models.Enums;
 using Simulation.Models.Extensions;
+using Simulation.Models.Spectrum;
 
 namespace Simulation.DDA.Grpc
 {
@@ -60,13 +61,23 @@ namespace Simulation.DDA.Grpc
                 Spectrum = ParameterHelper.ReadWavelengthFromConfiguration(ddaConfig)
             };
 
-            var result = await ext.CalculateCrossExtinction(parameters, unit =>
+            var result = await ext.CalculateCrossExtinction(parameters, (unit, result) =>
             {
-                return responseStream.WriteAsync(new DDAReply
+                lock (responseStream)
                 {
-                    Done = false,
-                    Wave = unit.Value
-                });
+                    return responseStream.WriteAsync(new DDAReply
+                    {
+                        Done = false,
+                        Wave = unit.Value,
+                        Result = JsonConvert.SerializeObject(new SimulationResult
+                        {
+                            CrossSectionExtinction = result.CrossSectionExtinction,
+                            CrossSectionAbsorption = result.CrossSectionAbsorption,
+                            EffectiveCrossSectionAbsorption = result.EffectiveCrossSectionAbsorption,
+                            EffectiveCrossSectionExtinction = result.EffectiveCrossSectionExtinction
+                        })
+                    });
+                }
             });
 
             await responseStream.WriteAsync(new DDAReply
@@ -75,7 +86,7 @@ namespace Simulation.DDA.Grpc
                 Result = JsonConvert.SerializeObject(result
                     .ToDictionary(
                                   pair => pair.Key.Value,
-                                  pair => new Simulation.Models.Spectrum.SimulationResult
+                                  pair => new SimulationResult
                                   {
                                       CrossSectionExtinction = pair.Value.CrossSectionExtinction,
                                       CrossSectionAbsorption = pair.Value.CrossSectionAbsorption,

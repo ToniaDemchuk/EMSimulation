@@ -196,6 +196,9 @@
 			async startCalculation () {
 				this.inProgress = true
 
+				this.result = null
+				this.progress = []
+
 				this.connection.on('Progress', (time) => {
 					this.progress.push(time)
 				});
