@@ -70,9 +70,9 @@ namespace Simulation.DDA.Console.Simulation
             return Calculate(
                 "ddaParameters.xml",
                 "opt_const.txt",
-                //ParameterHelper.ReadSystemConfigFromMesh(@"E:\Dropbox\DDA_Blender_issue\blender_models\sphere.fds")
+                ParameterHelper.ReadSystemConfigFromMesh(@"E:\Dropbox\DDA_Blender_issue\blender_models\icosahedron.fds")
                 //ParameterHelper.ReadSystemConfigFromMesh(@"E:\dispersion_model\dimer3ort.fds")
-                ParameterHelper.ReadSystemConfig("dipols.txt")
+                //ParameterHelper.ReadSystemConfig("dipols.txt")
                 //ParameterHelper.ReadSystemArray(6, 10)
                 );
         }

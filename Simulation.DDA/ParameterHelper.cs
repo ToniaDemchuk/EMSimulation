@@ -84,11 +84,11 @@ namespace Simulation.DDA
 
             var distinct = pointList.Distinct(new CartEqualComparer()).ToList();
 
-            Contract.Assert(pointList.Count == distinct.Count);
+            //Contract.Assert(pointList.Count == distinct.Count);
             //var radiusList = Enumerable.Repeat(Math.Pow(3 / (4 * Math.PI), 1.0 / 3.0), pointList.Count).ToList();
-            var radiusList = Enumerable.Repeat(0.5, pointList.Count).ToList();
+            var radiusList = Enumerable.Repeat(0.5, distinct.Count).ToList();
 
-            return new SystemConfig(radiusList, pointList);
+            return new SystemConfig(radiusList, distinct);
         }
 
         private class CartEqualComparer : IEqualityComparer<CartesianCoordinate>
