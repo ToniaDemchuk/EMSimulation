@@ -42,16 +42,19 @@
 						<input v-model.number="wave.radius" class="form-control" id="wave-radius" />
 					</div>
 					<div class="form-group col-4">
-						<label for="wave-polar">Polar:</label>{{ wave.polar }}
+						<label for="wave-polar">Polar:</label> {{ wave.polar }}
 						<input v-model.number="wave.polar" type="range" class="form-control-range" min="0" max="180" id="wave-polar" />
 					</div>
 					<div class="form-group col-4">
-						<label for="wave-azimuth">Azimuth:</label>{{ wave.azimuth }}
+						<label for="wave-azimuth">Azimuth:</label> {{ wave.azimuth }}
 						<input v-model.number="wave.azimuth" type="range" class="form-control-range"  min="-180" max="180" id="wave-azimuth" />
 					</div>
 				</div>
 
-				<input type="submit" class="btn btn-success" :disabled="!meshFile" value="Calculate" @@click.prevent="startCalculation">
+				<button type="submit" class="btn btn-success" :disabled="!meshFile" @@click.prevent="startCalculation">
+					Calculate
+					<span v-show="inProgress" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+				</button>
 			</fieldset>
 		</form>
 
