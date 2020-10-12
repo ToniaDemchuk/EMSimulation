@@ -176,18 +176,22 @@
 				}
 			},
 			resultChartData () {
+				const keys = Object
+					.keys(this.result)
+					.map(str => ({ key: str, number: Number(str) }))
+					.sort((a, b) => a.number - b.number)
+					.map(obj => obj.key)
+
 				return {
-					labels: Object.keys(this.result),
+					labels: keys,
 					datasets: [{
 						label: 'extinction',
-						data: Object
-							.entries(this.result)
-							.map(([key, value]) => ({ x: key, y: value.crossSectionExtinction }))
+						data: keys
+							.map(key => ({ x: key, y: this.result[key].crossSectionExtinction }))
 					}, {
 						label: 'effective extinction',
-						data: Object
-							.entries(this.result)
-							.map(([key, value]) => ({ x: key, y: value.effectiveCrossSectionExtinction}))
+						data: keys
+							.map(key => ({ x: key, y: this.result[key].effectiveCrossSectionExtinction }))
 					}]
 				}
 			}
@@ -224,7 +228,7 @@
 				});
 
 				// specify options
-			var options = {
+				var options = {
 					width:  '600px',
 					height: '600px',
 					style: 'dot-size',
@@ -246,13 +250,17 @@
 				// create a graph3d
 				var container = document.getElementById('mygraph');
 				graph3d = new vis.Graph3d(container, data, options);
-
 			},
 			async startCalculation () {
 				this.inProgress = true
 
-				this.connection.on('Progress', (wave) => {
+				this.result = null
+				this.progress = []
+
+				this.connection.on('Progress', (wave, stepResult) => {
 					this.progress.push(wave)
+					this.result = this.result ?? {}
+					Vue.set(this.result, wave, stepResult)
 				});
 
 				this.result = await this.connection.invoke(

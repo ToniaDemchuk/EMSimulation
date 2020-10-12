@@ -37,7 +37,7 @@ namespace Simulation.DDA
         /// </summary>
         /// <param name="parameters">The parameters.</param>
         /// <returns>The simulation results.</returns>
-        public async Task<SimulationResultDictionary> CalculateCrossExtinction(SimulationParameters parameters, Func<SpectrumUnit, Task> callback = null)
+        public async Task<SimulationResultDictionary> CalculateCrossExtinction(SimulationParameters parameters, Func<SpectrumUnit, SimulationResult, Task> callback = null)
         {
             var result = new SimulationResultDictionary();
 
@@ -54,8 +54,9 @@ namespace Simulation.DDA
 
                         while (partition.MoveNext())
                         {
-                            concurent.TryAdd(partition.Current, this.CalculateSingleDDA(partition.Current, parameters, polarization));
-                            await callback?.Invoke(partition.Current);
+                            var result = this.CalculateSingleDDA(partition.Current, parameters, polarization);
+                            concurent.TryAdd(partition.Current, result);
+                            await callback?.Invoke(partition.Current, result);
                         }
                     }
                 }))

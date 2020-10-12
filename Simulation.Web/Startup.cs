@@ -114,7 +114,7 @@ namespace Simulation.Web
                 }
                 else
                 {
-                    await this.Clients.Caller.Progress(reply.Time);
+                    await this.Clients.Caller.Progress(reply.Time, null);
                 }
             }
 
@@ -153,7 +153,8 @@ namespace Simulation.Web
                 }
                 else
                 {
-                    await this.Clients.Caller.Progress(reply.Wave);
+                    var result = JsonConvert.DeserializeObject<SimulationResult>(reply.Result);
+                    await this.Clients.Caller.Progress(reply.Wave, result);
                 }
             }
 
@@ -170,6 +171,6 @@ namespace Simulation.Web
 
     public interface ProgressHubClient
     {
-        Task Progress(double replyWave);
+        Task Progress(double replyWave, SimulationResult simulationResult);
     }
 }
