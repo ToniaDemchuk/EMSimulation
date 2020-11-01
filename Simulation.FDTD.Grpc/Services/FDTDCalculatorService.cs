@@ -55,11 +55,22 @@ namespace Simulation.FDTD.Grpc
 
             ext.TimeStepCalculated += async (sender, args) =>
             {
-                await responseStream.WriteAsync(new FDTDReply
-                {
-                    Done = false,
-                    Time = args.Time
-                });
+                var surf = new CartesianCoordinate[args.Parameters.Indices.ILength*args.Parameters.Indices.JLength];
+				var iterator = new SequentialIterator();
+                var counter = 0;
+				iterator.ForExceptK(
+					args.Parameters.Indices,
+					(i, j) =>
+					{
+						surf[counter++] = new CartesianCoordinate(i, j, args.Fields.E[i, j, args.Parameters.Indices.GetCenter().KLength].Z);
+					});
+				await responseStream.WriteAsync(new FDTDReply
+				{
+					Done = false,
+					Time = args.Time,
+					Result = JsonConvert.SerializeObject(surf)
+
+				});
             };
 
             var result = ext.Calculate(parameters);

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Newtonsoft.Json;
@@ -14,6 +15,7 @@ using Simulation.FDTD.Grpc;
 using Simulation.Models.Spectrum;
 using Simulation.Infrastructure.Readers;
 using Simulation.Infrastructure.Models;
+using Simulation.Models.Coordinates;
 
 namespace Simulation.Web
 {
@@ -36,6 +38,12 @@ namespace Simulation.Web
                 });
                 options.Address = new Uri("https://localhost:3001");
             });
+
+            var httpHandler = new HttpClientHandler();
+            // Return `true` to allow certificates that are untrusted/invalid
+            httpHandler.ServerCertificateCustomValidationCallback = 
+                HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+
             services.AddGrpcClient<FDTDCalculator.FDTDCalculatorClient>(options =>
             {
                 options.ChannelOptionsActions.Add(channel => {
@@ -114,7 +122,7 @@ namespace Simulation.Web
                 }
                 else
                 {
-                    await this.Clients.Caller.Progress(reply.Time, null);
+                    await this.Clients.Caller.ProgressField(reply.Time, JsonConvert.DeserializeObject<CartesianCoordinate[]>(reply.Result));
                 }
             }
 
@@ -172,5 +180,6 @@ namespace Simulation.Web
     public interface ProgressHubClient
     {
         Task Progress(double replyWave, SimulationResult simulationResult);
+        Task ProgressField(double replyWave, CartesianCoordinate[] field);
     }
 }

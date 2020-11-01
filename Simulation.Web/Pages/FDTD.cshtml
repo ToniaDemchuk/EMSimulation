@@ -70,6 +70,7 @@
 		<button class="btn btn-success" @@click="download">Download</button>
 		</template>
 	</div>
+			<div id="mygraph"></div>
 </div>
 
 <script src="https://unpkg.com/chart.js@2.9.3/dist/Chart.js"></script>
@@ -133,6 +134,7 @@
 				.then(() => {
 					 this.signalrStarted = true
 				})
+
 		},
 		computed: {
 			options () {
@@ -199,8 +201,10 @@
 				this.result = null
 				this.progress = []
 
-				this.connection.on('Progress', (time) => {
+				this.connection.on('ProgressField', (time, values) => {
 					this.progress.push(time)
+
+					this.drawVisualization(values);
 				});
 
 				this.result = await this.connection.invoke(
@@ -212,6 +216,34 @@
 
 				this.inProgress = false
 			},
+
+
+			// Called when the Visualization API is loaded.
+			drawVisualization(values) {
+					
+				var data = new vis.DataSet();
+
+				for (var i = 0; i < values.length; i++) {
+					var value = values[i];
+					data.add({id:i,x:value.x,y:value.y,z:value.z,style:value.z});
+				}
+
+				// specify options
+				var options = {
+					width:  '600px',
+					height: '600px',
+					style: 'surface',
+					showPerspective: true,
+					showGrid: true,
+					showShadow: false,
+					keepAspectRatio: true,
+					verticalRatio: 0.5
+				};
+				// Instantiate our graph object.
+				var container = document.getElementById('mygraph');
+				var graph = new vis.Graph3d(container, data, options);
+			},
+  
 			download () {
 				const element = document.createElement('a');
 				const data = Object
