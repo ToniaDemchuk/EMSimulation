@@ -4,8 +4,8 @@
 	ViewData["Title"] = "DDA";
 }
 
-<div>
-	<div id="app">
+<div class="row">
+	<div id="app" class="col-8">
 		<h3>DDA</h3>
 
 		<form>
@@ -16,8 +16,6 @@
 						<input type="file" class="custom-file-input" accept=".fds" @@change="meshSelected" id="meshInput">
 					</div>
 				</div>
-
- 				<div id="mygraph"></div>
 
 				<h6>Config:</h6>
 				<div class="form-row">
@@ -71,6 +69,10 @@
 		<button class="btn btn-success" @@click="download">Download</button>
 		</template>
 	</div>
+
+	
+		<div class="col-4" id="mygraph"></div>
+
 </div>
 
 <script src="https://unpkg.com/chart.js@2.9.3/dist/Chart.js"></script>
@@ -229,8 +231,8 @@
 
 				// specify options
 				var options = {
-					width:  '600px',
-					height: '600px',
+					width:  '300px',
+					height: '300px',
 					style: 'dot-size',
 					showPerspective: false,
 					showGrid: true,

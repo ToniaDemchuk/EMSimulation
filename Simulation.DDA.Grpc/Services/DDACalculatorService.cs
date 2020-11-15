@@ -37,7 +37,7 @@ namespace Simulation.DDA.Grpc
                 {
                     Azimuth = request.WavePropagation.Azimuth,
                     Polar = request.WavePropagation.Polar,
-                    Radius = request.IncidentMagnitude.Radius,
+                    Radius = request.WavePropagation.Radius,
                     Units = UnitOfMeasurement.Degree
                 },
                 IsSolidMaterial = false,
