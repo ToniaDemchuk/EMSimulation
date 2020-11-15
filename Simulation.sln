@@ -35,6 +35,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulation.Web", "Simulatio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulation.FDTD.Grpc", "Simulation.FDTD.Grpc\Simulation.FDTD.Grpc.csproj", "{6ECB4A6A-268F-4D4C-B7CE-A9DD7B367396}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulation.DDA.Grpc", "Simulation.DDA.Grpc\Simulation.DDA.Grpc.csproj", "{CB36C716-0A28-4E39-BF9A-732FE7536FD2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulation.Web", "Simulation.Web\Simulation.Web.csproj", "{7BD62990-538E-4EE8-9E38-57A78DFBCE27}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulation.FDTD.Grpc", "Simulation.FDTD.Grpc\Simulation.FDTD.Grpc.csproj", "{6ECB4A6A-268F-4D4C-B7CE-A9DD7B367396}"
+EndProject
 Global
 	GlobalSection(Performance) = preSolution
 		HasPerformanceSessions = true
