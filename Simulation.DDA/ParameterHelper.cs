@@ -42,7 +42,7 @@ namespace Simulation.DDA
                         break;
                     }
                     var split = str.Split(
-                        new[] { '\t' },
+                        new[] { '\t', ' ' },
                         StringSplitOptions.RemoveEmptyEntries)
                         .Select(x => double.Parse(x, CultureInfo.InvariantCulture)).ToArray();
 

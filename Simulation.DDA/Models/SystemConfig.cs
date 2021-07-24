@@ -40,7 +40,7 @@ namespace Simulation.DDA.Models
             {
                 if (!this.crossSectionArea.HasValue)
                 {
-                    this.crossSectionArea = this.Radius.Sum(radius => Math.PI * radius * radius); // todo: parallelize?
+                    this.crossSectionArea = this.Radius.Distinct().Sum(radius => Math.PI * radius * radius); // todo: not valid calculation
                 }
                 return this.crossSectionArea.Value;
             }

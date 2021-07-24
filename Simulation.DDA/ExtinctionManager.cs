@@ -242,11 +242,13 @@ namespace Simulation.DDA
 				return 1;
 			}
 
+			var charge = -0.1;
+
 			var medRef = Math.Pow(dispersion.MediumRefractiveIndex, 2);
 			var subsRef = Math.Pow(dispersion.SubstrateRefractiveIndex, 2);
 			var reflMult = (medRef - subsRef) / (medRef + subsRef);
 
-			return reflMult;
+			return reflMult + charge;
 		}
 
 		private double FrenselReflectCoef(DispersionParameter dispersion)

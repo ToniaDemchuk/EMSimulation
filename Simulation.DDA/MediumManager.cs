@@ -37,12 +37,12 @@ namespace Simulation.DDA
         /// <returns>The dispersion parameters.</returns>
         public DispersionParameter GetDispersionParameters(SpectrumUnit parameter, SphericalCoordinate angle)
         {
-            var parameters = new DispersionParameter
-            {
-                SpectrumParameter = parameter,
-                MediumRefractiveIndex = this.getMediumCoeficient(parameter),
-                Permittivity = this.medium.GetPermittivity(parameter),
-                SubstrateRefractiveIndex = this.getSubstrateCoefficient(parameter)
+			var parameters = new DispersionParameter
+			{
+				SpectrumParameter = parameter,
+				MediumRefractiveIndex = this.getMediumCoeficient(parameter),
+				Permittivity = this.medium.GetPermittivity(parameter),
+				SubstrateRefractiveIndex = this.getSubstrateCoefficient(parameter)
             };
 
             CartesianCoordinate waveVector = this.getWaveVector(
@@ -56,7 +56,8 @@ namespace Simulation.DDA
 
         private double getSubstrateCoefficient(SpectrumUnit parameter)
         {
-			return 1.65;
+			return 2.30;//LiNbO3
+			return 1.51;//Glass
         }
 
         private double getMediumCoeficient(SpectrumUnit waveLength)
