@@ -67,6 +67,7 @@ To start FDTD-simulation, do the same, but in `Simulation.FDTD.Console`.
 Commands and options of `dotnet`-driver are described in more details [elsewhere](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet).
 
 Settings for DDA-calculations are contained in `ddaParameters.xml` (for incident field), `dipols.txt` (for geometry of the problem) and `opt_consts.txt` (for medium treatment).
+Similarly, input geometry for FDTD-calculation could be found and modified in `sphere.fds` from `Simulation.FDTD.Console`.
 
 ## Contribute
 
