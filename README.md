@@ -35,21 +35,13 @@ The console applications use the [*gnuplot*](http://gnuplot.sourceforge.net/).
 ### Linux
 
 Installation process on Linux requires to clone repository into local system using 
-
-<center>
-<code>
+```
 git clone https://github.com/ToniaDemchuk/EMSimulation
-</code>
-</center>
-
+```
 and
-
-<center>
-<code>
+```
 dotnet build
-</code>
-</center>
-
+```
 in `Simulation.DDA.Console` or `Simulation.FDTD.Console` if you want to build either DDA- or FDTD-part of the project respectively.
 
 Build step is not stict requirement, because you always can build or re-build it during [usage](#usage) session.
@@ -59,20 +51,15 @@ Build step is not stict requirement, because you always can build or re-build it
 ### Linux
 
 To start DDA-simulation, in the terminal run:
-
-<center>
-<code>
+```
 dotnet run
-</code>
-</center>
+```
 in `Simulation.DDA.Console`. 
-Note, that `run` build project as first step, it you pre-build it during installation, you can just run:
 
-<center>
-<code>
+Note, that `run` build project as first step, it you pre-build it during installation, you can just run:
+```
 dotnet run --no-build
-</code>
-</center>
+```
 to explicitly make `dotnet` use already built files.
 
 To start FDTD-simulation, do the same, but in `Simulation.FDTD.Console`.
