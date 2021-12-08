@@ -16,6 +16,7 @@ using Simulation.Models.Coordinates;
 using Simulation.Models.Enums;
 using Simulation.Models.Extensions;
 using Simulation.Models.Spectrum;
+using Simulation.Models.Constants;
 
 namespace Simulation.FDTD.Grpc
 {

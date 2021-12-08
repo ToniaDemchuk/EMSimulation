@@ -119,7 +119,7 @@
 					polar: 90,
 					azimuth: 0
 				},
-				numSteps: 300,
+				numSteps: 150,
 				progress: [],
 				result: null
 			}
@@ -204,7 +204,7 @@
 				this.connection.on('ProgressField', (time, values) => {
 					this.progress.push(time)
 
-					this.drawVisualization(values);
+					this.drawVisualization(values, time);
 				});
 
 				this.result = await this.connection.invoke(
@@ -219,7 +219,7 @@
 
 
 			// Called when the Visualization API is loaded.
-			drawVisualization(values) {
+			drawVisualization(values, time) {
 					
 				var data = new vis.DataSet();
 
@@ -230,14 +230,21 @@
 
 				// specify options
 				var options = {
-					width:  '600px',
-					height: '600px',
+					width:  '1000px',
+					height: '1000px',
 					style: 'surface',
 					showPerspective: true,
 					showGrid: true,
 					showShadow: false,
 					keepAspectRatio: true,
-					verticalRatio: 0.5
+					verticalRatio: 0.5,
+					zLabel: `T = ${time}`,
+					zMax: 5e-17,
+					cameraPosition: {
+						horizontal: 1.1,
+						vertical: 0.4,
+						distance: 1.7
+					}
 				};
 				// Instantiate our graph object.
 				var container = document.getElementById('mygraph');
